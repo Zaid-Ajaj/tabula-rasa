@@ -1,0 +1,6 @@
+FSharp.Core
+LiteDB.FSharp
+Newtonsoft.Json
+Fable.JsonConverter
+Suave
+jose-jwt

@@ -1,0 +1,18 @@
+source https://nuget.org/api/v2
+
+storage:none
+
+nuget Fable.Elmish.HMR
+nuget FSharp.Core
+nuget Fable.Core
+nuget Fable.Elmish.React
+nuget Fable.Elmish.Browser
+nuget Fable.Elmish.Debugger
+
+nuget jose-jwt
+nuget Suave
+nuget Newtonsoft.Json
+nuget LiteDB.FSharp
+nuget Fable.JsonConverter
+
+clitool dotnet-fable

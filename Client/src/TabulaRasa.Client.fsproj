@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Info -->
+    <Compile Include="Info/View.fs" />
+    <!-- Counter -->
+    <Compile Include="Counter/Types.fs" />
+    <Compile Include="Counter/State.fs" />
+    <Compile Include="Counter/View.fs" />
+    <!-- Home -->
+    <Compile Include="Home/Types.fs" />
+    <Compile Include="Home/State.fs" />
+    <Compile Include="Home/View.fs" />
+    <!-- Navbar -->
+    <Compile Include="Navbar/View.fs" />
+
+    <!-- Latest Posts -->
+    <Compile Include="Posts/Types.fs" />
+    <Compile Include="Posts/State.fs" />
+    <Compile Include="Posts/View.fs" />
+    
+    <!-- App -->
+    <Compile Include="App/Types.fs" />
+    <Compile Include="App/State.fs" />
+    <Compile Include="App/View.fs" />
+
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

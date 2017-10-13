@@ -6,30 +6,22 @@
     <Compile Include="../../Shared/DomainModels.fs"/>
     <Compile Include="../../Shared/ViewModels.fs"/>
     <Compile Include="Html.fs" />
+    <!-- Admin Backoffice -->
+    <Compile Include="Admin.Backoffice/Types.fs" />
+    <Compile Include="Admin.Backoffice/View.fs" />
+    <Compile Include="Admin.Backoffice/State.fs" />
     <!-- Admin Login -->
     <Compile Include="Admin.Login/Types.fs" />
     <Compile Include="Admin.Login/View.fs" />
     <Compile Include="Admin.Login/State.fs" />
-
-    <!-- Admin Login -->
+    <!-- Admin -->
     <Compile Include="Admin/Types.fs" />
     <Compile Include="Admin/State.fs" />
     <Compile Include="Admin/View.fs" />
-    
-    <!-- Counter -->
-    <Compile Include="Counter/Types.fs" />
-    <Compile Include="Counter/State.fs" />
-    <Compile Include="Counter/View.fs" />
-    <!-- Home -->
-    <Compile Include="Home/Types.fs" />
-    <Compile Include="Home/State.fs" />
-    <Compile Include="Home/View.fs" />
-
     <!-- Latest Posts -->
     <Compile Include="Posts/Types.fs" />
     <Compile Include="Posts/State.fs" />
     <Compile Include="Posts/View.fs" />
-    
     <!-- App -->
     <Compile Include="App/Types.fs" />
     <Compile Include="App/State.fs" />

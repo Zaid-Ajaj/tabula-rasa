@@ -34,18 +34,15 @@ let urlUpdate (result: Option<Page>) model =
 let init result =
   let initialPage = Home
   let (posts, postsCmd) = Posts.State.init()
-  let (home, homeCmd) = Home.State.init()
   let admin, adminCmd = Admin.State.init()
   let (model, cmd) =
     urlUpdate result
       { CurrentPage = initialPage
         AdminSecurityToken = None
         Admin = admin
-        Posts = posts
-        Home = home }
+        Posts = posts }
   model, Cmd.batch [ cmd
                      Cmd.map PostsMsg postsCmd
-                     Cmd.map HomeMsg homeCmd
                      Cmd.map AdminMsg adminCmd ]
 
 let update msg state =
@@ -58,9 +55,6 @@ let update msg state =
   | AdminMsg msg ->
       let adminState, adminCmd = Admin.State.update msg state.Admin
       { state with Admin = adminState }, Cmd.map AdminMsg adminCmd
-  | HomeMsg msg ->
-      let (home, homeCmd) = Home.State.update msg state.Home
-      { state with Home = home }, Cmd.map HomeMsg homeCmd
   | ViewPage page ->
       let nextState = { state with CurrentPage = page }
       let modifyUrlCmd = Navigation.newUrl (toHash page)

@@ -14,7 +14,7 @@ let update msg (state: State) =
     | otherMsg -> 
         state, Cmd.none
         
-let init() : State = 
+let init() = 
     { InputUsername = "";
       InputPassword = "";
-      LoggingIn = false }
+      LoggingIn = false }, Cmd.none

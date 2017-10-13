@@ -25,12 +25,18 @@ type BlogPost = {
     Reactions: (SocialReaction * int) list
 }
 
+type LoginInfo = {
+    Username: string
+    Password: string
+}
+
 type CreateAdminReq = {
     Name: string
     Username: string
     Password: string
     Email: string
     About: string
+    ProfileImageUrl: string
 }
 
 type CreateAdminRespose = 

@@ -3,8 +3,19 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Info -->
-    <Compile Include="Info/View.fs" />
+    <Compile Include="../../Shared/DomainModels.fs"/>
+    <Compile Include="../../Shared/ViewModels.fs"/>
+    <Compile Include="Html.fs" />
+    <!-- Admin Login -->
+    <Compile Include="Admin.Login/Types.fs" />
+    <Compile Include="Admin.Login/View.fs" />
+    <Compile Include="Admin.Login/State.fs" />
+
+    <!-- Admin Login -->
+    <Compile Include="Admin/Types.fs" />
+    <Compile Include="Admin/State.fs" />
+    <Compile Include="Admin/View.fs" />
+    
     <!-- Counter -->
     <Compile Include="Counter/Types.fs" />
     <Compile Include="Counter/State.fs" />
@@ -13,8 +24,6 @@
     <Compile Include="Home/Types.fs" />
     <Compile Include="Home/State.fs" />
     <Compile Include="Home/View.fs" />
-    <!-- Navbar -->
-    <Compile Include="Navbar/View.fs" />
 
     <!-- Latest Posts -->
     <Compile Include="Posts/Types.fs" />

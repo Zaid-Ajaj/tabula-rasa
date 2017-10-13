@@ -12,7 +12,7 @@ let spinner =
     [ div [ ClassName "cssload-whirlpool" ] [ ] ]
 
 let render (model: Model) dispatch = 
-    let title = h1 [ ] [ str "Latest Posts" ]
+    let title = h1 [ ClassName "title" ] [ str "Latest Posts" ]
     let body =
         match model.Error with
         | Some errorMsg -> h1 [ Style [ Color "red" ] ] [ str errorMsg ]

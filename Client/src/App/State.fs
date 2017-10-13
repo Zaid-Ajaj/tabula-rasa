@@ -11,7 +11,8 @@ let toHash page =
   | Featured -> "#featured"
   | Archive -> "#archive"
   | Contact -> "#contact"
-  | Home -> ""
+  | Admin -> "#admin"
+  | Home -> "#home"
 
 let pageParser: Parser<Page->Page,Page> =
   oneOf [
@@ -19,29 +20,33 @@ let pageParser: Parser<Page->Page,Page> =
     map Featured (s "featured")
     map Archive (s "archive")
     map Contact (s "contact")
-    map Home (s "")
+    map Home (s "home")
+    map Admin (s "admin")
   ]
 
 let urlUpdate (result: Option<Page>) model =
   match result with
   | None ->
-      model, Navigation.modifyUrl (toHash model.CurrentPage)
+      model, Cmd.none
   | Some page ->
-      { model with CurrentPage = page }, Cmd.none
+      { model with CurrentPage = page }, Cmd.ofMsg (ViewPage page)
 
 let init result =
   let initialPage = Home
   let (posts, postsCmd) = Posts.State.init()
   let (home, homeCmd) = Home.State.init()
+  let admin, adminCmd = Admin.State.init()
   let (model, cmd) =
     urlUpdate result
       { CurrentPage = initialPage
-        SecurityToken = None
+        AdminSecurityToken = None
+        Admin = admin
         Posts = posts
         Home = home }
   model, Cmd.batch [ cmd
                      Cmd.map PostsMsg postsCmd
-                     Cmd.map HomeMsg homeCmd ]
+                     Cmd.map HomeMsg homeCmd
+                     Cmd.map AdminMsg adminCmd ]
 
 let update msg state =
   match msg with
@@ -50,13 +55,16 @@ let update msg state =
       let appState = { state with Posts = postsState }
       let appCmd = Cmd.map PostsMsg postsCmd
       appState, appCmd
+  | AdminMsg msg ->
+      let adminState, adminCmd = Admin.State.update msg state.Admin
+      { state with Admin = adminState }, Cmd.map AdminMsg adminCmd
   | HomeMsg msg ->
       let (home, homeCmd) = Home.State.update msg state.Home
       { state with Home = home }, Cmd.map HomeMsg homeCmd
   | ViewPage page ->
       let nextState = { state with CurrentPage = page }
-      let modifyUrlCmd = Navigation.modifyUrl (toHash page)
-      let reloadCmd =   
+      let modifyUrlCmd = Navigation.newUrl (toHash page)
+      let reloadCmd =
         match page with 
         | Posts -> Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
         | _ -> Cmd.none

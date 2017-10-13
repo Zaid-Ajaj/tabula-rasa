@@ -10,20 +10,10 @@ open System.Security.Cryptography
 open Shared.DomainModels
 open Shared.ViewModels
 
-type AdminInfo = {
-    Name: string
-    Username: string
-    PasswordHash: string
-    PasswordSalt: string
-    Email: string
-    About: string
-    ProfileImageUrl: string
-}
-
 //  Learn about JWT https://jwt.io/introduction/
 //  This module uses the JOSE-JWT library https://github.com/dvsekhvalnov/jose-jwt
 
-let private createRandomKey() = 
+let createRandomKey() = 
     let crypto = System.Security.Cryptography.RandomNumberGenerator.Create()
     let randomNumber = Array.init 32 byte
     crypto.GetBytes(randomNumber)
@@ -60,37 +50,17 @@ let validateJwt (jwt:string) : UserInfo option =
     with
     | _ -> None
 
-let private utf8Bytes (input: string) = Encoding.UTF8.GetBytes(input)
-let private base64 (input: byte[]) = Convert.ToBase64String(input)
-let private sha256 = SHA256.Create()
-let private sha256Hash (input: byte[]) : byte[] = sha256.ComputeHash(input)
-
-/// Creates an initial guest user as the admin if admin data does not exist
-let createAdmin (info: CreateAdminReq)  = 
-    let adminInfoExists = File.Exists(Environment.adminFile)
-    if not adminInfoExists then AdminAlreadyExists
-    else 
-        let salt = createRandomKey()
-        let password = utf8Bytes info.Password
-        let saltyPassword = Array.concat [ salt; password ]
-        let passwordHash = sha256Hash saltyPassword
-        let admin = {
-            Name = info.Name
-            Username = info.Username
-            PasswordSalt = base64 salt
-            PasswordHash = base64 passwordHash
-            Email = info.Email
-            About = info.About
-            ProfileImageUrl = ""
-        }
-        Json.serialize admin
-        |> fun json -> File.WriteAllText(Environment.adminFile, json)
-        AdminCreatedSuccesfully
+let utf8Bytes (input: string) = Encoding.UTF8.GetBytes(input)
+let base64 (input: byte[]) = Convert.ToBase64String(input)
+let sha256 = SHA256.Create()
+let sha256Hash (input: byte[]) : byte[] = sha256.ComputeHash(input)
 
 
-let verifyPassword password saltBase64 hash = 
+
+
+let verifyPassword password saltBase64 hashBase64 = 
     let salt = Convert.FromBase64String(saltBase64)
     Array.concat [ salt; utf8Bytes password ]
     |> sha256Hash
     |> base64
-    |> (=) hash 
+    |> (=) hashBase64 

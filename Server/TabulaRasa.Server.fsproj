@@ -12,6 +12,7 @@
     <Compile Include="Environment.fs" />
     <Compile Include="Json.fs" />
     <Compile Include="Security.fs" />
+    <Compile Include="Admin.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 

@@ -21,7 +21,7 @@ let sidebar currentPage dispatcher =
     [ div 
         [ Style [ TextAlign "center" ] ]
         [ h3 [ Style [ Color "white" ] ] [ str "Zaid Ajaj" ]
-          img [ ClassName "profile-img"; Src "/img/profile.jpg" ] ]
+          img [ ClassName "profile-img"; Src "/img/default-cuteness.jpg" ] ]
       div 
         [ ClassName "quote" ]
         [ str "F# enthusiast, interested in all kinds of metaprogramming, Coffee Driven Developement, writing and learning just about everything." ]

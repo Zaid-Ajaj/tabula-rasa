@@ -13,6 +13,8 @@ open App.View
 open Fable.Core.JsInterop
 importAll "../sass/app.sass"
 importAll "../sass/spinner.css"
+
+
 // App
 Program.mkProgram init update render
 |> Program.toNavigable (parseHash pageParser) urlUpdate

@@ -26,39 +26,20 @@ let update msg (state: State) =
         let nextState = { state with InputPassword = pass }
         nextState, Cmd.none
     | Login ->
-        let validUsername = 
-            String.IsNullOrWhiteSpace(state.InputUsername) |> not
-            && state.InputUsername.Length > 5
-        let validPassword = 
-            String.IsNullOrWhiteSpace(state.InputPassword) |> not
-            && state.InputPassword.Length > 5
-        if not validUsername then 
-          let errorMsg = 
-            "Username must have at least 6 characters"
-            |> Toastr.message 
-            |> Toastr.withTitle "Client"
-            |> Toastr.error
-          state, errorMsg()
-        elif not validPassword then
-          let errorMsg = 
-            "Password must have at least 6 characters"
-            |> Toastr.message 
-            |> Toastr.withTitle "Client"
-            |> Toastr.error
-          state, errorMsg()
+        if String.IsNullOrWhiteSpace(state.InputUsername) then 
+            state, Feedback.usernameEmpty()
+        elif state.InputUsername.Length < 6 then
+            state, Feedback.usernameInvalid()
+        elif String.IsNullOrWhiteSpace(state.InputPassword) then 
+            state, Feedback.passwordEmpty()
+        elif state.InputPassword.Length < 6 then
+            state, Feedback.passwordInvalid()
         else 
           let nextState = { state with LoggingIn = true } 
           nextState, loginAsyncCmd
     | LoginSuccess token -> 
         let nextState = { state with LoggingIn = false }
-
-        let successMsg = 
-            "Succesfully logged in"
-            |> Toastr.message 
-            |> Toastr.withTitle "Client"
-            |> Toastr.success
- 
-        nextState, successMsg()
+        nextState, Feedback.loginSuccess()
     | LoginFailed error ->
         let nextState = 
             { state with LoginError = Some error 

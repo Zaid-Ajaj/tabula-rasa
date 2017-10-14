@@ -17,13 +17,12 @@ let menuItem label page currentPage dispatcher =
 let sidebar currentPage dispatcher =
   aside
     [ ClassName "fit-parent child-space"; Style [ TextAlign "center" ] ]
-    [ div 
+    [ div
         [ Style [ TextAlign "center" ] ]
         [ h3 [ Style [ Color "white" ] ] [ str "Zaid Ajaj" ]
           br []
-          img [ ClassName "profile-img"; Src "/img/default-cuteness.jpg" ]
-          br [] ]
-      div 
+          img [ ClassName "profile-img"; Src "/img/default-cuteness.jpg" ] ]
+      div
         [ ClassName "quote" ]
         [ str "F# enthusiast, interested in all kinds of metaprogramming, Coffee Driven Developement, writing and learning just about everything." ]
       

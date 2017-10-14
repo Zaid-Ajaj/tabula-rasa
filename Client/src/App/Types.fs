@@ -11,7 +11,6 @@ type AppMsg =
   | ViewPage of Page
 
 type Model = {
-    AdminSecurityToken : string option
     CurrentPage: Page
     Posts: Posts.Types.Model
     Admin: Admin.Types.State

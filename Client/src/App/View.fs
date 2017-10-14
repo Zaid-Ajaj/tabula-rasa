@@ -11,8 +11,7 @@ let menuItem label page currentPage dispatcher =
       [ classList  
          [ "menu-item", true
            "menu-item-selected", page = currentPage ] 
-        OnClick (fun e -> dispatcher (ViewPage page))
-      ]
+        OnClick (fun e -> dispatcher (ViewPage page)) ]
       [ str label ]
 
 let sidebar currentPage dispatcher =
@@ -29,14 +28,13 @@ let sidebar currentPage dispatcher =
       menuItem "Posts" Posts currentPage dispatcher
       menuItem "About" Page.About currentPage dispatcher ]
 
-let render state dispatch =
-
-  let pageView page = 
-    match page with
+let renderPage state dispatch = 
+    match state.CurrentPage with
     | Posts -> Posts.View.render state.Posts (PostsMsg >> dispatch)
     | Admin -> Admin.View.render state.Admin (AdminMsg >> dispatch)
     | Page.About -> h1 [] [ str "About" ]
-    
+
+let render state dispatch =
   div
     [ ]
     [ div
@@ -44,4 +42,4 @@ let render state dispatch =
         [ sidebar state.CurrentPage dispatch ]
       div
         [ ClassName "main-content" ]
-        [ pageView state.CurrentPage ] ]
+        [ renderPage state dispatch ] ]

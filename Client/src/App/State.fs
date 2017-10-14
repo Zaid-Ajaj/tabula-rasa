@@ -7,15 +7,14 @@ open App.Types
 
 let toHash page =
   match page with
-  | Posts -> "#latest-posts"
+  | Posts -> "#posts"
   | About -> "#about"
   | Admin -> "#admin"
 
 let pageParser: Parser<Page->Page,Page> =
   oneOf [ map Admin (s "admin")
-          map Posts (s "latest-posts")
+          map Posts (s "posts")
           map About (s "about") ]
-
 
 let urlUpdate (result: Option<Page>) model =
   match result with
@@ -31,7 +30,6 @@ let init result =
   let (model, cmd) =
     urlUpdate result
       { CurrentPage = initialPage
-        AdminSecurityToken = None
         Admin = admin
         Posts = posts }
   model, Cmd.batch [ cmd

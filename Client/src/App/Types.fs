@@ -2,10 +2,7 @@ module App.Types
 
 type Page =
   | Posts
-  | Featured
-  | Archive
-  | Contact
-  | Home
+  | About
   | Admin
 
 type AppMsg =

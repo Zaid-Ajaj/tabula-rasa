@@ -18,7 +18,6 @@ let update msg (state: State) =
         | otherMsg -> 
             let nextState = { state with Login = nextLoginState }
             nextState, Cmd.map LoginMsg nextLoginCmd
-            
     | BackofficeMsg msg ->
         let prevBackofficeState = state.Backoffice
         let nextBackofficeState, nextBackofficeCmd = 

@@ -8,21 +8,14 @@ open App.Types
 let toHash page =
   match page with
   | Posts -> "#latest-posts"
-  | Featured -> "#featured"
-  | Archive -> "#archive"
-  | Contact -> "#contact"
+  | About -> "#about"
   | Admin -> "#admin"
-  | Home -> "#home"
 
 let pageParser: Parser<Page->Page,Page> =
-  oneOf [
-    map Posts (s "latest-posts")
-    map Featured (s "featured")
-    map Archive (s "archive")
-    map Contact (s "contact")
-    map Home (s "home")
-    map Admin (s "admin")
-  ]
+  oneOf [ map Admin (s "admin")
+          map Posts (s "latest-posts")
+          map About (s "about") ]
+
 
 let urlUpdate (result: Option<Page>) model =
   match result with
@@ -32,7 +25,7 @@ let urlUpdate (result: Option<Page>) model =
       { model with CurrentPage = page }, Cmd.ofMsg (ViewPage page)
 
 let init result =
-  let initialPage = Home
+  let initialPage = Posts
   let (posts, postsCmd) = Posts.State.init()
   let admin, adminCmd = Admin.State.init()
   let (model, cmd) =

@@ -6,14 +6,16 @@ open Admin.Login.Types
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
-let textInput inputLabel valid (onChange: string -> unit) = 
-  let inputClasses = 
-    classList [ "form-control", true 
-                "form-control-lg", true
-                "form-control-success", valid ]
+type InputType = Text | Password 
+let textInput inputLabel initial inputType (onChange: string -> unit) = 
+  let inputType = match inputType with 
+                  | Text -> "input"
+                  | Password -> "password"
   div 
     [ ClassName "form-group has-success" ]
-    [ input [ inputClasses
+    [ input [ ClassName "form-control form-control-lg"
+              Type inputType
+              DefaultValue initial
               Placeholder inputLabel
               OnChange (fun e -> onChange !!e.target?value) ] ]
 
@@ -26,12 +28,15 @@ let loginFormStyle =
 let cardBlockStyle = 
   Style [ Padding "30px"
           TextAlign "left"
-          BorderRadius "15px" ]
+          BackgroundImage "url('/img/login-bg.jpg')" ]
+
+let blogIcon = 
+  img [ Src "/img/favicon-book.png"
+        Style [ Height 32; Width 32; Margin 10 ] ]
 
 let render (state: State) dispatch = 
     let validUsername = String.IsNullOrWhiteSpace(state.InputUsername) |> not
     let validPassword = String.IsNullOrWhiteSpace(state.InputPassword) |> not
-    
     let loginBtnContent = 
       if state.LoggingIn then i [ ClassName "fa fa-circle-o-notch fa-spin" ] []
       else str "Login"
@@ -46,17 +51,20 @@ let render (state: State) dispatch =
     let btnClass = 
       if canLogin 
       then "btn btn-success btn-lg"
-      else "btn btn-primary btn-lg"
+      else "btn btn-info btn-lg"
     div 
       [ ClassName "container" ; loginFormStyle ]
       [ div 
          [ ClassName "card" ]
          [ div
              [ ClassName "card-block"; cardBlockStyle ]
-             [ h4 [ ClassName "card-title" ] [ str "Admin Login" ]
+             [ h4 
+                [ ClassName "card-title" ] 
+                [ span [ ] [ blogIcon ] 
+                  str "Admin Login" ]
                br []
-               textInput "Username" validUsername (ChangeUsername >> dispatch)
-               textInput "Password" validPassword (ChangePassword >> dispatch)
+               textInput "Username" state.InputUsername Text (ChangeUsername >> dispatch)
+               textInput "Password" state.InputPassword Password (ChangePassword >> dispatch)
                button 
                  [ ClassName btnClass
                    OnClick (fun e -> dispatch Login) ] 

@@ -24,24 +24,18 @@ let sidebar currentPage dispatcher =
           img [ ClassName "profile-img"; Src "/img/default-cuteness.jpg" ] ]
       div 
         [ ClassName "quote" ]
-        [ str "Programming, building things and F#" ]
+        [ str "F# enthusiast, interested in all kinds of metaprogramming, Coffee Driven Developement, writing and learning just about everything." ]
       
-      menuItem "Home" Home currentPage dispatcher
-      menuItem "Latest Posts" Posts currentPage dispatcher
-      menuItem "Featured" Featured currentPage dispatcher
-      menuItem "Archive" Archive currentPage dispatcher
-      menuItem "Contact" Contact currentPage dispatcher ]
+      menuItem "Posts" Posts currentPage dispatcher
+      menuItem "About" Page.About currentPage dispatcher ]
 
 let render state dispatch =
 
   let pageView page = 
     match page with
-    | Home ->  h1 [] [ str "Home" ]
     | Posts -> Posts.View.render state.Posts (PostsMsg >> dispatch)
     | Admin -> Admin.View.render state.Admin (AdminMsg >> dispatch)
-    | Featured -> h1 [] [ str "Featured Posts" ]
-    | Archive -> h1 [] [ str "Archive" ]
-    | Contact -> h1 [] [ str "Contact" ]
+    | Page.About -> h1 [] [ str "About" ]
     
   div
     [ ]

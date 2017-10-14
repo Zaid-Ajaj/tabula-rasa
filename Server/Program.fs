@@ -21,6 +21,6 @@ let rec findRoot dir =
 let main argv =
     let cwd = Assembly.GetEntryAssembly().Location
     let root = findRoot cwd
-    let client = root </> "Client" </> "src"
+    let client = root </> "Client" </> "src" </> "public"
     printfn "Hello %s from F#!" client
     0 // return an integer exit code

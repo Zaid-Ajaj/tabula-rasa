@@ -4,3 +4,4 @@ Newtonsoft.Json
 Fable.JsonConverter
 Suave
 jose-jwt
+Suave.DotLiquid

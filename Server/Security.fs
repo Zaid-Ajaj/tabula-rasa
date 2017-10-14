@@ -54,10 +54,6 @@ let utf8Bytes (input: string) = Encoding.UTF8.GetBytes(input)
 let base64 (input: byte[]) = Convert.ToBase64String(input)
 let sha256 = SHA256.Create()
 let sha256Hash (input: byte[]) : byte[] = sha256.ComputeHash(input)
-
-
-
-
 let verifyPassword password saltBase64 hashBase64 = 
     let salt = Convert.FromBase64String(saltBase64)
     Array.concat [ salt; utf8Bytes password ]

@@ -11,9 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "babel-runtime": "^6.26.0",
+    "jquery": "^3.2.1",
     "react": "^15.6.2",
     "react-dom": "^15.6.2",
-    "remotedev": "^0.2.7"
+    "remotedev": "^0.2.7",
+    "toastr": "^2.1.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

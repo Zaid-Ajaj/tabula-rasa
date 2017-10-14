@@ -18,7 +18,7 @@ let textInput inputLabel initial inputType (onChange: string -> unit) =
               DefaultValue initial
               Placeholder inputLabel
               OnChange (fun e -> onChange !!e.target?value) ] ]
-              
+
 let loginFormStyle = 
   Style [ Width "400px"
           MarginTop "70px"
@@ -43,8 +43,8 @@ let render (state: State) dispatch =
     let canLogin = 
       [ validUsername 
         validPassword
-        state.InputUsername.Length >= 4
-        state.InputPassword.Length >= 4 ]
+        state.InputUsername.Length >= 6
+        state.InputPassword.Length >= 6 ]
       |> Seq.forall id
      
     let btnClass = 

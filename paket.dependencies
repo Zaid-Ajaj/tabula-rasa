@@ -17,3 +17,4 @@ nuget LiteDB.FSharp
 nuget Fable.JsonConverter
 
 clitool dotnet-fable
+nuget Suave.DotLiquid

@@ -6,6 +6,7 @@
     <Compile Include="../../Shared/DomainModels.fs"/>
     <Compile Include="../../Shared/ViewModels.fs"/>
     <Compile Include="Html.fs" />
+    <Compile Include="Elmish.Toastr.fs" />
     <!-- Admin Backoffice -->
     <Compile Include="Admin.Backoffice/Types.fs" />
     <Compile Include="Admin.Backoffice/View.fs" />

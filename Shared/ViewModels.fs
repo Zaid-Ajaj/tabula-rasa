@@ -36,6 +36,8 @@ type CreateAdminReq = {
     Password: string
     Email: string
     About: string
+    BlogTitle: string
+    Theme: string
     ProfileImageUrl: string
 }
 

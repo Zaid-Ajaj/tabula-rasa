@@ -24,7 +24,7 @@ let sidebar currentPage dispatcher =
           img [ ClassName "profile-img"; Src "/img/default-cuteness.jpg" ] ]
       div 
         [ ClassName "quote" ]
-        [ str "F# enthusiast, interested in all kinds of metaprogramming, Coffee Driven Developement, writing and learning just about everything." ]
+        [ str "Programming, building things and F#" ]
       
       menuItem "Home" Home currentPage dispatcher
       menuItem "Latest Posts" Posts currentPage dispatcher

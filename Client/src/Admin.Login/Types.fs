@@ -13,4 +13,5 @@ type State = {
     LoggingIn: bool
     InputUsername: string
     InputPassword: string
+    LoginError: string option
 }

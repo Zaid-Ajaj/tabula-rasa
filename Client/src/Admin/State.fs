@@ -9,7 +9,16 @@ let update msg (state: State) =
         let prevLoginState = state.Login
         let nextLoginState, nextLoginCmd = 
             Admin.Login.State.update msg prevLoginState
-        { state with Login = nextLoginState }, Cmd.map LoginMsg nextLoginCmd
+        match msg with 
+        | Login.Types.Msg.LoginSuccess token ->
+            let nextState = 
+                { state with Login = nextLoginState
+                             SecurityToken = Some token }
+            nextState, Cmd.map LoginMsg nextLoginCmd
+        | otherMsg -> 
+            let nextState = { state with Login = nextLoginState }
+            nextState, Cmd.map LoginMsg nextLoginCmd
+            
     | BackofficeMsg msg ->
         let prevBackofficeState = state.Backoffice
         let nextBackofficeState, nextBackofficeCmd = 

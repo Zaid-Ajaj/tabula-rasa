@@ -1,8 +1,12 @@
-module Storage.Models
+module Storage
+
+open Shared.DomainModels
+open LiteDB
+open LiteDB.FSharp
 
 open System
-open Shared.DomainModels
-
+open System.IO
+open System.Text
 
 type AppUser = {
     Id: Guid
@@ -12,7 +16,6 @@ type AppUser = {
     DateAdded: DateTime
     IsAdmin: bool
 }
-
 
 /// Represents how the content of a blog is stored
 /// It can either be just the Markdown content of the blog or it can be a markdown page on github
@@ -33,3 +36,16 @@ type BlogPost = {
     Comments: Comment list
     Reactions: (SocialReaction * int) list
 }
+
+let saveFile (filename: string) (content: string) (database: LiteDatabase) = 
+    let content = if isNull content then "" else content
+    let contentAsBytes = Encoding.UTF8.GetBytes(content)
+    use memoryStream = new MemoryStream(contentAsBytes)
+    database.FileStorage.Upload(filename, filename, memoryStream) |> ignore
+
+let readFile (filename: string) (database: LiteDatabase) = 
+    use memoryStream = new MemoryStream()
+    try 
+        database.FileStorage.Download(filename, memoryStream) |> ignore
+        Encoding.UTF8.GetString(memoryStream.ToArray()) |> Some
+    with | ex -> None

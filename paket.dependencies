@@ -2,6 +2,7 @@ source https://nuget.org/api/v2
 
 storage:none
 
+nuget Expecto
 nuget Fable.Elmish.HMR
 nuget FSharp.Core
 nuget Fable.Core

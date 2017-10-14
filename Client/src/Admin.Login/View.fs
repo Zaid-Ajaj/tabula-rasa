@@ -12,14 +12,13 @@ let textInput inputLabel initial inputType (onChange: string -> unit) =
                   | Text -> "input"
                   | Password -> "password"
   div 
-    [ ClassName "form-group has-success" ]
+    [ ClassName "form-group" ]
     [ input [ ClassName "form-control form-control-lg"
               Type inputType
               DefaultValue initial
               Placeholder inputLabel
               OnChange (fun e -> onChange !!e.target?value) ] ]
-
-
+              
 let loginFormStyle = 
   Style [ Width "400px"
           MarginTop "70px"

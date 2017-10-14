@@ -3,16 +3,16 @@ module Admin.Login.Feedback
 open Elmish
 open Admin.Login.Types
 
-let private errorFromClient (msg: string) : (unit -> Cmd<Msg>) = 
+let private clientError (msg: string) : (unit -> Cmd<Msg>) = 
   msg
   |> Toastr.message 
   |> Toastr.withTitle "Client"
   |> Toastr.error 
 
-let usernameEmpty = errorFromClient "Username field cannot be empty"
-let usernameInvalid = errorFromClient "Username too short, at least 6 characters are required"
-let passwordEmpty = errorFromClient "Password field cannot be empty"
-let passwordInvalid = errorFromClient "Password too short, at least 6 characters are required"
+let usernameEmpty = clientError "Username field cannot be empty"
+let usernameTooShort = clientError "Username too short, at least 6 characters are required"
+let passwordEmpty = clientError "Password field cannot be empty"
+let passwordTooShort = clientError "Password too short, at least 6 characters are required"
 
 let loginSuccess : unit -> Cmd<Msg> = 
     "Succesfully logged in"

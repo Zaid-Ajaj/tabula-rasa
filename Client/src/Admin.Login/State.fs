@@ -29,11 +29,11 @@ let update msg (state: State) =
         if String.IsNullOrWhiteSpace(state.InputUsername) then 
             state, Feedback.usernameEmpty()
         elif state.InputUsername.Length < 6 then
-            state, Feedback.usernameInvalid()
+            state, Feedback.usernameTooShort()
         elif String.IsNullOrWhiteSpace(state.InputPassword) then 
             state, Feedback.passwordEmpty()
         elif state.InputPassword.Length < 6 then
-            state, Feedback.passwordInvalid()
+            state, Feedback.passwordTooShort()
         else 
           let nextState = { state with LoggingIn = true } 
           nextState, loginAsyncCmd

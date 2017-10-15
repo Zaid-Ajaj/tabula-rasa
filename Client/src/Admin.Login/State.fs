@@ -6,13 +6,6 @@ open Admin.Login.Types
 open Fable.PowerPack
 open Shared.ViewModels
 
-
-let loginAsyncCmd = 
-    Cmd.ofPromise 
-        loginAsync ()
-        LoginSuccess
-        (fun ex -> LoginFailed "Error")
-
 let update msg (state: State) = 
     match msg with 
     | ChangeUsername name ->

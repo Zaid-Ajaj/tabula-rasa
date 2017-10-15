@@ -4,12 +4,8 @@ open System
 open Elmish
 open Admin.Login.Types
 open Fable.PowerPack
+open Shared.ViewModels
 
-let loginAsync() = 
-    promise { 
-        do! Promise.sleep 1500
-        return "my secure token"
-    }
 
 let loginAsyncCmd = 
     Cmd.ofPromise 
@@ -36,7 +32,10 @@ let update msg (state: State) =
             state, Feedback.passwordTooShort()
         else 
           let nextState = { state with LoggingIn = true } 
-          nextState, loginAsyncCmd
+          let credentials : LoginInfo = 
+            { Username = state.InputUsername
+              Password = state.InputPassword  }
+          nextState, Http.login credentials
     | LoginSuccess token -> 
         let nextState = { state with LoggingIn = false }
         nextState, Feedback.loginSuccess()

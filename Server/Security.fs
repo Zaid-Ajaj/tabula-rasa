@@ -10,6 +10,11 @@ open System.Security.Cryptography
 open Shared.DomainModels
 open Shared.ViewModels
 
+type UserInfo = {
+    Username: string
+    Claims: string[]
+}
+
 //  Learn about JWT https://jwt.io/introduction/
 //  This module uses the JOSE-JWT library https://github.com/dvsekhvalnov/jose-jwt
 

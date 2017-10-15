@@ -30,6 +30,13 @@ type LoginInfo = {
     Password: string
 }
 
+type LoginResult = 
+    | Success of token: string
+    | UsernameDoesNotExist
+    | PasswordIncorrect
+    | JsonFormatIncorrect
+    | LoginError
+
 type CreateAdminReq = {
     Name: string
     Username: string

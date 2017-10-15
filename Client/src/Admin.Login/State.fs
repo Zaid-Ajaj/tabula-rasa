@@ -17,11 +17,11 @@ let update msg (state: State) =
     | Login ->
         if String.IsNullOrWhiteSpace(state.InputUsername) then 
             state, Feedback.usernameEmpty()
-        elif state.InputUsername.Length < 6 then
+        elif state.InputUsername.Length < 5 then
             state, Feedback.usernameTooShort()
         elif String.IsNullOrWhiteSpace(state.InputPassword) then 
             state, Feedback.passwordEmpty()
-        elif state.InputPassword.Length < 6 then
+        elif state.InputPassword.Length < 5 then
             state, Feedback.passwordTooShort()
         else 
           let nextState = { state with LoggingIn = true } 
@@ -36,7 +36,8 @@ let update msg (state: State) =
         let nextState = 
             { state with LoginError = Some error 
                          LoggingIn = false }
-        nextState, Cmd.none
+        let feedback = Feedback.errorToast error
+        nextState, feedback()
 
 let init() = 
     { InputUsername = ""

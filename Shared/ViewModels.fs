@@ -34,8 +34,7 @@ type LoginResult =
     | Success of token: string
     | UsernameDoesNotExist
     | PasswordIncorrect
-    | JsonFormatIncorrect
-    | LoginError
+    | LoginError of string
 
 type CreateAdminReq = {
     Name: string

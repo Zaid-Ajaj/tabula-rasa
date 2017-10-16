@@ -37,6 +37,10 @@ type BlogPost = {
     Reactions: (SocialReaction * int) list
 }
 
+type Store = 
+    | InMemory // using LiteDb's in-memory structure
+    | LocalDatabase
+
 let saveFile (filename: string) (content: string) (database: LiteDatabase) = 
     let content = if isNull content then "" else content
     let contentAsBytes = Encoding.UTF8.GetBytes(content)
@@ -49,3 +53,13 @@ let readFile (filename: string) (database: LiteDatabase) =
         database.FileStorage.Download(filename, memoryStream) |> ignore
         Encoding.UTF8.GetString(memoryStream.ToArray()) |> Some
     with | ex -> None
+
+let createDatabaseUsing store = 
+    let mapper = FSharpBsonMapper()
+    match store with
+    | InMemory ->
+        let memoryStream = new System.IO.MemoryStream()
+        new LiteDatabase(memoryStream, mapper)
+    | LocalDatabase ->
+        let dbFile = Environment.databaseFilePath
+        new LiteDatabase(dbFile, mapper)

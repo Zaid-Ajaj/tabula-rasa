@@ -4,6 +4,8 @@ storage:none
 
 nuget Expecto
 nuget Fable.Elmish.HMR
+nuget Fable.Remoting.Client
+nuget Fable.Remoting.Suave
 nuget FSharp.Core
 nuget Fable.Core
 nuget Fable.Elmish.React

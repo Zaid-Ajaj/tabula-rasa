@@ -17,5 +17,20 @@ let databaseFilePath = Path.Combine(dataFolder, "TabulaRasa.db")
 /// The path of the file containing the security pass phrase
 let securityTokenFile = Path.Combine(dataFolder, "token.txt")
 
-let adminFile = Path.Combine(dataFolder, "admin.json")
+let adminFile = "admin.json"
 
+let (</>) x y = Path.Combine(x, y) 
+
+let rec findRoot dir =
+    if File.Exists(System.IO.Path.Combine(dir, "TabulaRasa.sln"))
+    then dir
+    else
+        let parent = Directory.GetParent(dir)
+        if isNull parent then
+            failwith "Couldn't find package.json directory"
+        findRoot parent.FullName
+
+let clientPath = 
+    let cwd = System.Reflection.Assembly.GetEntryAssembly().Location
+    let root = findRoot cwd
+    root </> "Client" </> "public"

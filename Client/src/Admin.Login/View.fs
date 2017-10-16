@@ -43,8 +43,8 @@ let render (state: State) dispatch =
     let canLogin = 
       [ validUsername 
         validPassword
-        state.InputUsername.Length >= 6
-        state.InputPassword.Length >= 6 ]
+        state.InputUsername.Length >= 5
+        state.InputPassword.Length >= 5 ]
       |> Seq.forall id
      
     let btnClass = 

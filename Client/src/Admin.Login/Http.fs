@@ -7,6 +7,8 @@ open Fable.PowerPack
 open Fable.PowerPack.Fetch.Fetch_types
 open Fable.Core.JsInterop
 
+let server = Server.createProxy()
+
 let private loginPromise (info: LoginInfo) = 
     promise {
         let body = toJson info
@@ -20,18 +22,17 @@ let private loginPromise (info: LoginInfo) =
         | Ok response -> 
             let! json = response.text()
             return ofJson<LoginResult> json
-        | Error ex -> return LoginError
+        | Error ex -> return LoginError "Network error"
     }
 
 let login (info: LoginInfo) =
-
+    
     let successHandler = function
         | Success token -> LoginSuccess token
         | UsernameDoesNotExist -> LoginFailed "Username does not exist"
         | PasswordIncorrect -> LoginFailed "The password you entered is incorrect"
-        | JsonFormatIncorrect -> LoginFailed "The request data (login info) is not formatted correctly"
-        | LoginError -> LoginFailed "Unknown error occured while logging you in"
+        | LoginError _ -> LoginFailed "Unknown error occured while logging you in"
     
-    Cmd.ofPromise loginPromise info
-                  successHandler
-                  (fun ex -> LoginFailed "Unknown error occured while logging you in")
+    Cmd.ofAsync server.login info
+                successHandler
+                (fun ex -> LoginFailed "Unknown error occured while logging you in")

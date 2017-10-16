@@ -32,7 +32,7 @@ let create (info: CreateAdminReq)  =
         About = info.About
         ProfileImageUrl = info.ProfileImageUrl }
 
-let createGuestAdmin() = 
+let guestAdmin = 
     let info : CreateAdminReq = 
         { Name = "Cute by default"
           BlogTitle = "Blog title"
@@ -43,3 +43,15 @@ let createGuestAdmin() =
           About = "Here is where you tell a little bit about yourself, adjust it from the settings"
           ProfileImageUrl = "https://raw.githubusercontent.com/Zaid-Ajaj/tabula-rasa/57ea2879d7ec0bb8e62b64e44159a2832eccd7be/Client/public/img/default-cuteness.jpg?token=AMswmPx_1Yk_OXV7-9ird49Rje80J7Jtks5Z6dyFwA%3D%3D" }
     create info
+
+
+let writeAdminIfDoesNotExists (adminInfo: AdminInfo) (writeFile: string -> string -> unit) (readFile: string -> string option) = 
+    let adminPath = Environment.adminFile
+    match readFile adminPath with
+    | None ->
+        // no file found, write data
+        let data = Json.serialize adminInfo
+        writeFile adminPath data 
+    | Some _ ->
+        // there already exists some data, don't do anything
+        ()

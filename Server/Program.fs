@@ -10,51 +10,29 @@ open System.Reflection
 open System.Text
 
 open Shared.ViewModels
+open ClientServer
 open Security
 
-let (</>) x y = Path.Combine(x, y) 
-
-let rec findRoot dir =
-    if File.Exists(IO.Path.Combine(dir, "TabulaRasa.sln"))
-    then dir
-    else
-        let parent = Directory.GetParent(dir)
-        if isNull parent then
-            failwith "Couldn't find package.json directory"
-        findRoot parent.FullName
-
-let login (ctx: HttpContext) =  
-    let loginInfo =
-        ctx.request.rawForm
-        |> Encoding.UTF8.GetString
-        |> Json.tryDeserialize<LoginInfo>
-
-    let loginResult =
-      match loginInfo with
-      | None -> JsonFormatIncorrect
-      | Some user ->
-         if user.Username <> "guest" then 
-            UsernameDoesNotExist
-         elif user.Password <> "guest" then
-            PasswordIncorrect
-         else 
-           let userInfo = { Username = "guest"; Claims = [| "admin" |] }
-           let token = Security.encodeJwt userInfo
-           Success token
-    let loginResult = Json.serialize loginResult
-    OK loginResult ctx
-
+open Fable.Remoting.Suave
 
 [<EntryPoint>]
 let main argv =
-    let cwd = Assembly.GetEntryAssembly().Location
-    let root = findRoot cwd
-    let client = root </> "Client" </> "src" </> "public"
-    let app = 
-        choose 
-          [ POST >=> choose 
-               [ path "/api/login" >=> login ] ]
 
-    startWebServer defaultConfig app
-    printfn "Hello %s from F#!" client
+    let store = 
+        match argv with
+        | [| "--store"; "local-database" |] -> Storage.LocalDatabase
+        | [| "--store"; "in-memory" |] -> Storage.InMemory
+        | otherwise -> Storage.InMemory // by default
+
+    let webApp = WebApp.createUsing store
+
+    let client = Environment.clientPath
+    let webServerConfig = 
+        { defaultConfig with 
+            homeFolder = Some client }
+
+    let webServer = FableSuaveAdapter.webPartWithBuilderFor webApp routeBuilder
+
+    startWebServer webServerConfig webServer
+    printfn "Hello from F#!"
     0 // return an integer exit code

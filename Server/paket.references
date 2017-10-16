@@ -5,3 +5,4 @@ Fable.JsonConverter
 Suave
 jose-jwt
 Suave.DotLiquid
+Fable.Remoting.Suave

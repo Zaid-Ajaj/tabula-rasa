@@ -22,30 +22,26 @@ let private warningToastWithTitle (msg: string) (title: string)  : unit = import
 let message msg = { Message = msg; Title = ""  }
 let withTitle title msg = { msg with Title = title }
 
-let success (msg: ToastrMsg) : (unit -> Cmd<'a>) = 
-    fun () ->
+let success (msg: ToastrMsg) : Cmd<_> = 
+    [fun _ ->
         if System.String.IsNullOrEmpty(msg.Title) 
         then successToast msg.Message
-        else successToastWithTitle msg.Message msg.Title
-        Cmd.none
+        else successToastWithTitle msg.Message msg.Title]
 
-let error (msg: ToastrMsg) : (unit -> Cmd<'a>) = 
-    fun () ->
+let error (msg: ToastrMsg) :  Cmd<_> = 
+    [fun _ ->
         if System.String.IsNullOrEmpty(msg.Title) 
         then errorToast msg.Message
-        else errorToastWithTitle msg.Message msg.Title
-        Cmd.none
+        else errorToastWithTitle msg.Message msg.Title]
 
-let info (msg: ToastrMsg) : (unit -> Cmd<'a>) = 
-    fun () ->
+let info (msg: ToastrMsg) : Cmd<_> = 
+    [fun _ ->
         if System.String.IsNullOrEmpty(msg.Title) 
         then infoToast msg.Message
-        else infoToastWithTitle msg.Message msg.Title
-        Cmd.none
+        else infoToastWithTitle msg.Message msg.Title]
 
-let warning (msg: ToastrMsg) : (unit -> Cmd<'a>) = 
-    fun () ->
+let warning (msg: ToastrMsg) : Cmd<_> = 
+    [fun _ ->
         if System.String.IsNullOrEmpty(msg.Title) 
         then warningToast msg.Message
-        else warningToastWithTitle msg.Message msg.Title
-        Cmd.none
+        else warningToastWithTitle msg.Message msg.Title]

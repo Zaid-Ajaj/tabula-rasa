@@ -21,14 +21,14 @@ let stories =
     div 
      [ ]
      [ h3 [ ] [ leftIcon "book"; str "Stories" ]
-       p [ ] [ str "Public articles you have written." ]  ]
+       p [ ] [ str "Stories that you have published." ]  ]
     |> cardContainer 
        
 let drafts = 
     div 
      [ ]
      [ h3 [ ] [ leftIcon "file-text-o"; str "Drafts" ]
-       p [ ] [ str "Stories you havn't published yet." ]  ]
+       p [ ] [ str "Stories that you are still working on and havn't published yet." ]  ]
     |> cardContainer 
 
 let settings = 
@@ -42,7 +42,7 @@ let writeStory =
     div 
      [ ]
      [ h3 [ ] [ leftIcon "plus"; str "New Story" ]
-       p [ ] [ str "Write a story" ]  ]
+       p [ ] [ str "A story is the best way to share your ideas with the world." ]  ]
     |> cardContainer 
 
 let subscribers = 

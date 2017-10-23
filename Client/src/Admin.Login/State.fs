@@ -68,7 +68,7 @@ let update msg (state: State) =
             Toastr.message "Login succesful"
             |> Toastr.withTitle "Login"
             |> Toastr.success
-        nextState, successFeedback()
+        nextState, successFeedback
     | LoginFailed error ->
         let nextState = 
             { state with LoginError = Some error 
@@ -78,4 +78,4 @@ let update msg (state: State) =
             |> Toastr.withTitle "Login"
             |> Toastr.error
         
-        nextState, showErrorMsg()
+        nextState, showErrorMsg

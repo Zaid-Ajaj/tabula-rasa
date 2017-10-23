@@ -64,11 +64,18 @@ let update msg (state: State) =
           nextState, Http.login credentials
     | LoginSuccess token -> 
         let nextState = { state with LoggingIn = false }
-        nextState, Cmd.none
+        let successFeedback = 
+            Toastr.message "Login succesful"
+            |> Toastr.withTitle "Login"
+            |> Toastr.success
+        nextState, successFeedback()
     | LoginFailed error ->
-        printfn "Login Failed: %s" error
         let nextState = 
             { state with LoginError = Some error 
                          LoggingIn = false }
-        let showErrorMsg = Feedback.errorToast error
+        let showErrorMsg = 
+            Toastr.message error
+            |> Toastr.withTitle "Login"
+            |> Toastr.error
+        
         nextState, showErrorMsg()

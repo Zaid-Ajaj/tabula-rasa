@@ -16,7 +16,6 @@
     <Compile Include="Admin.Login/Types.fs" />
     <Compile Include="Admin.Login/Http.fs" />
     <Compile Include="Admin.Login/View.fs" />
-    <Compile Include="Admin.Login/Feedback.fs" />
     <Compile Include="Admin.Login/State.fs" />
     <!-- Admin -->
     <Compile Include="Admin/Types.fs" />

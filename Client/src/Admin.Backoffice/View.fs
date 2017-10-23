@@ -34,21 +34,21 @@ let drafts =
 let settings = 
     div 
      [ ]
-     [ h3 [ ]  [ leftIcon "cogs"; str "Settings" ]
+     [ h3 [ ] [ leftIcon "cogs"; str "Settings" ]
        p [ ] [ str "Public articles you have written." ]  ]
     |> cardContainer 
 
 let writeStory = 
     div 
      [ ]
-     [ h3 [ ]  [ leftIcon "plus"; str "New Story" ]
+     [ h3 [ ] [ leftIcon "plus"; str "New Story" ]
        p [ ] [ str "Write a story" ]  ]
     |> cardContainer 
 
 let subscribers = 
     div 
      [ ]
-     [ h3 [ ]  [ leftIcon "users"; str "Subscribers" ]
+     [ h3 [ ] [ leftIcon "users"; str "Subscribers" ]
        p [ ] [ str "View who subscribes to your blog" ]  ]
     |> cardContainer 
 

@@ -1,0 +1,1 @@
+dotnet build Server/TabulaRasa.Server.fsproj -o ../dist

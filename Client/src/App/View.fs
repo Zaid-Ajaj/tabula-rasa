@@ -11,23 +11,23 @@ let menuItem label page currentPage dispatcher =
       [ classList  
          [ "menu-item", true
            "menu-item-selected", page = currentPage ] 
-        OnClick (fun e -> dispatcher (ViewPage page)) ]
+        OnClick (fun _ -> dispatcher (ViewPage page)) ]
       [ str label ]
 
-let sidebar currentPage dispatcher =
+let sidebar state dispatcher =
   aside
     [ ClassName "fit-parent child-space"; Style [ TextAlign "center" ] ]
     [ div
         [ Style [ TextAlign "center" ] ]
-        [ h3 [ Style [ Color "white" ] ] [ str "Zaid Ajaj" ]
+        [ h3 [ Style [ Color "white" ] ] [ str state.BlogInfo.Value.Name ]
           br []
-          img [ ClassName "profile-img"; Src "/img/default-cuteness.jpg" ] ]
+          img [ ClassName "profile-img"; Src state.BlogInfo.Value.ProfileImageUrl ] ]
       div
         [ ClassName "quote" ]
-        [ str "F# enthusiast, interested in all kinds of metaprogramming, Coffee Driven Developement, writing and learning just about everything." ]
+        [ str state.BlogInfo.Value.About ]
       
-      menuItem "Posts" Posts currentPage dispatcher
-      menuItem "About" Page.About currentPage dispatcher ]
+      menuItem "Posts" Posts state.CurrentPage dispatcher
+      menuItem "About" Page.About state.CurrentPage dispatcher ]
 
 let renderPage state dispatch = 
     match state.CurrentPage with
@@ -36,11 +36,16 @@ let renderPage state dispatch =
     | Page.About -> h1 [] [ str "About" ]
 
 let render state dispatch =
+  if state.LoadingBlogInfo 
+  then div [ ] [ ]
+  elif not state.LoadingBlogInfo && state.BlogInfo.IsNone 
+  then h1 [ ] [ str "Error loading initial blog data" ]
+  else
   div
     [ ]
     [ div
         [ ClassName "sidebar" ]
-        [ sidebar state.CurrentPage dispatch ]
+        [ sidebar state dispatch ]
       div
         [ ClassName "main-content" ]
         [ renderPage state dispatch ] ]

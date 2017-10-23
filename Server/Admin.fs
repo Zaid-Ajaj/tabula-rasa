@@ -13,7 +13,6 @@ type AdminInfo = {
     Email: string
     About: string
     ProfileImageUrl: string
-    Theme: string
 }
 
 /// Creates an admin user if admin data does not exist and saves to a json file
@@ -24,7 +23,6 @@ let create (info: CreateAdminReq)  =
     let passwordHash = sha256Hash saltyPassword
     {   Name = info.Name
         BlogTitle = info.BlogTitle
-        Theme = info.Theme
         Username = info.Username
         PasswordSalt = base64 salt
         PasswordHash = base64 passwordHash
@@ -34,14 +32,13 @@ let create (info: CreateAdminReq)  =
 
 let guestAdmin = 
     let info : CreateAdminReq = 
-        { Name = "Cute by default"
+        { Name = "Guest Guest"
           BlogTitle = "Blog title"
-          Theme = "default"
           Username = "guest"
           Password = "guest"
           Email = "example@guest.com"
           About = "Here is where you tell a little bit about yourself, adjust it from the settings"
-          ProfileImageUrl = "https://raw.githubusercontent.com/Zaid-Ajaj/tabula-rasa/57ea2879d7ec0bb8e62b64e44159a2832eccd7be/Client/public/img/default-cuteness.jpg?token=AMswmPx_1Yk_OXV7-9ird49Rje80J7Jtks5Z6dyFwA%3D%3D" }
+          ProfileImageUrl = "https://user-images.githubusercontent.com/13316248/31862023-6bb4bb10-b737-11e7-9de3-58ca0b1644c3.jpg" }
     create info
 
 
@@ -55,3 +52,41 @@ let writeAdminIfDoesNotExists (adminInfo: AdminInfo) (writeFile: string -> strin
     | Some _ ->
         // there already exists some data, don't do anything
         ()
+
+let readAdminData (readFile: string -> string option)  =
+    let adminPath = Environment.adminFile
+    readFile adminPath
+    |> Option.map Json.deserialize<AdminInfo>
+    |> function 
+        | Some admin -> admin
+        | None -> failwith "Could not read admin data for initial render"
+
+let login (readFile: string -> string option) (loginInfo: LoginInfo)  = 
+    let username = loginInfo.Username
+    let password = loginInfo.Password
+    match readFile Environment.adminFile with
+    | None ->
+        LoginError "Could not read admin information from data store"
+    | Some adminInfoContent -> 
+        let adminInfo = Json.tryDeserialize<AdminInfo> adminInfoContent
+        match adminInfo with
+        | None ->
+            LoginError "Admin data is corrupt and is not readable as Json-formatted text"
+        | Some adminInfo -> 
+            if adminInfo.Username <> username then
+                UsernameDoesNotExist
+            else
+            let salt = adminInfo.PasswordSalt
+            let hash = adminInfo.PasswordHash
+            let passwordDidNotMatch = verifyPassword password salt hash |> not
+            if passwordDidNotMatch then 
+                PasswordIncorrect
+            else
+            let userInfo = { Username = username; Claims = [| "admin" |] }
+            let token = encodeJwt userInfo
+            Success token
+
+let blogInfoFromAdmin (admin: AdminInfo) : BlogInfo = 
+    { Name = admin.Name; 
+      About = admin.About; 
+      ProfileImageUrl = admin.ProfileImageUrl }

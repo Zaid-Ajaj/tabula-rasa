@@ -1,5 +1,5 @@
 module Admin.Backoffice.Types
 
-type Msg = Any
+type Msg = Logout | Any
 
 type State = { Name : string }

@@ -3,44 +3,72 @@ module Admin.Login.State
 open System
 open Elmish
 open Admin.Login.Types
-open Fable.PowerPack
 open Shared.ViewModels
+
+let init() = 
+    { InputUsername = ""
+      InputPassword = ""
+      UsernameValidationErrors =  [ ]
+      PasswordValidationErrors =  [ ]
+      HasTriedToLogin = false
+      LoginError = None
+      LoggingIn = false }, Cmd.ofMsg UpdateValidationErrors
+
+let validateInput (state: State) =  
+  let usernameRules = 
+    [ String.IsNullOrWhiteSpace(state.InputUsername), "Field 'Username' cannot be empty"
+      state.InputUsername.Trim().Length < 5, "Field 'Username' must at least have 5 characters" ]
+  let passwordRules = 
+    [ String.IsNullOrWhiteSpace(state.InputPassword), "Field 'Password' cannot be empty"
+      state.InputPassword.Trim().Length < 5, "Field 'Password' must at least have 5 characters" ]
+  let usernameValidationErrors = 
+      usernameRules
+      |> List.filter fst
+      |> List.map snd
+  let passwordValidationErrors = 
+      passwordRules
+      |> List.filter fst
+      |> List.map snd
+  
+  usernameValidationErrors, passwordValidationErrors
 
 let update msg (state: State) = 
     match msg with 
     | ChangeUsername name ->
-        let nextState = { state with InputUsername = name }
-        nextState, Cmd.none
+        let nextState = { state with InputUsername = name }          
+        nextState, Cmd.ofMsg UpdateValidationErrors
     | ChangePassword pass ->
-        let nextState = { state with InputPassword = pass }
+        let nextState = { state with InputPassword = pass }        
+        nextState, Cmd.ofMsg UpdateValidationErrors
+    | UpdateValidationErrors ->
+        let usernameErrors, passwordErrors =
+             validateInput state
+        let nextState =
+            { state with UsernameValidationErrors = usernameErrors
+                         PasswordValidationErrors = passwordErrors }
         nextState, Cmd.none
     | Login ->
-        if String.IsNullOrWhiteSpace(state.InputUsername) then 
-            state, Feedback.usernameEmpty()
-        elif state.InputUsername.Length < 5 then
-            state, Feedback.usernameTooShort()
-        elif String.IsNullOrWhiteSpace(state.InputPassword) then 
-            state, Feedback.passwordEmpty()
-        elif state.InputPassword.Length < 5 then
-            state, Feedback.passwordTooShort()
+        let state = { state with HasTriedToLogin = true }
+        let usernameErrors, passwordErrors =
+           validateInput state
+        let startLogin = 
+            List.isEmpty usernameErrors
+         && List.isEmpty passwordErrors
+
+        if not startLogin then state, Cmd.none 
         else 
           let nextState = { state with LoggingIn = true } 
-          let credentials : LoginInfo = 
+          let credentials  = 
             { Username = state.InputUsername
               Password = state.InputPassword  }
           nextState, Http.login credentials
     | LoginSuccess token -> 
         let nextState = { state with LoggingIn = false }
-        nextState, Feedback.loginSuccess()
+        nextState, Cmd.none
     | LoginFailed error ->
+        printfn "Login Failed: %s" error
         let nextState = 
             { state with LoginError = Some error 
                          LoggingIn = false }
-        let feedback = Feedback.errorToast error
-        nextState, feedback()
-
-let init() = 
-    { InputUsername = ""
-      InputPassword = ""
-      LoginError = None
-      LoggingIn = false }, Cmd.none
+        let showErrorMsg = Feedback.errorToast error
+        nextState, showErrorMsg()

@@ -7,4 +7,5 @@ let routeBuilder typeName methodName =
  sprintf "/api/%s/%s" typeName methodName
  
 type Protocol = 
-    { login: LoginInfo -> Async<LoginResult> }
+    {  getBlogInfo : unit -> Async<BlogInfo>
+       login: LoginInfo -> Async<LoginResult> }

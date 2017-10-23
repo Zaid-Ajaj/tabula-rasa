@@ -29,12 +29,27 @@ let init result =
   let admin, adminCmd = Admin.State.init()
   let (model, cmd) =
     urlUpdate result
-      { CurrentPage = initialPage
+      { LoadingBlogInfo = false
+        CurrentPage = initialPage
         Admin = admin
-        Posts = posts }
+        Posts = posts
+        BlogInfo = None }
+
   model, Cmd.batch [ cmd
                      Cmd.map PostsMsg postsCmd
-                     Cmd.map AdminMsg adminCmd ]
+                     Cmd.map AdminMsg adminCmd
+                     Cmd.ofMsg LoadBlogInfo ]
+
+let server = Server.createProxy()
+
+let loadBlogInfoCmd = 
+  Cmd.ofAsync server.getBlogInfo ()
+              (fun info -> 
+                BlogInfoLoaded 
+                  { Name = info.Name
+                    About = info.About
+                    ProfileImageUrl = info.ProfileImageUrl })
+              (fun _ -> BlogInfoLoadFailed)
 
 let update msg state =
   match msg with
@@ -46,6 +61,15 @@ let update msg state =
   | AdminMsg msg ->
       let adminState, adminCmd = Admin.State.update msg state.Admin
       { state with Admin = adminState }, Cmd.map AdminMsg adminCmd
+  | LoadBlogInfo ->
+      let nextState = { state with LoadingBlogInfo = true }
+      nextState, loadBlogInfoCmd
+  | BlogInfoLoaded info ->
+      let nextState = { state with BlogInfo = Some info; LoadingBlogInfo = false }
+      nextState, Cmd.none
+  | BlogInfoLoadFailed ->
+      let nextState = { state with BlogInfo = None; LoadingBlogInfo = false }
+      nextState, Cmd.none
   | ViewPage page ->
       let nextState = { state with CurrentPage = page }
       let modifyUrlCmd = Navigation.newUrl (toHash page)

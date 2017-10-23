@@ -1,6 +1,7 @@
 var path = require("path");
 var webpack = require("webpack");
 var fableUtils = require("fable-utils");
+var WriteFilePlugin = require('write-file-webpack-plugin');
 
 function resolve(filePath) {
     return path.join(__dirname, filePath)

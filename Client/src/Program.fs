@@ -18,7 +18,9 @@ importAll "../sass/spinner.css"
 // App
 Program.mkProgram init update render
 |> Program.toNavigable (parseHash pageParser) urlUpdate
+#if DEBUG
 |> Program.withDebugger
 |> Program.withHMR
+#endif
 |> Program.withReact "elmish-app"
 |> Program.run

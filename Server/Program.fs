@@ -1,19 +1,7 @@
-﻿open System
+﻿module Program
 
 open Suave
-open Suave.Filters
-open Suave.Operators
-open Suave.Successful
-
-open System.IO
-open System.Reflection
-open System.Text
-
-open Shared.ViewModels
-open ClientServer
-open Security
-
-open Fable.Remoting.Suave
+open Environment
 
 [<EntryPoint>]
 let main argv =
@@ -26,13 +14,13 @@ let main argv =
 
     let webApp = WebApp.createUsing store
 
-    let client = Environment.clientPath
-    let webServerConfig = 
+    let client = solutionRoot </> "dist" </> "client"
+    printfn "Client directory: %s" client
+
+    let webAppConfig = 
         { defaultConfig with 
             homeFolder = Some client }
 
-    let webServer = FableSuaveAdapter.webPartWithBuilderFor webApp routeBuilder
-
-    startWebServer webServerConfig webServer
+    startWebServer webAppConfig webApp
     printfn "Hello from F#!"
     0 // return an integer exit code

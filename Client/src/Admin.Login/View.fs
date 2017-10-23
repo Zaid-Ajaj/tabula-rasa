@@ -3,8 +3,17 @@ module Admin.Login.View
 open System
 open Fable.Core.JsInterop
 open Admin.Login.Types
+
+open Fable.Core
+open Fable.Core.JsInterop
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
+open Fable.Import.React
+
+module Option =
+  let ofElement (elem : ReactElement option) =
+    unbox<ReactElement> elem
+    
 
 type InputType = Text | Password 
 let textInput inputLabel initial inputType (onChange: string -> unit) = 
@@ -27,26 +36,37 @@ let loginFormStyle =
 let cardBlockStyle = 
   Style [ Padding "30px"
           TextAlign "left"
-          BackgroundImage "url('/img/login-bg.jpg')" ]
+          BorderRadius 10 ]
 
-let blogIcon = 
-  img [ Src "/img/favicon-book.png"
-        Style [ Height 32; Width 32; Margin 10 ] ]
+[<Emit("null")>]
+let emptyElement : ReactElement = jsNative
+
+
+let errorMessagesIfAny triedLogin = function
+  | [ ] -> emptyElement
+  | _ when not triedLogin -> emptyElement
+  | errors ->
+    let errorStyle = Style [ Color "crimson"; FontSize 12 ]
+    ul [ ] 
+       [ for error in errors -> 
+          li [ errorStyle ] [ str error ] ]
+
+let appIcon = 
+  img [ Src "/img/fable_logo.png"
+        Style [ Height 80; Width 100 ] ]
 
 let render (state: State) dispatch = 
-    let validUsername = String.IsNullOrWhiteSpace(state.InputUsername) |> not
-    let validPassword = String.IsNullOrWhiteSpace(state.InputPassword) |> not
+
     let loginBtnContent = 
       if state.LoggingIn then i [ ClassName "fa fa-circle-o-notch fa-spin" ] []
       else str "Login"
 
-    let canLogin = 
-      [ validUsername 
-        validPassword
-        state.InputUsername.Length >= 5
-        state.InputPassword.Length >= 5 ]
-      |> Seq.forall id
-     
+    let validationRules = 
+      [ state.InputUsername.Trim().Length >= 5
+        state.InputPassword.Trim().Length >= 5 ]
+    
+    let canLogin = Seq.forall id validationRules
+
     let btnClass = 
       if canLogin 
       then "btn btn-success btn-lg"
@@ -57,14 +77,17 @@ let render (state: State) dispatch =
          [ ClassName "card" ]
          [ div
              [ ClassName "card-block"; cardBlockStyle ]
-             [ h4 
-                [ ClassName "card-title" ] 
-                [ span [ ] [ blogIcon ] 
-                  str "Admin Login" ]
-               br []
+             [ div 
+                [ Style [ TextAlign "center" ] ] 
+                [ appIcon ]
+               br [ ]
                textInput "Username" state.InputUsername Text (ChangeUsername >> dispatch)
+               errorMessagesIfAny state.HasTriedToLogin state.UsernameValidationErrors
                textInput "Password" state.InputPassword Password (ChangePassword >> dispatch)
-               button 
-                 [ ClassName btnClass
-                   OnClick (fun e -> dispatch Login) ] 
-                 [ loginBtnContent ] ] ] ] 
+               errorMessagesIfAny state.HasTriedToLogin state.PasswordValidationErrors
+               div
+                [ Style [ TextAlign "center" ] ]
+                [ button 
+                    [ ClassName btnClass
+                      OnClick (fun e -> dispatch Login) ] 
+                    [ loginBtnContent ] ] ] ] ]

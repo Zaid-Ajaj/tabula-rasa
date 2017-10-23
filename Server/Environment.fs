@@ -22,15 +22,15 @@ let adminFile = "admin.json"
 let (</>) x y = Path.Combine(x, y) 
 
 let rec findRoot dir =
-    if File.Exists(System.IO.Path.Combine(dir, "TabulaRasa.sln"))
+    if File.Exists(System.IO.Path.Combine(dir, "paket.dependencies"))
     then dir
     else
         let parent = Directory.GetParent(dir)
         if isNull parent then
-            failwith "Couldn't find package.json directory"
+            failwith "Couldn't find root directory"
         findRoot parent.FullName
 
-let clientPath = 
+let solutionRoot = 
     let cwd = System.Reflection.Assembly.GetEntryAssembly().Location
     let root = findRoot cwd
-    root </> "Client" </> "public"
+    root

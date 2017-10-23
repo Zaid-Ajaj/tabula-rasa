@@ -10,11 +10,6 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Fable.Import.React
 
-module Option =
-  let ofElement (elem : ReactElement option) =
-    unbox<ReactElement> elem
-    
-
 type InputType = Text | Password 
 let textInput inputLabel initial inputType (onChange: string -> unit) = 
   let inputType = match inputType with 
@@ -40,7 +35,6 @@ let cardBlockStyle =
 
 [<Emit("null")>]
 let emptyElement : ReactElement = jsNative
-
 
 let errorMessagesIfAny triedLogin = function
   | [ ] -> emptyElement
@@ -89,5 +83,5 @@ let render (state: State) dispatch =
                 [ Style [ TextAlign "center" ] ]
                 [ button 
                     [ ClassName btnClass
-                      OnClick (fun e -> dispatch Login) ] 
+                      OnClick (fun _ -> dispatch Login) ] 
                     [ loginBtnContent ] ] ] ] ]

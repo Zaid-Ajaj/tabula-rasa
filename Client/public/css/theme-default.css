@@ -6,3 +6,8 @@
     color: white;
     background-color: #404040;
 }
+
+.admin-setion:hover {
+    color: lightgreen;
+    cursor: pointer;
+}

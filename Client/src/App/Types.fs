@@ -1,15 +1,11 @@
 module App.Types
 
+open Shared.ViewModels
+
 type Page =
   | Posts
   | About
   | Admin
-
-type BlogInfo = {
-  Name: string
-  About: string
-  ProfileImageUrl: string
-}
 
 type AppMsg =
   | LoadBlogInfo

@@ -52,8 +52,8 @@ let errorMessagesIfAny triedLogin = function
           li [ errorStyle ] [ str error ] ]
 
 let appIcon = 
-  img [ Src "/img/fable_logo.png"
-        Style [ Height 80; Width 100 ] ]
+  img [ Src "/img/favicon-book.png"
+        Style [ Height 60; Width 80 ] ]
 
 let render (state: State) dispatch = 
 

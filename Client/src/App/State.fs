@@ -44,11 +44,7 @@ let server = Server.createProxy()
 
 let loadBlogInfoCmd = 
   Cmd.ofAsync server.getBlogInfo ()
-              (fun info -> 
-                BlogInfoLoaded 
-                  { Name = info.Name
-                    About = info.About
-                    ProfileImageUrl = info.ProfileImageUrl })
+              BlogInfoLoaded
               (fun _ -> BlogInfoLoadFailed)
 
 let update msg state =

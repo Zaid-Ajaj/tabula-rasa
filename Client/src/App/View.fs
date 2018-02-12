@@ -1,7 +1,6 @@
 module App.View
 
 open App.Types
-open App.State
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
@@ -11,7 +10,7 @@ let menuItem label page currentPage dispatcher =
       [ classList  
          [ "menu-item", true
            "menu-item-selected", page = currentPage ] 
-        OnClick (fun _ -> dispatcher (ViewPage page)) ]
+        OnClick (fun _ -> dispatcher (SetCurrentPage page)) ]
       [ str label ]
 
 let sidebar state dispatcher =
@@ -27,13 +26,15 @@ let sidebar state dispatcher =
         [ str state.BlogInfo.Value.About ]
       
       menuItem "Posts" Posts state.CurrentPage dispatcher
-      menuItem "About" Page.About state.CurrentPage dispatcher ]
+      menuItem "About" AppPage.About state.CurrentPage dispatcher ]
 
 let renderPage state dispatch = 
     match state.CurrentPage with
-    | Posts -> Posts.View.render state.Posts (PostsMsg >> dispatch)
-    | Admin -> Admin.View.render state.Admin (AdminMsg >> dispatch)
-    | Page.About -> h1 [] [ str "About" ]
+    | Posts -> 
+        Posts.View.render state.Posts (PostsMsg >> dispatch)
+    | Admin _ -> 
+        Admin.View.render state.Admin (AdminMsg >> dispatch)
+    | AppPage.About -> h1 [] [ str "About" ]
 
 let render state dispatch =
   if state.LoadingBlogInfo 

@@ -8,6 +8,10 @@
     <Compile Include="../../Shared/ClientServer.fs"/>
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
+    <!-- Admin Backoffice.NewArticle -->
+    <Compile Include="Admin.Backoffice/NewArticle/Types.fs" />
+    <Compile Include="Admin.Backoffice/NewArticle/View.fs" />
+    <Compile Include="Admin.Backoffice/NewArticle/State.fs" />
     <!-- Admin Backoffice -->
     <Compile Include="Admin.Backoffice/Types.fs" />
     <Compile Include="Admin.Backoffice/View.fs" />
@@ -19,15 +23,15 @@
     <Compile Include="Admin.Login/State.fs" />
     <!-- Admin -->
     <Compile Include="Admin/Types.fs" />
-    <Compile Include="Admin/State.fs" />
     <Compile Include="Admin/View.fs" />
+    <Compile Include="Admin/State.fs" />
     <!-- Latest Posts -->
     <Compile Include="Posts/Types.fs" />
-    <Compile Include="Posts/State.fs" />
     <Compile Include="Posts/View.fs" />
+    <Compile Include="Posts/State.fs" />
     <!-- App -->
     <Compile Include="App/Types.fs" />
-    <Compile Include="App/State.fs" />
+    <Compile Include="App/State.fs" />    
     <Compile Include="App/View.fs" />
 
     <Compile Include="Program.fs" />

@@ -12,7 +12,7 @@ let init() =
       PasswordValidationErrors =  [ ]
       HasTriedToLogin = false
       LoginError = None
-      LoggingIn = false }, Cmd.ofMsg UpdateValidationErrors
+      LoggingIn = false }, Cmd.batch [ Cmd.ofMsg UpdateValidationErrors ]
 
 let validateInput (state: State) =  
   let usernameRules = 
@@ -41,8 +41,7 @@ let update msg (state: State) =
         let nextState = { state with InputPassword = pass }        
         nextState, Cmd.ofMsg UpdateValidationErrors
     | UpdateValidationErrors ->
-        let usernameErrors, passwordErrors =
-             validateInput state
+        let usernameErrors, passwordErrors = validateInput state
         let nextState =
             { state with UsernameValidationErrors = usernameErrors
                          PasswordValidationErrors = passwordErrors }

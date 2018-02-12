@@ -6,36 +6,51 @@ open Admin.Types
 let init() = 
     let login, loginCmd = Login.State.init()
     let backoffice, backofficeCmd = Backoffice.State.init()
+    
     let initialAdminState =
       { SecurityToken = None
         Login = login
-        Backoffice = backoffice } 
+        Backoffice = backoffice
+        CurrentPage = None } 
+
     let initialAdminCmd = 
         Cmd.batch [ Cmd.map LoginMsg loginCmd
                     Cmd.map BackofficeMsg backofficeCmd ]
+
     initialAdminState, initialAdminCmd
     
 let update msg (state: State) =
     match msg with
+    | SetCurrentPage page ->
+        let nextState = 
+          match state.SecurityToken with
+          | None -> { state with CurrentPage = Some Login }
+          | Some _ -> { state with CurrentPage = Some page }
+              
+        nextState, Cmd.none
     | LoginMsg loginMsg ->
-        let prevLoginState = state.Login
-        let nextLoginState, nextLoginCmd = Login.State.update loginMsg prevLoginState
         match loginMsg with 
+        // intercept a login success message
         | Login.Types.Msg.LoginSuccess token ->
             let nextState = 
-                { state with Login = nextLoginState
-                             SecurityToken = Some token }
-            nextState, Cmd.map LoginMsg nextLoginCmd
-        | otherMsg -> 
-            printfn "otherMsg: %A" otherMsg
-            let nextState = { state with Login = nextLoginState }
-            nextState, Cmd.map LoginMsg nextLoginCmd
+                { state with Login = state.Login
+                             SecurityToken = Some token
+                             CurrentPage = Some (Backoffice (Backoffice.Types.Page.Home)) }
+            nextState, Cmd.none
+        // propagate other messages to child component
+        | _ -> 
+            let nextLoginState, nextLoginCmd = Admin.Login.State.update loginMsg state.Login
+            let nextAdminState = { state with Login = nextLoginState }
+            nextAdminState, Cmd.map LoginMsg nextLoginCmd
     | BackofficeMsg msg ->
-          match msg with 
-          | Backoffice.Types.Msg.Logout -> 
-              init()
-          | otherwise -> 
-              let prevBackofficeState = state.Backoffice
-              let nextBackofficeState, nextBackofficeCmd = 
-                  Backoffice.State.update msg prevBackofficeState
-              { state with Backoffice = nextBackofficeState }, Cmd.map BackofficeMsg nextBackofficeCmd
+        match msg with 
+        | Backoffice.Types.Msg.Logout -> 
+            init()
+        | _ -> 
+            let prevBackofficeState = state.Backoffice
+            let nextBackofficeState, nextBackofficeCmd = Backoffice.State.update msg prevBackofficeState
+            let nextAdminPage = Admin.Types.Page.Backoffice nextBackofficeState.CurrentPage
+            let nextAdminState = 
+              { state with Backoffice = nextBackofficeState
+                           CurrentPage = Some nextAdminPage  }
+            nextAdminState, Cmd.map BackofficeMsg nextBackofficeCmd

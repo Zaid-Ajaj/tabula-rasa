@@ -2,7 +2,10 @@ module Shared.DomainModels
 
 open System
 
-type UserInfo = { Username: string; Password: string }
+type UserInfo = { 
+    Username: string; 
+    Password: string 
+}
 
 /// Github-style reactions for blog posts
 type SocialReaction = 

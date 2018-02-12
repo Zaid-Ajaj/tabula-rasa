@@ -1,6 +1,5 @@
 module Admin
 
-open System.IO
 open Shared.ViewModels
 open Security
 

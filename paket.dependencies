@@ -2,6 +2,7 @@ source https://nuget.org/api/v2
 
 storage:none
 
+nuget Elmish.Toastr
 nuget Expecto
 
 nuget Fable.Remoting.Client

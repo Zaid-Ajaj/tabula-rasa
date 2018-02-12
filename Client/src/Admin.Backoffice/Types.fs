@@ -1,5 +1,21 @@
 module Admin.Backoffice.Types
 
-type Msg = Logout | Any
+open Admin.Backoffice 
 
-type State = { Name : string }
+type Page = 
+    | Home
+    | NewArticle
+    | Settings
+    | Drafts
+    | Published
+    | Subscribers
+
+type Msg = 
+    | Logout 
+    | NewArticleMsg of NewArticle.Types.Msg 
+    | SetCurrentPage of Page
+
+type State = { 
+    NewArticleState : NewArticle.Types.NewArticleState
+    CurrentPage : Page
+}

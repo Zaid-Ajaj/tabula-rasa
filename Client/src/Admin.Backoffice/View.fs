@@ -28,7 +28,7 @@ let drafts =
     div 
      [ ]
      [ h3 [ ] [ leftIcon "file-text-o"; str "Drafts" ]
-       p [ ] [ str "Stories that you are still working on and havn't published yet." ]  ]
+       p [ ] [ str "Articles that you are still working on and havn't published yet." ]  ]
     |> cardContainer 
 
 let settings = 
@@ -38,10 +38,10 @@ let settings =
        p [ ] [ str "Public articles you have written." ]  ]
     |> cardContainer 
 
-let writeStory = 
+let writeArticle dispatch = 
     div 
-     [ ]
-     [ h3 [ ] [ leftIcon "plus"; str "New Story" ]
+     [ OnClick (fun _ -> dispatch (SetCurrentPage NewArticle)) ]
+     [ h3 [ ] [ leftIcon "plus"; str "New Article" ]
        p [ ] [ str "A story is the best way to share your ideas with the world." ]  ]
     |> cardContainer 
 
@@ -57,12 +57,18 @@ let oneThirdPage child =
         [ child ]
 
 let render (state: State) dispatch = 
-    div 
-     [ Style [ PaddingLeft 30 ]  ]
-     [ div 
-         [ ClassName "row" ]
-         [ oneThirdPage stories
-           oneThirdPage drafts 
-           oneThirdPage settings
-           oneThirdPage writeStory
-           oneThirdPage subscribers ] ]
+    match state.CurrentPage with
+    | Home -> 
+        div 
+         [ Style [ PaddingLeft 30 ]  ]
+         [ div 
+             [ ClassName "row" ]
+             [ oneThirdPage stories
+               oneThirdPage drafts 
+               oneThirdPage settings
+               oneThirdPage (writeArticle dispatch) 
+               oneThirdPage subscribers ] ]
+    | NewArticle ->
+        NewArticle.View.render state.NewArticleState (NewArticleMsg >> dispatch)
+    | _ -> 
+        div [ ] [ ]

@@ -1,7 +1,6 @@
 module Posts.View
 
 open Posts.Types
-open Posts.State
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
@@ -15,7 +14,9 @@ let render (model: Model) dispatch =
     let title = h1 [ ClassName "title" ] [ str "Latest Posts" ]
     let body =
         match model.Error with
-        | Some errorMsg -> h1 [ Style [ Color "red" ] ] [ str errorMsg ]
+        | Some errorMsg -> 
+            h1 [ Style [ Color "red" ] ] 
+               [ str errorMsg ]
         | None ->
             match model.IsLoadingPosts with
             | true -> spinner

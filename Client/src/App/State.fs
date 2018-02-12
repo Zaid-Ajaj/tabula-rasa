@@ -21,12 +21,12 @@ let toHash page =
 
 let pageParser: Parser<AppPage -> AppPage, AppPage> =
   oneOf [ map (Admin Admin.Types.Page.Login) (s "login")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s "admin")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s "admin" </> s "settings")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "posts" </> s "new")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s "admin" </> s "posts" </> s "drafts")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Published)) (s "admin" </> s "posts" </> s "published")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "posts" </> s "new")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s "admin" </> s "subscribers")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s "admin")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s "admin" </> s "settings")
           map Posts (s "posts")
           map About (s "about") ]
 

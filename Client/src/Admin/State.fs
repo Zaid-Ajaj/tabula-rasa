@@ -25,7 +25,12 @@ let update msg (state: State) =
         let nextState = 
           match state.SecurityToken with
           | None -> { state with CurrentPage = Some Login }
-          | Some _ -> { state with CurrentPage = Some page }
+          | Some _ ->
+            match page with
+            | Login -> { state with CurrentPage = Some Login }
+            | Backoffice backofficePage -> 
+                { state with CurrentPage = Some page
+                             Backoffice = { state.Backoffice with CurrentPage = backofficePage }  }
               
         nextState, Cmd.none
     | LoginMsg loginMsg ->
@@ -35,6 +40,7 @@ let update msg (state: State) =
             let nextState = 
                 { state with Login = state.Login
                              SecurityToken = Some token
+                             Backoffice = { state.Backoffice with CurrentPage = Backoffice.Types.Page.Home }
                              CurrentPage = Some (Backoffice (Backoffice.Types.Page.Home)) }
             nextState, Cmd.none
         // propagate other messages to child component

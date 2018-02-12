@@ -31,12 +31,16 @@ let sidebar state dispatcher =
 let renderPage state dispatch = 
     match state.CurrentPage with
     | Some Posts -> 
+        // The posts page
         Posts.View.render state.Posts (PostsMsg >> dispatch)
-    | Some (Admin x) -> 
+    | Some (Admin _) -> 
+        // The Admin page
         Admin.View.render state.Admin (AdminMsg >> dispatch)
     | Some AppPage.About -> 
+        // The about page
         h1 [] [ str "About" ]
     | None ->
+        // Default when navigating to root 
         Posts.View.render state.Posts (PostsMsg >> dispatch)
 
 let render state dispatch =

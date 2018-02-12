@@ -2,8 +2,9 @@ module App.State
 
 open Elmish
 open Elmish.Browser.UrlParser
-open App.Types
 open Elmish.Browser.Navigation
+
+open App.Types
 
 type BackofficePage = Admin.Backoffice.Types.Page
 
@@ -104,5 +105,6 @@ let update msg state =
            nextAppState, Cmd.none
       | Admin adminPage ->
            // tell child to update current page by sending an admin message
+           let nextState = { state with Admin = { state.Admin with CurrentPage = Some adminPage } }
            let adminMsg = Admin.Types.SetCurrentPage adminPage
-           state, Cmd.ofMsg (AdminMsg adminMsg)  
+           nextState, Cmd.ofMsg (AdminMsg adminMsg)  

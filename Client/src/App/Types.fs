@@ -16,7 +16,7 @@ type AppMsg =
   | UrlUpdated of AppPage
   | SetCurrentPage of Option<AppPage>
 
-type Model = {
+type AppState = {
     LoadingBlogInfo: bool
     CurrentPage: Option<AppPage>
     Posts: Posts.Types.Model

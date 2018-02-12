@@ -35,7 +35,7 @@ let update msg (state: State) =
         nextState, Cmd.none
     | LoginMsg loginMsg ->
         match loginMsg with 
-        // intercept a login success message
+        // intercept the LoginSuccess message dispatched by the child component
         | Login.Types.Msg.LoginSuccess token ->
             let nextState = 
                 { state with Login = state.Login

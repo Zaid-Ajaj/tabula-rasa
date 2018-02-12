@@ -5,27 +5,28 @@ open Elmish.Browser.UrlParser
 open App.Types
 open Elmish.Browser.Navigation
 
+type BackofficePage = Admin.Backoffice.Types.Page
 
 let toHash page =
   match page with
   | Posts -> "#posts"
   | About -> "#about"
-  | Admin Login -> "#login"
-  | Admin (Backoffice Home) -> "#admin"
-  | Admin (Backoffice NewArticle) -> "#admin/posts/new"
-  | Admin (Backoffice Drafts) -> "#admin/posts/drafts"
-  | Admin (Backoffice Published) -> "#admin/posts/published"
-  | Admin (Backoffice Subscribers) -> "#admin/subscribers"
-  | Admin (Backoffice Settings) -> "#admin/settings"
+  | Admin Admin.Types.Page.Login -> "#login"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Home) -> "#admin"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle) -> "#admin/posts/new"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts) -> "#admin/posts/drafts"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Published) -> "#admin/posts/published"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers) -> "#admin/subscribers"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Settings) -> "#admin/settings"
 
 let pageParser: Parser<AppPage -> AppPage, AppPage> =
-  oneOf [ map (Admin Login) (s "login")
-          map (Admin (Backoffice Home)) (s "admin")
-          map (Admin (Backoffice Settings)) (s "admin" </> s "settings")
-          map (Admin (Backoffice Drafts)) (s "admin" </> s "posts" </> s "drafts")
-          map (Admin (Backoffice Published)) (s "admin" </> s "posts" </> s "published")
-          map (Admin (Backoffice NewArticle)) (s "admin" </> s "posts" </> s "new")
-          map (Admin (Backoffice Subscribers)) (s "admin" </> s "subscribers")
+  oneOf [ map (Admin Admin.Types.Page.Login) (s "login")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s "admin")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s "admin" </> s "settings")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s "admin" </> s "posts" </> s "drafts")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Published)) (s "admin" </> s "posts" </> s "published")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "posts" </> s "new")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s "admin" </> s "subscribers")
           map Posts (s "posts")
           map About (s "about") ]
 
@@ -36,33 +37,6 @@ let urlUpdate (result: Option<AppPage>) model =
   | Some page ->
       model, Cmd.ofMsg (UrlUpdated page)
 
-let mapAppToAdmin (adminPage : AdminPage) = 
-    match adminPage with
-    | Login -> 
-        Admin.Types.Page.Login
-    | Backoffice backofficePage -> 
-        match backofficePage with
-        | Home -> Admin.Backoffice.Types.Page.Home
-        | NewArticle -> Admin.Backoffice.Types.Page.NewArticle
-        | Settings -> Admin.Backoffice.Types.Page.Settings
-        | Published -> Admin.Backoffice.Types.Page.Published
-        | Drafts -> Admin.Backoffice.Types.Page.Drafts
-        | Subscribers -> Admin.Backoffice.Types.Page.Subscribers
-        |> Admin.Types.Page.Backoffice
-
-let mapAdminToApp (adminPage: Option<Admin.Types.Page>) defaultPage = 
-    match adminPage with
-    | Some Admin.Types.Page.Login -> Admin Login
-    | Some (Admin.Types.Page.Backoffice backofficePage) ->
-        match backofficePage  with
-        | Admin.Backoffice.Types.Page.Home -> Admin (Backoffice Home)
-        | Admin.Backoffice.Types.Page.NewArticle -> Admin (Backoffice NewArticle)
-        | Admin.Backoffice.Types.Page.Settings -> Admin (Backoffice Settings)
-        | Admin.Backoffice.Types.Page.Published -> Admin (Backoffice Published)
-        | Admin.Backoffice.Types.Page.Drafts -> Admin (Backoffice Drafts)
-        | Admin.Backoffice.Types.Page.Subscribers -> Admin (Backoffice Subscribers)
-    | None -> defaultPage
-
 let init result =
   let initialPage = Posts
   let posts, postsCmd = Posts.State.init()
@@ -70,7 +44,7 @@ let init result =
   let model, cmd =
     urlUpdate result
       { LoadingBlogInfo = false
-        CurrentPage = initialPage
+        CurrentPage = Some initialPage
         Admin = admin
         Posts = posts
         BlogInfo = None }
@@ -97,11 +71,11 @@ let update msg state =
 
   | AdminMsg msg ->
       let nextAdminState, adminCmd = Admin.State.update msg state.Admin
-      let nextAppPage = mapAdminToApp nextAdminState.CurrentPage state.CurrentPage
+      let nextAdminPage = nextAdminState.CurrentPage |> Option.map AppPage.Admin
       let nextAppState = { state with Admin = nextAdminState
-                                      CurrentPage = nextAppPage }
+                                      CurrentPage = nextAdminPage }
       let nextAppCmd = Cmd.batch [ Cmd.map AdminMsg adminCmd; 
-                                   Cmd.ofMsg (SetCurrentPage nextAppPage) ]
+                                   Cmd.ofMsg (SetCurrentPage nextAdminPage) ]
       nextAppState, nextAppCmd
       
   | LoadBlogInfo ->
@@ -113,20 +87,22 @@ let update msg state =
   | BlogInfoLoadFailed ->
       let nextState = { state with BlogInfo = None; LoadingBlogInfo = false }
       nextState, Cmd.none
-  | SetCurrentPage page -> 
-      state, Navigation.modifyUrl (toHash page)
+  | SetCurrentPage (Some page) -> 
+      state, Navigation.newUrl (toHash page)
+  | SetCurrentPage None ->
+      state, Cmd.none
   | UrlUpdated page -> 
       match page with 
       | Posts -> 
            // make sure to load posts anytime the posts page is requested
-           let nextAppState = { state with CurrentPage = page }
+           let nextAppState = { state with CurrentPage = Some page }
            let nextCmd = Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
            nextAppState, nextCmd
       | AppPage.About ->
            // just show the About page
-           let nextAppState = { state with CurrentPage = page }
+           let nextAppState = { state with CurrentPage = Some page }
            nextAppState, Cmd.none
       | Admin adminPage ->
            // tell child to update current page by sending an admin message
-           let adminMsg = Admin.Types.SetCurrentPage (mapAppToAdmin adminPage)
+           let adminMsg = Admin.Types.SetCurrentPage adminPage
            state, Cmd.ofMsg (AdminMsg adminMsg)  

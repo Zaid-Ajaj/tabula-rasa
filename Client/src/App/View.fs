@@ -5,7 +5,7 @@ open App.Types
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
-let menuItem label page currentPage dispatcher =
+let menuItem label (page: Option<AppPage>) currentPage dispatcher =
     div
       [ classList  
          [ "menu-item", true
@@ -25,16 +25,19 @@ let sidebar state dispatcher =
         [ ClassName "quote" ]
         [ str state.BlogInfo.Value.About ]
       
-      menuItem "Posts" Posts state.CurrentPage dispatcher
-      menuItem "About" AppPage.About state.CurrentPage dispatcher ]
+      menuItem "Posts" (Some Posts) state.CurrentPage dispatcher
+      menuItem "About" (Some AppPage.About) state.CurrentPage dispatcher ]
 
 let renderPage state dispatch = 
     match state.CurrentPage with
-    | Posts -> 
+    | Some Posts -> 
         Posts.View.render state.Posts (PostsMsg >> dispatch)
-    | Admin _ -> 
+    | Some (Admin x) -> 
         Admin.View.render state.Admin (AdminMsg >> dispatch)
-    | AppPage.About -> h1 [] [ str "About" ]
+    | Some AppPage.About -> 
+        h1 [] [ str "About" ]
+    | None ->
+        Posts.View.render state.Posts (PostsMsg >> dispatch)
 
 let render state dispatch =
   if state.LoadingBlogInfo 

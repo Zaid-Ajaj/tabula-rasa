@@ -11,15 +11,18 @@ type AppMsg =
   | LoadBlogInfo
   | BlogInfoLoaded of BlogInfo
   | BlogInfoLoadFailed 
-  | PostsMsg of Posts.Types.Msg
-  | AdminMsg of Admin.Types.Msg
   | UrlUpdated of AppPage
   | SetCurrentPage of Option<AppPage>
+  // messages from children
+  | PostsMsg of Posts.Types.Msg
+  | AdminMsg of Admin.Types.Msg
 
 type AppState = {
+    // state of root app
     LoadingBlogInfo: bool
+    BlogInfo: BlogInfo option
     CurrentPage: Option<AppPage>
+    // states of children
     Posts: Posts.Types.Model
     Admin: Admin.Types.State
-    BlogInfo: BlogInfo option
 }

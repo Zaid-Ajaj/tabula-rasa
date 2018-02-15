@@ -38,8 +38,7 @@ let main state dispatch =
         let adminState = { state.Admin with CurrentPage = adminPage }
         Admin.View.render adminState (AdminMsg >> dispatch)
     | Some AppPage.About -> 
-        // The about page
-        h1 [] [ str "About" ]
+        About.View.render()
     | None ->
         // Could not parse route
         // Default to the posts page 

@@ -73,7 +73,7 @@ let update msg state =
   | AdminMsg msg ->
       let nextAdminState, adminCmd = Admin.State.update msg state.Admin
       let nextAppState = { state with Admin = nextAdminState }
-      let nextAppCmd = Cmd.batch [ Cmd.map AdminMsg adminCmd ]
+      let nextAppCmd = Cmd.map AdminMsg adminCmd
       nextAppState, nextAppCmd
       
   | LoadBlogInfo ->

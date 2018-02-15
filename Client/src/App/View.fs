@@ -28,7 +28,7 @@ let sidebar state dispatcher =
       menuItem "Posts" (Some Posts) state.CurrentPage dispatcher
       menuItem "About" (Some AppPage.About) state.CurrentPage dispatcher ]
 
-let renderPage state dispatch = 
+let main state dispatch = 
     match state.CurrentPage with
     | Some Posts -> 
         // The posts page
@@ -58,4 +58,4 @@ let render state dispatch =
         [ sidebar state dispatch ]
       div
         [ ClassName "main-content" ]
-        [ renderPage state dispatch ] ]
+        [ main state dispatch ] ]

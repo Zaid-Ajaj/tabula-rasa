@@ -25,15 +25,26 @@ let update msg (state: State) =
     match msg with
     | SetCurrentPage page -> 
         // parent tells admin to change page 
-        // admin will decide whether it is a valid operation or not and change accordingly
+        // admin will decide whether it is a valid operation or not 
+        // and change state or navigate accordingly
         match page with
         | Login ->
             match state.SecurityToken with
             | None -> { state with CurrentPage = page }, Cmd.none
-            | Some token -> state, Navigation.newUrl "#admin"
+            | Some token -> 
+                let showInfo = 
+                    Toastr.message "Already logged in"
+                    |> Toastr.withTitle "Tabula Rasa"
+                    |> Toastr.info                
+                state, Cmd.batch [ Navigation.newUrl "#admin"; showInfo ]
         | Backoffice backoffice ->
             match state.SecurityToken with
-            | None -> state, Navigation.newUrl "#login"
+            | None -> 
+                let showInfo = 
+                    Toastr.message "You should login first"
+                    |> Toastr.withTitle "Tabula Rasa"
+                    |> Toastr.info
+                state, Cmd.batch [ Navigation.newUrl "#login"; showInfo ]
             | Some token -> { state with CurrentPage = page }, Cmd.none
     | LoginMsg loginMsg ->
         match loginMsg with 
@@ -51,7 +62,9 @@ let update msg (state: State) =
     | BackofficeMsg msg ->
         match msg with 
         | Backoffice.Types.Msg.Logout -> 
-            init()
+            // intercept logout message of the backoffice child
+            let nextState, initCmd = init()
+            nextState, Navigation.newUrl "/#posts"
         | _ -> 
             let prevBackofficeState = state.Backoffice
             let nextBackofficeState, nextBackofficeCmd = Backoffice.State.update msg prevBackofficeState

@@ -38,9 +38,9 @@ let settings =
        p [ ] [ str "Public articles you have written." ]  ]
     |> cardContainer 
 
-let writeArticle dispatch = 
+let writeArticle = 
     div 
-     [ OnClick (fun _ -> dispatch (NavigateTo NewArticle)) ]
+     [  ]
      [ h3 [ ] [ leftIcon "plus"; str "New Article" ]
        p [ ] [ str "A story is the best way to share your ideas with the world." ]  ]
     |> cardContainer 
@@ -52,9 +52,16 @@ let subscribers =
        p [ ] [ str "View who subscribes to your blog" ]  ]
     |> cardContainer 
 
-let oneThirdPage child = 
-    div [ ClassName "col-md-4" ]
+let oneThirdPage child page dispatch = 
+    div [ ClassName "col-md-4"; OnClick (fun _ -> dispatch (NavigateTo page)) ]
         [ child ]
+        
+let logout dispatch = 
+    div [ ClassName "col-md-4"; OnClick (fun _ -> dispatch Logout) ]
+        [ cardContainer <|
+             div [ ] 
+                 [ h3 [ ] [ leftIcon "power-off"; str "Logout" ]
+                   p [ ] [ str "Return to your home page" ]] ]
 
 let render (state: State) dispatch = 
     match state.CurrentPage with
@@ -63,11 +70,12 @@ let render (state: State) dispatch =
          [ Style [ PaddingLeft 30 ]  ]
          [ div 
              [ ClassName "row" ]
-             [ oneThirdPage stories
-               oneThirdPage drafts 
-               oneThirdPage settings
-               oneThirdPage (writeArticle dispatch) 
-               oneThirdPage subscribers ] ]
+             [ oneThirdPage stories Published dispatch
+               oneThirdPage drafts Drafts dispatch
+               oneThirdPage settings Settings dispatch
+               oneThirdPage writeArticle NewArticle dispatch 
+               oneThirdPage subscribers Subscribers dispatch
+               logout dispatch] ]
     | NewArticle ->
         NewArticle.View.render state.NewArticleState (NewArticleMsg >> dispatch)
     | _ -> 

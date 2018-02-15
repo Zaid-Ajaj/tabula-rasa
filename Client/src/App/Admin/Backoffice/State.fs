@@ -23,7 +23,8 @@ let update msg state =
         let nextCmd = Cmd.map NewArticleMsg nextCmd
 
         nextBackofficeState, nextCmd
-    | Logout -> state, Cmd.none
+    | Logout -> 
+        state, Cmd.none
     
 
 let init() = 

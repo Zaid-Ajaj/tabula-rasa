@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a6a997fb-f3b9-42f1-9d67-8f683ad6cb89" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Backoffice/NewArticle/State.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Backoffice/NewArticle/Types.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Backoffice/NewArticle/View.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Backoffice/State.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Backoffice/Types.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Backoffice/View.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Login/Http.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Login/State.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Login/Types.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin.Login/View.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin/State.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin/Types.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Admin/View.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/App/State.fs" afterPath="$PROJECT_DIR$/Client/src/App/State.fs" />
+      <change beforePath="$PROJECT_DIR$/Client/src/App/View.fs" afterPath="$PROJECT_DIR$/Client/src/App/View.fs" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Posts/State.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Posts/Types.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/Posts/View.fs" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/Client/src/TabulaRasa.Client.fsproj" afterPath="$PROJECT_DIR$/Client/src/TabulaRasa.Client.fsproj" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file leaf-file-name="State.fs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Client/src/App/State.fs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="277">
+              <caret line="106" column="0" lean-forward="false" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
+              <folding>
+                <marker date="1518661510762" expanded="true" signature="16:4208" ph=" ..." />
+                <marker date="1518661510762" expanded="false" signature="23:106" ph="..." />
+                <marker date="1518661510762" expanded="true" signature="174:799" ph=" = ..." />
+                <marker date="1518661510762" expanded="true" signature="194:799" ph=" ..." />
+                <marker date="1518661510762" expanded="true" signature="815:1629" ph=": Parser&lt;AppPage -&gt; AppPage, AppPage&gt; = ..." />
+                <marker date="1518661510762" expanded="true" signature="862:1629" ph=" [ map (Admin Admin.Types.Page.Login) (s &quot;login&quot;) ..." />
+                <marker date="1518661510762" expanded="true" signature="1676:1790" ph=" = ..." />
+                <marker date="1518661510762" expanded="true" signature="1698:1790" ph=" ..." />
+                <marker date="1518661510762" expanded="true" signature="1807:2268" ph=" = ..." />
+                <marker date="1518661510762" expanded="true" signature="1938:2102" ph=" = ..." />
+                <marker date="1518661510762" expanded="true" signature="1969:2101" ph=" LoadingBlogInfo = false ..." />
+                <marker date="1518661510762" expanded="true" signature="2106:2268" ph="model, Cmd.batch [ cmd ..." />
+                <marker date="1518661510762" expanded="true" signature="2324:2436" ph=" =  ..." />
+                <marker date="1518661510762" expanded="true" signature="2458:4208" ph=" = ..." />
+                <marker date="1518661510762" expanded="true" signature="2477:4208" ph=" ..." />
+                <marker date="1518661510762" expanded="true" signature="2494:2689" ph=" -&gt; ..." />
+                <marker date="1518661510762" expanded="true" signature="2707:2939" ph=" -&gt; ..." />
+                <marker date="1518661510762" expanded="true" signature="2963:3059" ph=" -&gt; ..." />
+                <marker date="1518661510762" expanded="true" signature="3083:3195" ph=" -&gt; ..." />
+                <marker date="1518661510762" expanded="true" signature="3218:3325" ph=" -&gt; ..." />
+                <marker date="1518661510762" expanded="true" signature="3474:4208" ph=" -&gt;  ..." />
+                <marker date="1518661510762" expanded="true" signature="3515:3773" ph=" -&gt;  ..." />
+                <marker date="1518661510762" expanded="true" signature="3795:3940" ph=" -&gt; ..." />
+                <marker date="1518661510762" expanded="true" signature="3964:4208" ph=" -&gt; ..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="View.fs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/View.fs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="168">
+              <caret line="8" column="12" lean-forward="false" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="12" />
+              <folding>
+                <marker date="1518405829292" expanded="true" signature="39:215" ph=" ..." />
+                <marker date="1518405829292" expanded="true" signature="46:136" ph="..." />
+                <marker date="1518405829292" expanded="true" signature="183:215" ph=" =  ..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Types.fs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/Types.fs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="235">
+              <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+              <folding>
+                <marker date="1518470609311" expanded="true" signature="40:364" ph=" ..." />
+                <marker date="1518470609311" expanded="true" signature="52:238" ph="=  ..." />
+                <marker date="1518470609311" expanded="true" signature="59:238" ph="| SetTitle of string ..." />
+                <marker date="1518470609311" expanded="true" signature="262:364" ph="= { ..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Program.fs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Client/src/Program.fs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="273">
+              <caret line="23" column="6" lean-forward="false" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="6" />
+              <folding>
+                <marker date="1509756684332" expanded="true" signature="14:469" ph=" ..." />
+                <marker date="1509756684332" expanded="false" signature="21:197" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/State.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Types.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/View.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Login/State.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Login/Types.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/State.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/Types.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/View.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/State.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/Types.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/View.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/Program.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/State.fs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/Types.fs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Client/src/App/View.fs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Client/src/App/Admin/View.fs" />
+        <option value="$PROJECT_DIR$/Client/src/App/View.fs" />
+        <option value="$PROJECT_DIR$/Client/src/App/Admin/Types.fs" />
+        <option value="$PROJECT_DIR$/Client/src/App/State.fs" />
+        <option value="$PROJECT_DIR$/Client/src/App/Admin/State.fs" />
+        <option value="$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/State.fs" />
+        <option value="$PROJECT_DIR$/Client/src/App/Admin/Backoffice/Types.fs" />
+        <option value="$PROJECT_DIR$/Client/src/App/Admin/Backoffice/State.fs" />
+        <option value="$PROJECT_DIR$/Client/src/App/Admin/Backoffice/View.fs" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-1" />
+    <option name="y" value="-1" />
+    <option name="width" value="1368" />
+    <option name="height" value="749" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="SolutionExplorer" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="SolutionExplorer">
+        <subPane>
+          <expand>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Client" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="TabulaRasa.Client" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="TabulaRasa.Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="App" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="TabulaRasa.Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="App" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Admin" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="TabulaRasa.Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="App" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Admin" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Backoffice" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="TabulaRasa.Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="App" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Admin" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Backoffice" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="NewArticle" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="TabulaRasa.Client" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="App" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Admin" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="Login" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+            <path>
+              <item name="" type="13324e5d:SolutionExplorerViewPane$ProjectViewPaneTreeStructure$createRoot$1" />
+              <item name="TabulaRasa (2 projects)" type="977d5f41:SolutionExplorerNodeRider" />
+              <item name="TabulaRasa.Server" type="977d5f41:SolutionExplorerNodeRider" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+        <option name="show-file-system" value="false" />
+        <option name="show-all-items" value="false" />
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="Default" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <envs />
+      <option name="USE_MONO" value="0" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="PROJECT_PATH" value="" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="None" />
+      <option name="PROJECT_TFM" value="" />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a6a997fb-f3b9-42f1-9d67-8f683ad6cb89" name="Default" comment="" />
+      <created>1518658859118</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1518658859118</updated>
+      <workItem from="1518658864049" duration="3069000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="3069000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-1" y="-1" width="1368" height="749" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Errors In Solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32917318" sideWeight="0.50292826" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Unit Tests" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32917318" sideWeight="0.49707174" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="NuGet" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24963397" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Login/Types.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1509756684328" expanded="true" signature="24:452" ph=" ..." />
+            <marker date="1509756684328" expanded="true" signature="35:221" ph="=  ..." />
+            <marker date="1509756684328" expanded="true" signature="42:221" ph="| Login ..." />
+            <marker date="1509756684328" expanded="true" signature="235:452" ph="= { ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Login/State.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-520">
+          <caret line="31" column="2" lean-forward="false" selection-start-line="31" selection-start-column="2" selection-end-line="31" selection-end-column="2" />
+          <folding>
+            <marker date="1518438287799" expanded="true" signature="24:2847" ph=" ..." />
+            <marker date="1518438287799" expanded="false" signature="31:95" ph="..." />
+            <marker date="1518438287799" expanded="true" signature="107:364" ph=" =  ..." />
+            <marker date="1518438287799" expanded="true" signature="115:364" ph="{ InputUsername = &quot;&quot; ..." />
+            <marker date="1518438287799" expanded="true" signature="398:1080" ph=" =   ..." />
+            <marker date="1518438287799" expanded="true" signature="422:612" ph=" =  ..." />
+            <marker date="1518438287799" expanded="true" signature="431:611" ph=" String.IsNullOrWhiteSpace(state.InputUsername), &quot;Field 'Username' cannot be empty&quot; ..." />
+            <marker date="1518438287799" expanded="true" signature="632:822" ph=" =  ..." />
+            <marker date="1518438287799" expanded="true" signature="641:821" ph=" String.IsNullOrWhiteSpace(state.InputPassword), &quot;Field 'Password' cannot be empty&quot; ..." />
+            <marker date="1518438287799" expanded="true" signature="853:923" ph=" =  ..." />
+            <marker date="1518438287799" expanded="true" signature="954:1024" ph=" =  ..." />
+            <marker date="1518438287799" expanded="true" signature="1111:2847" ph=" =  ..." />
+            <marker date="1518438287799" expanded="true" signature="1133:2847" ph="  ..." />
+            <marker date="1518438287799" expanded="true" signature="1160:1285" ph=" -&gt; ..." />
+            <marker date="1518438287799" expanded="true" signature="1311:1434" ph=" -&gt; ..." />
+            <marker date="1518438287799" expanded="true" signature="1463:1719" ph=" -&gt; ..." />
+            <marker date="1518438287799" expanded="true" signature="1553:1691" ph=" = ..." />
+            <marker date="1518438287799" expanded="true" signature="1569:1690" ph=" state with UsernameValidationErrors = usernameErrors ..." />
+            <marker date="1518438287799" expanded="true" signature="1731:2263" ph=" -&gt; ..." />
+            <marker date="1518438287799" expanded="true" signature="1835:1868" ph=" = ..." />
+            <marker date="1518438287799" expanded="true" signature="1891:1974" ph=" =  ..." />
+            <marker date="1518438287799" expanded="true" signature="2001:2263" ph=" then state, Cmd.none  ..." />
+            <marker date="1518438287799" expanded="true" signature="2122:2219" ph="  =  ..." />
+            <marker date="1518438287799" expanded="true" signature="2140:2218" ph=" Username = state.InputUsername ..." />
+            <marker date="1518438287799" expanded="true" signature="2288:2530" ph=" -&gt;  ..." />
+            <marker date="1518438287799" expanded="true" signature="2377:2495" ph=" =  ..." />
+            <marker date="1518438287799" expanded="true" signature="2554:2847" ph=" -&gt; ..." />
+            <marker date="1518438287799" expanded="true" signature="2596:2676" ph=" state with LoginError = Some error  ..." />
+            <marker date="1518438287799" expanded="true" signature="2702:2806" ph=" =  ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/View.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="25" column="12" lean-forward="false" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
+          <folding>
+            <marker date="1518659984793" expanded="true" signature="17:1105" ph=" ..." />
+            <marker date="1518659984793" expanded="true" signature="72:1105" ph=" =  ..." />
+            <marker date="1518659984793" expanded="true" signature="108:1105" ph=" ..." />
+            <marker date="1518659984793" expanded="true" signature="120:604" ph=" -&gt; ..." />
+            <marker date="1518659984793" expanded="true" signature="420:604" ph=" -&gt;  ..." />
+            <marker date="1518659984793" expanded="true" signature="636:1105" ph=" -&gt; ..." />
+            <marker date="1518659984793" expanded="true" signature="944:1105" ph=" -&gt; ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Types.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1518458962112" expanded="true" signature="16:489" ph=" ..." />
+            <marker date="1518458962112" expanded="true" signature="55:106" ph="= ..." />
+            <marker date="1518458962112" expanded="true" signature="59:106" ph="| Posts ..." />
+            <marker date="1518458962112" expanded="true" signature="120:321" ph="= ..." />
+            <marker date="1518458962112" expanded="true" signature="124:321" ph="| LoadBlogInfo ..." />
+            <marker date="1518458962112" expanded="true" signature="337:489" ph="= { ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/View.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="60" column="25" lean-forward="false" selection-start-line="60" selection-start-column="25" selection-end-line="60" selection-end-column="25" />
+          <folding>
+            <marker date="1518660345284" expanded="true" signature="15:1893" ph=" ..." />
+            <marker date="1518660345284" expanded="true" signature="22:88" ph="..." />
+            <marker date="1518660345284" expanded="true" signature="155:351" ph=" = ..." />
+            <marker date="1518660345284" expanded="true" signature="165:331" ph=" ..." />
+            <marker date="1518660345284" expanded="true" signature="173:330" ph=" classList   ..." />
+            <marker date="1518660345284" expanded="true" signature="196:267" ph=" &quot;menu-item&quot;, true ..." />
+            <marker date="1518660345284" expanded="true" signature="381:922" ph=" = ..." />
+            <marker date="1518660345284" expanded="true" signature="391:464" ph=" ..." />
+            <marker date="1518660345284" expanded="true" signature="470:921" ph=" div ..." />
+            <marker date="1518660345284" expanded="true" signature="525:691" ph=" h3 [ Style [ Color &quot;white&quot; ] ] [ str state.BlogInfo.Value.Name ] ..." />
+            <marker date="1518660345284" expanded="true" signature="702:732" ph=" ..." />
+            <marker date="1518660345284" expanded="true" signature="953:1517" ph=" =  ..." />
+            <marker date="1518660345284" expanded="true" signature="989:1517" ph=" ..." />
+            <marker date="1518660345284" expanded="true" signature="1126:1286" ph=" -&gt;  ..." />
+            <marker date="1518660345284" expanded="true" signature="1394:1455" ph="// Could not parse route ..." />
+            <marker date="1518660345284" expanded="true" signature="1544:1893" ph=" = ..." />
+            <marker date="1518660345284" expanded="true" signature="1573:1893" ph="  ..." />
+            <marker date="1518660345284" expanded="true" signature="1651:1893" ph="  ..." />
+            <marker date="1518660345284" expanded="true" signature="1721:1729" ph=" ..." />
+            <marker date="1518660345284" expanded="true" signature="1735:1892" ph=" div ..." />
+            <marker date="1518660345284" expanded="true" signature="1816:1853" ph=" ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/View.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="8" column="12" lean-forward="false" selection-start-line="8" selection-start-column="12" selection-end-line="8" selection-end-column="12" />
+          <folding>
+            <marker date="1518405829292" expanded="true" signature="39:215" ph=" ..." />
+            <marker date="1518405829292" expanded="true" signature="46:136" ph="..." />
+            <marker date="1518405829292" expanded="true" signature="183:215" ph=" =  ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/State.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="277">
+          <caret line="106" column="0" lean-forward="false" selection-start-line="106" selection-start-column="0" selection-end-line="106" selection-end-column="0" />
+          <folding>
+            <marker date="1518661510762" expanded="true" signature="16:4208" ph=" ..." />
+            <marker date="1518661510762" expanded="false" signature="23:106" ph="..." />
+            <marker date="1518661510762" expanded="true" signature="174:799" ph=" = ..." />
+            <marker date="1518661510762" expanded="true" signature="194:799" ph=" ..." />
+            <marker date="1518661510762" expanded="true" signature="815:1629" ph=": Parser&lt;AppPage -&gt; AppPage, AppPage&gt; = ..." />
+            <marker date="1518661510762" expanded="true" signature="862:1629" ph=" [ map (Admin Admin.Types.Page.Login) (s &quot;login&quot;) ..." />
+            <marker date="1518661510762" expanded="true" signature="1676:1790" ph=" = ..." />
+            <marker date="1518661510762" expanded="true" signature="1698:1790" ph=" ..." />
+            <marker date="1518661510762" expanded="true" signature="1807:2268" ph=" = ..." />
+            <marker date="1518661510762" expanded="true" signature="1938:2102" ph=" = ..." />
+            <marker date="1518661510762" expanded="true" signature="1969:2101" ph=" LoadingBlogInfo = false ..." />
+            <marker date="1518661510762" expanded="true" signature="2106:2268" ph="model, Cmd.batch [ cmd ..." />
+            <marker date="1518661510762" expanded="true" signature="2324:2436" ph=" =  ..." />
+            <marker date="1518661510762" expanded="true" signature="2458:4208" ph=" = ..." />
+            <marker date="1518661510762" expanded="true" signature="2477:4208" ph=" ..." />
+            <marker date="1518661510762" expanded="true" signature="2494:2689" ph=" -&gt; ..." />
+            <marker date="1518661510762" expanded="true" signature="2707:2939" ph=" -&gt; ..." />
+            <marker date="1518661510762" expanded="true" signature="2963:3059" ph=" -&gt; ..." />
+            <marker date="1518661510762" expanded="true" signature="3083:3195" ph=" -&gt; ..." />
+            <marker date="1518661510762" expanded="true" signature="3218:3325" ph=" -&gt; ..." />
+            <marker date="1518661510762" expanded="true" signature="3474:4208" ph=" -&gt;  ..." />
+            <marker date="1518661510762" expanded="true" signature="3515:3773" ph=" -&gt;  ..." />
+            <marker date="1518661510762" expanded="true" signature="3795:3940" ph=" -&gt; ..." />
+            <marker date="1518661510762" expanded="true" signature="3964:4208" ph=" -&gt; ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/View.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="41" column="8" lean-forward="true" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="8" />
+          <folding>
+            <marker date="1518661899722" expanded="true" signature="28:2029" ph=" ..." />
+            <marker date="1518661899722" expanded="false" signature="35:113" ph="..." />
+            <marker date="1518661899722" expanded="true" signature="132:228" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="253:451" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="264:306" ph="  ..." />
+            <marker date="1518661899722" expanded="true" signature="313:450" ph=" div ..." />
+            <marker date="1518661899722" expanded="true" signature="362:448" ph=" div  ..." />
+            <marker date="1518661899722" expanded="true" signature="464:614" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="475:485" ph="  ..." />
+            <marker date="1518661899722" expanded="true" signature="492:592" ph=" h3 [ ] [ leftIcon &quot;book&quot;; str &quot;Stories&quot; ] ..." />
+            <marker date="1518661899722" expanded="true" signature="634:822" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="645:655" ph="  ..." />
+            <marker date="1518661899722" expanded="true" signature="662:800" ph=" h3 [ ] [ leftIcon &quot;file-text-o&quot;; str &quot;Drafts&quot; ] ..." />
+            <marker date="1518661899722" expanded="true" signature="837:989" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="848:858" ph="  ..." />
+            <marker date="1518661899722" expanded="true" signature="865:967" ph=" h3 [ ] [ leftIcon &quot;cogs&quot;; str &quot;Settings&quot; ] ..." />
+            <marker date="1518661899722" expanded="true" signature="1017:1250" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="1028:1090" ph="  ..." />
+            <marker date="1518661899722" expanded="true" signature="1097:1228" ph=" h3 [ ] [ leftIcon &quot;plus&quot;; str &quot;New Article&quot; ] ..." />
+            <marker date="1518661899722" expanded="true" signature="1268:1423" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="1279:1289" ph="  ..." />
+            <marker date="1518661899722" expanded="true" signature="1296:1401" ph=" h3 [ ] [ leftIcon &quot;users&quot;; str &quot;Subscribers&quot; ] ..." />
+            <marker date="1518661899722" expanded="true" signature="1448:1502" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="1538:2029" ph=" =  ..." />
+            <marker date="1518661899722" expanded="true" signature="1574:2029" ph=" ..." />
+            <marker date="1518661899722" expanded="true" signature="1585:1896" ph=" -&gt;  ..." />
+            <marker date="1518661899722" expanded="true" signature="1652:1895" ph=" div  ..." />
+            <marker date="1518661899722" expanded="true" signature="1705:1893" ph=" oneThirdPage stories ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/Types.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="20" column="0" lean-forward="true" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding>
+            <marker date="1518470609311" expanded="true" signature="40:364" ph=" ..." />
+            <marker date="1518470609311" expanded="true" signature="52:238" ph="=  ..." />
+            <marker date="1518470609311" expanded="true" signature="59:238" ph="| SetTitle of string ..." />
+            <marker date="1518470609311" expanded="true" signature="262:364" ph="= { ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/State.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="16" column="8" lean-forward="true" selection-start-line="16" selection-start-column="8" selection-end-line="16" selection-end-column="8" />
+          <folding>
+            <marker date="1518661906442" expanded="true" signature="29:1065" ph=" ..." />
+            <marker date="1518661906442" expanded="true" signature="36:144" ph="..." />
+            <marker date="1518661906442" expanded="true" signature="166:806" ph=" =  ..." />
+            <marker date="1518661906442" expanded="true" signature="188:806" ph=" ..." />
+            <marker date="1518661906442" expanded="true" signature="210:407" ph=" -&gt; ..." />
+            <marker date="1518661906442" expanded="true" signature="450:774" ph=" -&gt; ..." />
+            <marker date="1518661906442" expanded="true" signature="626:684" ph=" =  ..." />
+            <marker date="1518661906442" expanded="true" signature="823:1065" ph=" =  ..." />
+            <marker date="1518661906442" expanded="true" signature="917:996" ph=" = { ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/Types.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="20" column="1" lean-forward="true" selection-start-line="20" selection-start-column="1" selection-end-line="20" selection-end-column="1" />
+          <folding>
+            <marker date="1518661903822" expanded="true" signature="29:351" ph=" ..." />
+            <marker date="1518661903822" expanded="true" signature="65:157" ph="=  ..." />
+            <marker date="1518661903822" expanded="true" signature="72:157" ph="| Home ..." />
+            <marker date="1518661903822" expanded="true" signature="168:254" ph="=  ..." />
+            <marker date="1518661903822" expanded="true" signature="175:254" ph="| Logout  ..." />
+            <marker date="1518661903822" expanded="true" signature="267:351" ph="= {  ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Types.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="6" column="11" lean-forward="false" selection-start-line="6" selection-start-column="11" selection-end-line="6" selection-end-column="11" />
+          <folding>
+            <marker date="1518661059434" expanded="true" signature="18:386" ph=" ..." />
+            <marker date="1518661059434" expanded="true" signature="30:92" ph="=  ..." />
+            <marker date="1518661059434" expanded="true" signature="37:92" ph="| Login ..." />
+            <marker date="1518661059434" expanded="true" signature="103:224" ph="=  ..." />
+            <marker date="1518661059434" expanded="true" signature="110:224" ph="| LoginMsg of Admin.Login.Types.Msg ..." />
+            <marker date="1518661059434" expanded="true" signature="241:386" ph="=   ..." />
+            <marker date="1518661059434" expanded="true" signature="247:386" ph="{ SecurityToken : string option  ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/Backoffice/NewArticle/State.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="63">
+          <caret line="18" column="19" lean-forward="false" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
+          <folding>
+            <marker date="1518471004576" expanded="true" signature="40:1107" ph=" ..." />
+            <marker date="1518471004576" expanded="true" signature="47:92" ph="..." />
+            <marker date="1518471004576" expanded="true" signature="104:281" ph=" =  ..." />
+            <marker date="1518471004576" expanded="true" signature="128:253" ph=" : NewArticleState = { ..." />
+            <marker date="1518471004576" expanded="true" signature="304:1107" ph=" =  ..." />
+            <marker date="1518471004576" expanded="true" signature="326:1107" ph="  ..." />
+            <marker date="1518471004576" expanded="true" signature="348:432" ph=" -&gt; ..." />
+            <marker date="1518471004576" expanded="true" signature="458:546" ph=" -&gt; ..." />
+            <marker date="1518471004576" expanded="true" signature="566:648" ph=" -&gt; ..." />
+            <marker date="1518471004576" expanded="true" signature="678:766" ph=" -&gt; ..." />
+            <marker date="1518471004576" expanded="true" signature="784:1069" ph=" -&gt; ..." />
+            <marker date="1518471004576" expanded="true" signature="878:1069" ph=" ..." />
+            <marker date="1518471004576" expanded="true" signature="929:1069" ph=" -&gt;  ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/App/Admin/State.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="54" column="15" lean-forward="false" selection-start-line="54" selection-start-column="15" selection-end-line="54" selection-end-column="15" />
+          <folding>
+            <marker date="1518661675652" expanded="true" signature="18:2373" ph=" ..." />
+            <marker date="1518661675652" expanded="true" signature="25:99" ph="..." />
+            <marker date="1518661675652" expanded="true" signature="111:538" ph=" =  ..." />
+            <marker date="1518661675652" expanded="true" signature="250:365" ph=" = ..." />
+            <marker date="1518661675652" expanded="true" signature="260:364" ph=" SecurityToken = None ..." />
+            <marker date="1518661675652" expanded="true" signature="391:498" ph=" =  ..." />
+            <marker date="1518661675652" expanded="true" signature="414:497" ph=" Cmd.map LoginMsg loginCmd ..." />
+            <marker date="1518661675652" expanded="true" signature="573:2373" ph=" = ..." />
+            <marker date="1518661675652" expanded="true" signature="594:2373" ph=" ..." />
+            <marker date="1518661675652" expanded="true" signature="620:1181" ph=" -&gt;  ..." />
+            <marker date="1518661675652" expanded="true" signature="633:761" ph="// parent tells admin to change page  ..." />
+            <marker date="1518661675652" expanded="true" signature="801:975" ph=" -&gt; ..." />
+            <marker date="1518661675652" expanded="true" signature="1007:1181" ph=" -&gt; ..." />
+            <marker date="1518661675652" expanded="true" signature="1205:1844" ph=" -&gt; ..." />
+            <marker date="1518661675652" expanded="true" signature="1362:1551" ph=" -&gt; ..." />
+            <marker date="1518661675652" expanded="true" signature="1412:1500" ph=" state with Login = state.Login ..." />
+            <marker date="1518661675652" expanded="true" signature="1618:1844" ph=" -&gt;  ..." />
+            <marker date="1518661675652" expanded="true" signature="1868:2373" ph=" -&gt; ..." />
+            <marker date="1518661675652" expanded="true" signature="1968:2373" ph=" -&gt;  ..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client/src/Program.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="23" column="6" lean-forward="false" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="6" />
+          <folding>
+            <marker date="1509756684332" expanded="true" signature="14:469" ph=" ..." />
+            <marker date="1509756684332" expanded="false" signature="21:197" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

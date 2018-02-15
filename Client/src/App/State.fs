@@ -72,11 +72,8 @@ let update msg state =
 
   | AdminMsg msg ->
       let nextAdminState, adminCmd = Admin.State.update msg state.Admin
-      let nextAdminPage = nextAdminState.CurrentPage |> Option.map AppPage.Admin
-      let nextAppState = { state with Admin = nextAdminState
-                                      CurrentPage = nextAdminPage }
-      let nextAppCmd = Cmd.batch [ Cmd.map AdminMsg adminCmd; 
-                                   Cmd.ofMsg (SetCurrentPage nextAdminPage) ]
+      let nextAppState = { state with Admin = nextAdminState }
+      let nextAppCmd = Cmd.batch [ Cmd.map AdminMsg adminCmd ]
       nextAppState, nextAppCmd
       
   | LoadBlogInfo ->
@@ -105,6 +102,5 @@ let update msg state =
            nextAppState, Cmd.none
       | Admin adminPage ->
            // tell child to update current page by sending an admin message
-           let nextState = { state with Admin = { state.Admin with CurrentPage = Some adminPage } }
-           let adminMsg = Admin.Types.SetCurrentPage adminPage
-           nextState, Cmd.ofMsg (AdminMsg adminMsg)  
+           let nextState = { state with CurrentPage = Some (Admin adminPage) }
+           nextState, Cmd.ofMsg (AdminMsg (Admin.Types.Msg.SetCurrentPage adminPage))

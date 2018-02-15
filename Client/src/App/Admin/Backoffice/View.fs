@@ -40,7 +40,7 @@ let settings =
 
 let writeArticle dispatch = 
     div 
-     [ OnClick (fun _ -> dispatch (SetCurrentPage NewArticle)) ]
+     [ OnClick (fun _ -> dispatch (NavigateTo NewArticle)) ]
      [ h3 [ ] [ leftIcon "plus"; str "New Article" ]
        p [ ] [ str "A story is the best way to share your ideas with the world." ]  ]
     |> cardContainer 

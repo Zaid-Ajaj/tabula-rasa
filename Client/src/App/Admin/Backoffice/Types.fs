@@ -13,7 +13,7 @@ type Page =
 type Msg = 
     | Logout 
     | NewArticleMsg of NewArticle.Types.Msg 
-    | SetCurrentPage of Page
+    | NavigateTo of Page
 
 type State = { 
     NewArticleState : NewArticle.Types.NewArticleState

@@ -33,14 +33,16 @@ let renderPage state dispatch =
     | Some Posts -> 
         // The posts page
         Posts.View.render state.Posts (PostsMsg >> dispatch)
-    | Some (Admin _) -> 
+    | Some (Admin adminPage) -> 
         // The Admin page
-        Admin.View.render state.Admin (AdminMsg >> dispatch)
+        let adminState = { state.Admin with CurrentPage = adminPage }
+        Admin.View.render adminState (AdminMsg >> dispatch)
     | Some AppPage.About -> 
         // The about page
         h1 [] [ str "About" ]
     | None ->
-        // Default when navigating to root 
+        // Could not parse route
+        // Default to the posts page 
         Posts.View.render state.Posts (PostsMsg >> dispatch)
 
 let render state dispatch =

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="$USER_HOME$/.Rider2017.3/system/resharper-host/local/Transient/ReSharperHost/v11/SolutionCaches/_TabulaRasa.-2043386462.00" t="ExcludeRecursive" />
+    <e p="$PROJECT_DIR$" t="IncludeFlat">
+      <e p="Client" t="Include">
+        <e p="src" t="IncludeRecursive">
+          <e p="App" t="Include">
+            <e p="About" t="Include">
+              <e p="View.fs" t="Include" />
+            </e>
+            <e p="Admin" t="Include">
+              <e p="Backoffice" t="Include">
+                <e p="NewArticle" t="Include">
+                  <e p="State.fs" t="Include" />
+                  <e p="Types.fs" t="Include" />
+                  <e p="View.fs" t="Include" />
+                </e>
+                <e p="State.fs" t="Include" />
+                <e p="Types.fs" t="Include" />
+                <e p="View.fs" t="Include" />
+              </e>
+              <e p="Login" t="Include">
+                <e p="Http.fs" t="Include" />
+                <e p="State.fs" t="Include" />
+                <e p="Types.fs" t="Include" />
+                <e p="View.fs" t="Include" />
+              </e>
+              <e p="State.fs" t="Include" />
+              <e p="Types.fs" t="Include" />
+              <e p="View.fs" t="Include" />
+            </e>
+            <e p="Posts" t="Include">
+              <e p="State.fs" t="Include" />
+              <e p="Types.fs" t="Include" />
+              <e p="View.fs" t="Include" />
+            </e>
+            <e p="State.fs" t="Include" />
+            <e p="Types.fs" t="Include" />
+            <e p="View.fs" t="Include" />
+          </e>
+          <e p="Elmish.Toastr.fs" t="Include" />
+          <e p="Program.fs" t="Include" />
+          <e p="Server.fs" t="Include" />
+          <e p="TabulaRasa.Client.fsproj" t="IncludeRecursive" />
+          <e p="bin" t="ExcludeRecursive" />
+          <e p="obj" t="ExcludeRecursive" />
+        </e>
+      </e>
+      <e p="Server" t="IncludeRecursive">
+        <e p="Admin.fs" t="Include" />
+        <e p="Environment.fs" t="Include" />
+        <e p="Json.fs" t="Include" />
+        <e p="Program.fs" t="Include" />
+        <e p="Security.fs" t="Include" />
+        <e p="Storage.fs" t="Include" />
+        <e p="TabulaRasa.Server.fsproj" t="IncludeRecursive" />
+        <e p="WebApp.fs" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive" />
+      </e>
+      <e p="Shared/ClientServer.fs" t="Include" />
+      <e p="Shared/DomainModels.fs" t="Include" />
+      <e p="Shared/ViewModels.fs" t="Include" />
+      <e p="TabulaRasa.sln" t="IncludeFlat" />
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>

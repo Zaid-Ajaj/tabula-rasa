@@ -9,9 +9,11 @@ open Admin.Backoffice
 
 let update msg state = 
     match msg with
-    | SetCurrentPage page ->
-        let nextState = { state with CurrentPage = page }
-        nextState, Cmd.none 
+    | NavigateTo page ->
+        match page with 
+        | Home -> state, Navigation.newUrl "#admin"
+        | NewArticle -> state, Navigation.newUrl "#admin/posts/new"
+        | _ -> state, Navigation.newUrl "#admin"
         
     | NewArticleMsg newArticleMsg ->
         let prevArticleState = state.NewArticleState

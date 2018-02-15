@@ -8,27 +8,29 @@
     <Compile Include="../../Shared/ClientServer.fs"/>
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
-    <!-- Admin Backoffice.NewArticle -->
-    <Compile Include="Admin.Backoffice/NewArticle/Types.fs" />
-    <Compile Include="Admin.Backoffice/NewArticle/View.fs" />
-    <Compile Include="Admin.Backoffice/NewArticle/State.fs" />
+    <!-- Admin Backoffice NewArticle -->
+    <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />
+    <Compile Include="App/Admin/Backoffice/NewArticle/View.fs" />
+    <Compile Include="App/Admin/Backoffice/NewArticle/State.fs" />
     <!-- Admin Backoffice -->
-    <Compile Include="Admin.Backoffice/Types.fs" />
-    <Compile Include="Admin.Backoffice/View.fs" />
-    <Compile Include="Admin.Backoffice/State.fs" />
+    <Compile Include="App/Admin/Backoffice/Types.fs" />
+    <Compile Include="App/Admin/Backoffice/View.fs" />
+    <Compile Include="App/Admin/Backoffice/State.fs" />
     <!-- Admin Login -->
-    <Compile Include="Admin.Login/Types.fs" />
-    <Compile Include="Admin.Login/Http.fs" />
-    <Compile Include="Admin.Login/View.fs" />
-    <Compile Include="Admin.Login/State.fs" />
+    <Compile Include="App/Admin/Login/Types.fs" />
+    <Compile Include="App/Admin/Login/Http.fs" />
+    <Compile Include="App/Admin/Login/View.fs" />
+    <Compile Include="App/Admin/Login/State.fs" />
     <!-- Admin -->
-    <Compile Include="Admin/Types.fs" />
-    <Compile Include="Admin/View.fs" />
-    <Compile Include="Admin/State.fs" />
-    <!-- Latest Posts -->
-    <Compile Include="Posts/Types.fs" />
-    <Compile Include="Posts/View.fs" />
-    <Compile Include="Posts/State.fs" />
+    <Compile Include="App/Admin/Types.fs" />
+    <Compile Include="App/Admin/View.fs" />
+    <Compile Include="App/Admin/State.fs" />
+    <!-- Posts -->
+    <Compile Include="App/Posts/Types.fs" />
+    <Compile Include="App/Posts/View.fs" />
+    <Compile Include="App/Posts/State.fs" />
+    <!-- About -->
+    <Compile Include="App/About/View.fs" />
     <!-- App -->
     <Compile Include="App/Types.fs" />
     <Compile Include="App/State.fs" />    

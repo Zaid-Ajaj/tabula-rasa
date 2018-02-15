@@ -14,12 +14,12 @@ let main argv =
 
     let webApp = WebApp.createUsing store
 
-    let client = solutionRoot </> "dist" </> "client"
-    printfn "Client directory: %s" client
+    let clientPath = solutionRoot </> "dist" </> "client"
+    printfn "Client directory: %s" clientPath
 
     let webAppConfig = 
         { defaultConfig with 
-            homeFolder = Some client }
+            homeFolder = Some clientPath }
 
     startWebServer webAppConfig webApp
     printfn "Hello from F#!"

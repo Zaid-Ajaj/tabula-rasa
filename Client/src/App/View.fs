@@ -5,12 +5,12 @@ open App.Types
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
-let menuItem label (page: Option<AppPage>) currentPage dispatcher =
+let menuItem label (page: Option<Page>) currentPage dispatcher =
     div
       [ classList  
          [ "menu-item", true
            "menu-item-selected", page = currentPage ] 
-        OnClick (fun _ -> dispatcher (SetCurrentPage page)) ]
+        OnClick (fun _ -> dispatcher (NavigateTo page)) ]
       [ str label ]
 
 let sidebar state dispatcher =
@@ -26,7 +26,7 @@ let sidebar state dispatcher =
         [ str state.BlogInfo.Value.About ]
       
       menuItem "Posts" (Some Posts) state.CurrentPage dispatcher
-      menuItem "About" (Some AppPage.About) state.CurrentPage dispatcher ]
+      menuItem "About" (Some Page.About) state.CurrentPage dispatcher ]
 
 let main state dispatch = 
     match state.CurrentPage with
@@ -37,12 +37,11 @@ let main state dispatch =
         // The Admin page
         let adminState = { state.Admin with CurrentPage = adminPage }
         Admin.View.render adminState (AdminMsg >> dispatch)
-    | Some AppPage.About -> 
+    | Some Page.About -> 
+        // the about page
         About.View.render()
-    | None ->
-        // Could not parse route
-        // Default to the posts page 
-        Posts.View.render state.Posts (PostsMsg >> dispatch)
+    | None -> 
+        div [ ] [ ]
 
 let render state dispatch =
   if state.LoadingBlogInfo 

@@ -2,7 +2,7 @@ module App.Types
 
 open Shared.ViewModels
 
-type AppPage =
+type Page =
   | Posts
   | About
   | Admin of Admin.Types.Page
@@ -11,18 +11,15 @@ type AppMsg =
   | LoadBlogInfo
   | BlogInfoLoaded of BlogInfo
   | BlogInfoLoadFailed 
-  | UrlUpdated of AppPage
-  | SetCurrentPage of Option<AppPage>
-  // messages from children
+  | UrlUpdated of Page
+  | NavigateTo of Option<Page>
   | PostsMsg of Posts.Types.Msg
   | AdminMsg of Admin.Types.Msg
 
 type AppState = {
-    // state of root app
     LoadingBlogInfo: bool
     BlogInfo: BlogInfo option
-    CurrentPage: Option<AppPage>
-    // states of children
+    CurrentPage: Option<Page>
     Posts: Posts.Types.Model
     Admin: Admin.Types.State
 }

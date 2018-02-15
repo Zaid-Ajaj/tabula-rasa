@@ -20,7 +20,7 @@ let toHash page =
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers) -> "#admin/subscribers"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Settings) -> "#admin/settings"
 
-let pageParser: Parser<AppPage -> AppPage, AppPage> =
+let pageParser: Parser<Page -> Page, Page> =
   oneOf [ map (Admin Admin.Types.Page.Login) (s "login")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "posts" </> s "new")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s "admin" </> s "posts" </> s "drafts")
@@ -31,7 +31,7 @@ let pageParser: Parser<AppPage -> AppPage, AppPage> =
           map Posts (s "posts")
           map About (s "about") ]
 
-let urlUpdate (result: Option<AppPage>) model =
+let urlUpdate (result: Option<Page>) model =
   match result with
   | None ->
       model, Cmd.none
@@ -39,13 +39,12 @@ let urlUpdate (result: Option<AppPage>) model =
       model, Cmd.ofMsg (UrlUpdated page)
 
 let init result =
-  let initialPage = Posts
   let posts, postsCmd = Posts.State.init()
   let admin, adminCmd = Admin.State.init()
   let model, cmd =
     urlUpdate result
       { LoadingBlogInfo = false
-        CurrentPage = Some initialPage
+        CurrentPage = None
         Admin = admin
         Posts = posts
         BlogInfo = None }
@@ -79,28 +78,31 @@ let update msg state =
   | LoadBlogInfo ->
       let nextState = { state with LoadingBlogInfo = true }
       nextState, loadBlogInfoCmd
+      
   | BlogInfoLoaded info ->
       let nextState = { state with BlogInfo = Some info; LoadingBlogInfo = false }
-      nextState, Cmd.none
+      nextState, Cmd.ofMsg (NavigateTo (Some Posts))
+      
   | BlogInfoLoadFailed ->
       let nextState = { state with BlogInfo = None; LoadingBlogInfo = false }
       nextState, Cmd.none
-  | SetCurrentPage (Some page) -> 
+      
+  | NavigateTo (Some page) ->
       state, Navigation.newUrl (toHash page)
-  | SetCurrentPage None ->
+      
+  | NavigateTo None ->
       state, Cmd.none
+      
   | UrlUpdated page -> 
       match page with 
       | Posts -> 
            // make sure to load posts anytime the posts page is requested
-           let nextAppState = { state with CurrentPage = Some page }
+           let nextAppState = { state with CurrentPage = Some Posts }
            let nextCmd = Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
            nextAppState, nextCmd
-      | AppPage.About ->
-           // just show the About page
-           let nextAppState = { state with CurrentPage = Some page }
-           nextAppState, Cmd.none
+      | Page.About ->
+           let nextState = { state with CurrentPage = Some Page.About }
+           nextState, Cmd.none
       | Admin adminPage ->
-           // tell child to update current page by sending an admin message
            let nextState = { state with CurrentPage = Some (Admin adminPage) }
            nextState, Cmd.ofMsg (AdminMsg (Admin.Types.Msg.SetCurrentPage adminPage))

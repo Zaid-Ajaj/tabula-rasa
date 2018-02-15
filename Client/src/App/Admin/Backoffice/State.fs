@@ -17,9 +17,8 @@ let update msg state =
         
     | NewArticleMsg newArticleMsg ->
         let prevArticleState = state.NewArticleState
-        let nextState, nextCmd = NewArticle.State.update newArticleMsg prevArticleState
-        let nextBackofficeState = 
-            { state with NewArticleState = nextState }
+        let nextArticleState, nextCmd = NewArticle.State.update newArticleMsg prevArticleState
+        let nextBackofficeState = { state with NewArticleState = nextArticleState }
         let nextCmd = Cmd.map NewArticleMsg nextCmd
 
         nextBackofficeState, nextCmd

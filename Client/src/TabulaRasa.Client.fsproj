@@ -10,6 +10,7 @@
     <Compile Include="Elmish.Toastr.fs" />
     <!-- Admin Backoffice NewArticle -->
     <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />
+    <Compile Include="App/Admin/Backoffice/NewArticle/React.Marked.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/View.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/State.fs" />
     <!-- Admin Backoffice -->

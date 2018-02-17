@@ -11,6 +11,7 @@ open Fable.Helpers.React.Props
 open Fable.Import.React
 
 type InputType = Text | Password 
+
 let textInput inputLabel initial inputType (onChange: string -> unit) = 
   let inputType = match inputType with 
                   | Text -> "input"

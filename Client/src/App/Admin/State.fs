@@ -21,6 +21,11 @@ let init() =
 
     initialAdminState, initialAdminCmd
     
+let showInfo msg = 
+     Toastr.message msg
+     |> Toastr.withTitle "Tabula Rasa"
+     |> Toastr.info  
+
 let update msg (state: State) =
     match msg with
     | SetCurrentPage page -> 
@@ -30,21 +35,15 @@ let update msg (state: State) =
         match page with
         | Login ->
             match state.SecurityToken with
-            | None -> { state with CurrentPage = page }, Cmd.none
+            | None -> { state with CurrentPage = Login }, Cmd.none
             | Some token -> 
-                let showInfo = 
-                    Toastr.message "Already logged in"
-                    |> Toastr.withTitle "Tabula Rasa"
-                    |> Toastr.info                
-                state, Cmd.batch [ Navigation.newUrl "#admin"; showInfo ]
+                  state, Cmd.batch [ Navigation.newUrl "#admin" 
+                                     showInfo "Already logged in" ]
         | Backoffice backoffice ->
             match state.SecurityToken with
             | None -> 
-                let showInfo = 
-                    Toastr.message "You should login first"
-                    |> Toastr.withTitle "Tabula Rasa"
-                    |> Toastr.info
-                state, Cmd.batch [ Navigation.newUrl "#login"; showInfo ]
+                state, Cmd.batch [ Navigation.newUrl "#login"
+                                   showInfo "You must be logged in first" ]
             | Some token -> { state with CurrentPage = page }, Cmd.none
     | LoginMsg loginMsg ->
         match loginMsg with 

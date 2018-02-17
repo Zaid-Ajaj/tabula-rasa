@@ -14,29 +14,29 @@ let toHash page =
   | About -> "#about"
   | Admin Admin.Types.Page.Login -> "#login"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Home) -> "#admin"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle) -> "#admin/posts/new"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts) -> "#admin/posts/drafts"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Published) -> "#admin/posts/published"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle) -> "#admin/new-post"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts) -> "#admin/drafts"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Published) -> "#admin/published"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers) -> "#admin/subscribers"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Settings) -> "#admin/settings"
 
 let pageParser: Parser<Page -> Page, Page> =
   oneOf [ map (Admin Admin.Types.Page.Login) (s "login")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "posts" </> s "new")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s "admin" </> s "posts" </> s "drafts")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Published)) (s "admin" </> s "posts" </> s "published")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "new-post")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s "admin" </> s "drafts")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Published)) (s "admin" </> s "published")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s "admin" </> s "subscribers")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s "admin")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s "admin" </> s "settings")
           map Posts (s "posts")
           map About (s "about") ]
 
-let urlUpdate (result: Option<Page>) model =
-  match result with
+let urlUpdate (parsedPage: Option<Page>) currentState =
+  match parsedPage with
   | None ->
-      model, Cmd.none
+      currentState, Cmd.none
   | Some page ->
-      model, Cmd.ofMsg (UrlUpdated page)
+      currentState, Cmd.ofMsg (UrlUpdated page)
 
 let init result =
   let posts, postsCmd = Posts.State.init()

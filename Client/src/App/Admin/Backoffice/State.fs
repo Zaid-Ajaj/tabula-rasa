@@ -12,7 +12,7 @@ let update msg state =
     | NavigateTo page ->
         match page with 
         | Home -> state, Navigation.newUrl "#admin"
-        | NewArticle -> state, Navigation.newUrl "#admin/posts/new"
+        | NewArticle -> state, Navigation.newUrl "#admin/new-post"
         | _ -> state, Navigation.newUrl "#admin"
         
     | NewArticleMsg newArticleMsg ->

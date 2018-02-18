@@ -5,6 +5,9 @@ type Msg =
     | SetSlug of string
     | SetContent of string
     | AddTag of string
+    | Publish
+    | Published 
+    | PublishError of string
     | TogglePreview
 
 
@@ -14,6 +17,8 @@ type NewArticleState = {
     Tags: string list
     Content: string
     Preview : bool
+    IsPublishing : bool
 }
  
 
+ 

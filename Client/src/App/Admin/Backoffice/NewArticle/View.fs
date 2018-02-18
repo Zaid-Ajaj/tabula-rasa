@@ -8,6 +8,11 @@ open Fable.Core.JsInterop
 open React.Marked
 
 let title state dispatch = 
+  let publishBtnContent = 
+    if state.IsPublishing 
+    then i [ ClassName "fa fa-circle-o-notch fa-spin" ] [ ]
+    else str "Publish" 
+    
   h1 
     [ ] 
     [ str "Write a new post" 
@@ -15,7 +20,12 @@ let title state dispatch =
         [ ClassName (if state.Preview then "btn btn-success" else "btn btn-info")
           Style [ MarginLeft 15 ]
           OnClick (fun _ -> dispatch TogglePreview) ] 
-        [ str "Preview" ] ]
+        [ str "Preview" ]
+      button 
+        [ ClassName "btn btn-success"
+          Style [ MarginLeft 15 ]
+          OnClick (fun _ -> dispatch Publish) ] 
+        [ publishBtnContent ] ]
         
 let onTextChanged disptach = 
   OnChange <| fun (ev: Fable.Import.React.FormEvent) ->
@@ -37,14 +47,14 @@ let editor state dispatch =
   [ div 
       [ ClassName "row" ]
       [ div 
-          [ ClassName "col";spacing ]
+          [ ClassName "col"; spacing ]
           [ label [ spacing ] [ str "Title" ] 
             input [ ClassName "form-control"; 
                     DefaultValue state.Title
                     onTextChanged (SetTitle >> dispatch)
                     spacing ] ]
         div 
-          [ ClassName "col";spacing ]
+          [ ClassName "col"; spacing ]
           [ label [ spacing ] [ str "Slug" ] 
             input [ ClassName "form-control";
                     DefaultValue state.Slug

@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="..\Shared\DomainModels.fs" />
     <Compile Include="..\Shared\ViewModels.fs" />
@@ -14,9 +12,9 @@
     <Compile Include="Json.fs" />
     <Compile Include="Security.fs" />
     <Compile Include="Admin.fs" />
+    <Compile Include="BlogPosts.fs" />
     <Compile Include="WebApp.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

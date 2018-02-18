@@ -66,7 +66,9 @@ let update msg (state: State) =
             nextState, Navigation.newUrl "/#posts"
         | _ -> 
             let prevBackofficeState = state.Backoffice
-            let nextBackofficeState, nextBackofficeCmd = Backoffice.State.update msg prevBackofficeState
-            let nextAdminPage = Admin.Types.Page.Backoffice nextBackofficeState.CurrentPage
+            let nextBackofficeState, nextBackofficeCmd = 
+                // pass auth token down to backoffice
+                let authToken = state.SecurityToken.Value
+                Backoffice.State.update authToken msg prevBackofficeState
             let nextAdminState = { state with Backoffice = nextBackofficeState }
             nextAdminState, Cmd.map BackofficeMsg nextBackofficeCmd

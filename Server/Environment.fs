@@ -9,6 +9,7 @@ let dataFolder =
     let directoryInfo = DirectoryInfo(folder)
     if not directoryInfo.Exists then 
         Directory.CreateDirectory folder |> ignore
+    printfn "Using data folder: %s" folder
     folder
 
 /// The path of database file

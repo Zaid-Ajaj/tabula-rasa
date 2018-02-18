@@ -3,28 +3,6 @@ module Shared.ViewModels
 open System
 open Shared.DomainModels
 
-type BlogPostItem = {
-    Id: int
-    Title: string
-    Summary: string
-    IsFeatured: bool
-    Slug: string
-    DateAdded: DateTime
-    CommentCount: int
-    Reactions: (SocialReaction * int) list
-}
-
-type BlogPost = {
-    Id: int
-    Title: string
-    Content: string
-    IsFeatured: bool
-    Slug: string
-    DateAdded: DateTime
-    Comments: Comment list
-    Reactions: (SocialReaction * int) list
-}
-
 type BlogInfo = {
     Name: string
     ProfileImageUrl: string
@@ -56,3 +34,21 @@ type CreateAdminRespose =
     | AdminCreatedSuccesfully
     | AdminAlreadyExists
     | UnknownError
+    
+type BlogPostItem = {
+    Id : int
+    Title : string
+    DateAdded : DateTime
+}
+
+type SecureRequest<'t> = {
+    Token : string
+    Body : 't
+}
+
+type NewBlogPostReq = {
+    Slug : string
+    Title : string
+    Content : string
+    Tags : string list
+}

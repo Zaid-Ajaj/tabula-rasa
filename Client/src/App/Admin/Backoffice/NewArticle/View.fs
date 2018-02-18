@@ -15,12 +15,12 @@ let title state dispatch =
     
   h1 
     [ ] 
-    [ str "Write a new post" 
+    [ str "New Post" 
       button 
-        [ ClassName (if state.Preview then "btn btn-success" else "btn btn-info")
+        [ ClassName "btn btn-info"
           Style [ MarginLeft 15 ]
           OnClick (fun _ -> dispatch TogglePreview) ] 
-        [ str "Preview" ]
+        [ str (if state.Preview then "Back to Post" else "Preview") ]
       button 
         [ ClassName "btn btn-success"
           Style [ MarginLeft 15 ]

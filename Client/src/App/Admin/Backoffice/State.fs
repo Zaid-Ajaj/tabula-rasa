@@ -7,7 +7,7 @@ open Elmish.Browser.Navigation
 open Admin.Backoffice.Types
 open Admin.Backoffice
 
-let update msg state = 
+let update authToken msg state = 
     match msg with
     | NavigateTo page ->
         match page with 
@@ -17,7 +17,8 @@ let update msg state =
         
     | NewArticleMsg newArticleMsg ->
         let prevArticleState = state.NewArticleState
-        let nextArticleState, nextCmd = NewArticle.State.update newArticleMsg prevArticleState
+        let nextArticleState, nextCmd = 
+            NewArticle.State.update authToken newArticleMsg prevArticleState
         let nextBackofficeState = { state with NewArticleState = nextArticleState }
         let nextCmd = Cmd.map NewArticleMsg nextCmd
 

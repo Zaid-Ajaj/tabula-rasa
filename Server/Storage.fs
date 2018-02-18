@@ -17,20 +17,6 @@ type AppUser = {
     IsAdmin: bool
 }
 
-/// A represtation of a blog post as a document in the database
-type BlogPost = {
-    Id: Guid
-    Title: string
-    Summary: string
-    Content: string
-    IsDraft: bool
-    IsFeatured: bool
-    Slug: string
-    DateAdded: DateTime
-    Comments: Comment list
-    Reactions: (SocialReaction * int) list
-}
-
 type Store = 
     | InMemory // using LiteDb's in-memory structure
     | LocalDatabase

@@ -2,6 +2,9 @@
 
 open Suave
 open Environment
+open Fable.Remoting.Suave
+
+FableSuaveAdapter.logger <- Some (printfn "%s")
 
 [<EntryPoint>]
 let main argv =

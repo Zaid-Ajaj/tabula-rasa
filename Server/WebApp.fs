@@ -1,12 +1,15 @@
 module WebApp
 
+open System
 open Shared.ViewModels
 open Shared.DomainModels
+open LiteDB.FSharp
 open ClientServer
 open Security
 open Fable.Remoting.Suave
 
 
+open Shared.ViewModels
 open Suave
 open Suave.Successful
 open Suave.Operators
@@ -28,14 +31,17 @@ let createUsing store =
     Admin.writeAdminIfDoesNotExists Admin.guestAdmin writeFile readFile
     let adminData = Admin.readAdminData readFile
     
-    let login = Admin.login readFile
-    let getBlogInfo() = 
-        Admin.blogInfoFromAdmin adminData
-        |> Async.lift
-
+    
+    let login info = async { return Admin.login readFile info }
+    let getBlogInfo() = async {  return Admin.blogInfoFromAdmin adminData }
+    let publishNewPost req = async { return BlogPosts.publishNewPost req database }
+    let getPosts() = async { return BlogPosts.getAll database }    
+    
     let serverProtocol =
         {  getBlogInfo = getBlogInfo 
-           login = login >> Async.lift }
+           login = login
+           publishNewPost = publishNewPost
+           getPosts = getPosts }
     
     let clientServerProtocol = FableSuaveAdapter.webPartWithBuilderFor serverProtocol routeBuilder
    

@@ -1,13 +1,13 @@
 module Posts.Types
-
-type Post = string
+open Shared.ViewModels
 
 type Msg = 
     | LoadLatestPosts
-    | LoadingPostsFinished of Post[] option
+    | LoadingPostsFinished of list<BlogPostItem>
+    | LoadingPostsError 
 
 type Model = {
     IsLoadingPosts: bool
-    Posts: Post[]
+    Posts: BlogPostItem list
     Error: string option
 }

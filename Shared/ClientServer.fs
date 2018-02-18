@@ -1,5 +1,6 @@
 module ClientServer
 
+open System
 open Shared.ViewModels
 open Shared.DomainModels
 
@@ -8,4 +9,6 @@ let routeBuilder typeName methodName =
  
 type Protocol = 
     {  getBlogInfo : unit -> Async<BlogInfo>
-       login: LoginInfo -> Async<LoginResult> }
+       login : LoginInfo -> Async<LoginResult>
+       getPosts : unit -> Async<list<BlogPostItem>>
+       publishNewPost : SecureRequest<NewBlogPostReq> -> Async<Result<int, string>> }

@@ -3,6 +3,7 @@ module BlogPosts
 open System
 open LiteDB
 open LiteDB.FSharp
+open LiteDB.FSharp.Extensions
 open Shared.DomainModels
 open Shared.ViewModels
 
@@ -56,6 +57,15 @@ let getAll (database: LiteDatabase) : list<BlogPostItem> =
     |> Seq.map (fun post -> 
        { Id = post.Id; 
          Title = post.Title; 
+         Slug = post.Slug;
          DateAdded = post.DateAdded })
     |> List.ofSeq
      
+let getPostBySlug (database: LiteDatabase) (slug: string) =
+   let posts = database.GetCollection<BlogPost> "posts"
+   let query = Query.EQ("Slug", BsonValue(slug))
+   posts.Find(query)
+   |> List.ofSeq
+   |> function 
+       | [ post ] -> Some post.Content
+       | _ -> None

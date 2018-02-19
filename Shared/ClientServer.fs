@@ -11,4 +11,5 @@ type Protocol =
     {  getBlogInfo : unit -> Async<BlogInfo>
        login : LoginInfo -> Async<LoginResult>
        getPosts : unit -> Async<list<BlogPostItem>>
+       getPostBySlug : string -> Async<Option<string>>
        publishNewPost : SecureRequest<NewBlogPostReq> -> Async<Result<int, string>> }

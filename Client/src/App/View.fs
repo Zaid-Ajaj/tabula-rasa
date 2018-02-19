@@ -25,16 +25,17 @@ let sidebar state dispatcher =
         [ ClassName "quote" ]
         [ str state.BlogInfo.Value.About ]
       
-      menuItem "Posts" (Some Posts) state.CurrentPage dispatcher
+      menuItem "Posts" (Some (Posts Posts.Types.Page.AllPosts)) state.CurrentPage dispatcher
       menuItem "About" (Some Page.About) state.CurrentPage dispatcher ]
 
 let main state dispatch = 
     match state.CurrentPage with
-    | Some Posts -> Posts.View.render state.Posts (PostsMsg >> dispatch)
-    | Some Page.About -> About.View.render()
+    | Some Page.About -> 
+        About.View.render()
+    | Some (Posts postsPage) -> 
+        Posts.View.render postsPage state.Posts (PostsMsg >> dispatch)
     | Some (Admin adminPage) -> 
-        let adminState = { state.Admin with CurrentPage = adminPage }
-        Admin.View.render adminState (AdminMsg >> dispatch)
+        Admin.View.render adminPage state.Admin (AdminMsg >> dispatch)
     | None -> 
         div [ ] [ ]
 

@@ -38,6 +38,7 @@ type CreateAdminRespose =
 type BlogPostItem = {
     Id : int
     Title : string
+    Slug : string
     DateAdded : DateTime
 }
 

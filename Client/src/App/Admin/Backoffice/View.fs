@@ -63,19 +63,23 @@ let logout dispatch =
                  [ h3 [ ] [ leftIcon "power-off"; str "Logout" ]
                    p [ ] [ str "Return to your home page" ]] ]
 
-let render (state: State) dispatch = 
-    match state.CurrentPage with
+
+let homePage dispatch = 
+  div 
+    [ Style [ PaddingLeft 30 ]  ]
+    [ div 
+        [ ClassName "row" ]
+        [ oneThirdPage stories Published dispatch
+          oneThirdPage drafts Drafts dispatch
+          oneThirdPage settings Settings dispatch
+          oneThirdPage writeArticle NewArticle dispatch 
+          oneThirdPage subscribers Subscribers dispatch
+          logout dispatch] ]
+
+let render currentPage (state: State) dispatch = 
+    match currentPage with
     | Home -> 
-        div 
-         [ Style [ PaddingLeft 30 ]  ]
-         [ div 
-             [ ClassName "row" ]
-             [ oneThirdPage stories Published dispatch
-               oneThirdPage drafts Drafts dispatch
-               oneThirdPage settings Settings dispatch
-               oneThirdPage writeArticle NewArticle dispatch 
-               oneThirdPage subscribers Subscribers dispatch
-               logout dispatch] ]
+        homePage dispatch
     | NewArticle ->
         NewArticle.View.render state.NewArticleState (NewArticleMsg >> dispatch)
     | _ -> 

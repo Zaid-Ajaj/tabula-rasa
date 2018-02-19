@@ -17,5 +17,4 @@ type Msg =
 
 type State = { 
     NewArticleState : NewArticle.Types.NewArticleState
-    CurrentPage : Page
 }

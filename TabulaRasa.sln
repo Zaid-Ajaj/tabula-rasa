@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{765B77
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "TabulaRasa.Client", "Client\src\TabulaRasa.Client.fsproj", "{5174623B-1704-49C9-B9D7-617C2F3C8009}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Server.Tests", "Server.Tests\Server.Tests.fsproj", "{A608ABA6-1F7A-400C-9CE5-E92679F4B188}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,18 @@ Global
 		{5174623B-1704-49C9-B9D7-617C2F3C8009}.Release|x64.Build.0 = Release|x64
 		{5174623B-1704-49C9-B9D7-617C2F3C8009}.Release|x86.ActiveCfg = Release|x86
 		{5174623B-1704-49C9-B9D7-617C2F3C8009}.Release|x86.Build.0 = Release|x86
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Debug|x64.ActiveCfg = Debug|x64
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Debug|x64.Build.0 = Debug|x64
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Debug|x86.ActiveCfg = Debug|x86
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Debug|x86.Build.0 = Debug|x86
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Release|x64.ActiveCfg = Release|x64
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Release|x64.Build.0 = Release|x64
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Release|x86.ActiveCfg = Release|x86
+		{A608ABA6-1F7A-400C-9CE5-E92679F4B188}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5174623B-1704-49C9-B9D7-617C2F3C8009} = {765B7718-7BC5-4131-984D-EE7A9C0A1498}

@@ -36,12 +36,14 @@ let createUsing store =
     let getBlogInfo() = async {  return Admin.blogInfoFromAdmin adminData }
     let publishNewPost req = async { return BlogPosts.publishNewPost req database }
     let getPosts() = async { return BlogPosts.getAll database }    
+    let getPostBySlug slug = async { return BlogPosts.getPostBySlug database slug }
     
     let serverProtocol =
         {  getBlogInfo = getBlogInfo 
            login = login
            publishNewPost = publishNewPost
-           getPosts = getPosts }
+           getPosts = getPosts
+           getPostBySlug =  getPostBySlug }
     
     let clientServerProtocol = FableSuaveAdapter.webPartWithBuilderFor serverProtocol routeBuilder
    

@@ -3,15 +3,16 @@ module App.State
 open Elmish
 open Elmish.Browser.UrlParser
 open Elmish.Browser.Navigation
-
 open App.Types
 
 type BackofficePage = Admin.Backoffice.Types.Page
+type PostsPage = Posts.Types.Page
 
 let toHash page =
   match page with
-  | Posts -> "#posts"
   | About -> "#about"
+  | Posts PostsPage.AllPosts -> "#posts"
+  | Posts (PostsPage.Post slug) -> "#posts/" + slug
   | Admin Admin.Types.Page.Login -> "#login"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Home) -> "#admin"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle) -> "#admin/new-post"
@@ -21,15 +22,16 @@ let toHash page =
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Settings) -> "#admin/settings"
 
 let pageParser: Parser<Page -> Page, Page> =
-  oneOf [ map (Admin Admin.Types.Page.Login) (s "login")
+  oneOf [ map About (s "about")
+          map (Admin Admin.Types.Page.Login) (s "login")
+          map (PostsPage.Post >> Posts) (s "posts" </> str)
+          map (Posts PostsPage.AllPosts) (s "posts")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s "admin")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "new-post")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s "admin" </> s "drafts")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Published)) (s "admin" </> s "published")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s "admin" </> s "subscribers")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s "admin")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s "admin" </> s "settings")
-          map Posts (s "posts")
-          map About (s "about") ]
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s "admin" </> s "settings") ]
 
 let urlUpdate (parsedPage: Option<Page>) currentState =
   match parsedPage with
@@ -61,6 +63,11 @@ let loadBlogInfoCmd =
               BlogInfoLoaded
               (fun _ -> BlogInfoLoadFailed)
 
+let showInfo msg = 
+     Toastr.message msg
+     |> Toastr.withTitle "Tabula Rasa"
+     |> Toastr.info  
+
 let update msg state =
   match msg with
   | PostsMsg msg ->
@@ -81,7 +88,7 @@ let update msg state =
       
   | BlogInfoLoaded info ->
       let nextState = { state with BlogInfo = Some info; LoadingBlogInfo = false }
-      nextState, Cmd.ofMsg (NavigateTo (Some Posts))
+      nextState, Cmd.ofMsg (NavigateTo (Some (Posts PostsPage.AllPosts)))
       
   | BlogInfoLoadFailed ->
       let nextState = { state with BlogInfo = None; LoadingBlogInfo = false }
@@ -95,14 +102,32 @@ let update msg state =
       
   | UrlUpdated page -> 
       match page with 
-      | Posts -> 
+      | Posts page -> 
            // make sure to load posts anytime the posts page is requested
-           let nextAppState = { state with CurrentPage = Some Posts }
-           let nextCmd = Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
+           let nextAppState = { state with CurrentPage = Some (Posts page) }
+           let nextCmd =
+              match page with
+              | Posts.Types.Page.AllPosts ->  Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
+              | Posts.Types.Page.Post slug -> Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadPost slug))
+              
            nextAppState, nextCmd
       | Page.About ->
            let nextState = { state with CurrentPage = Some Page.About }
            nextState, Cmd.none
       | Admin adminPage ->
-           let nextState = { state with CurrentPage = Some (Admin adminPage) }
-           nextState, Cmd.ofMsg (AdminMsg (Admin.Types.Msg.SetCurrentPage adminPage))
+        let nextAdminCmd = 
+          match adminPage with
+          | Admin.Types.Page.Login ->
+              match state.Admin.SecurityToken with
+              | None -> Cmd.none
+              | Some _ -> Cmd.batch [ Navigation.newUrl "#admin";
+                                      showInfo "Already logged in" ]
+     
+          | Admin.Types.Page.Backoffice _ ->
+              match state.Admin.SecurityToken with
+              | None -> Cmd.batch [ Navigation.newUrl "#login"
+                                    showInfo "You must be logged in first" ]
+              | Some _ -> Cmd.none
+
+        let nextState = { state with CurrentPage = Some (Admin adminPage) }
+        nextState, nextAdminCmd

@@ -32,7 +32,6 @@ let init() =
     
     let initialState = {
         NewArticleState = newArticleState
-        CurrentPage = Home
     }
 
     initialState, Cmd.batch [ Cmd.map NewArticleMsg newArticleCmd ]

@@ -3,8 +3,8 @@ module App.Types
 open Shared.ViewModels
 
 type Page =
-  | Posts
   | About
+  | Posts of Posts.Types.Page
   | Admin of Admin.Types.Page
 
 type AppMsg =
@@ -20,6 +20,6 @@ type AppState = {
     LoadingBlogInfo: bool
     BlogInfo: BlogInfo option
     CurrentPage: Option<Page>
-    Posts: Posts.Types.Model
+    Posts: Posts.Types.State
     Admin: Admin.Types.State
 }

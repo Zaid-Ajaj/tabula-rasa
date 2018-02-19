@@ -12,8 +12,7 @@ let init() =
     let initialAdminState =
       { SecurityToken = None
         Login = login
-        Backoffice = backoffice
-        CurrentPage = Login } 
+        Backoffice = backoffice } 
 
     let initialAdminCmd = 
         Cmd.batch [ Cmd.map LoginMsg loginCmd
@@ -21,30 +20,9 @@ let init() =
 
     initialAdminState, initialAdminCmd
     
-let showInfo msg = 
-     Toastr.message msg
-     |> Toastr.withTitle "Tabula Rasa"
-     |> Toastr.info  
 
 let update msg (state: State) =
     match msg with
-    | SetCurrentPage page -> 
-        // parent tells admin to change page 
-        // admin will decide whether it is a valid operation or not 
-        // and change state or navigate accordingly
-        match page with
-        | Login ->
-            match state.SecurityToken with
-            | None -> { state with CurrentPage = Login }, Cmd.none
-            | Some token -> 
-                  state, Cmd.batch [ Navigation.newUrl "#admin" 
-                                     showInfo "Already logged in" ]
-        | Backoffice backoffice ->
-            match state.SecurityToken with
-            | None -> 
-                state, Cmd.batch [ Navigation.newUrl "#login"
-                                   showInfo "You must be logged in first" ]
-            | Some token -> { state with CurrentPage = page }, Cmd.none
     | LoginMsg loginMsg ->
         match loginMsg with 
         // intercept the LoginSuccess message dispatched by the child component
@@ -62,7 +40,7 @@ let update msg (state: State) =
         match msg with 
         | Backoffice.Types.Msg.Logout -> 
             // intercept logout message of the backoffice child
-            let nextState, initCmd = init()
+            let nextState, _ = init()
             nextState, Navigation.newUrl "/#posts"
         | _ -> 
             let prevBackofficeState = state.Backoffice

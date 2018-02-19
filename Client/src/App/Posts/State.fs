@@ -1,5 +1,6 @@
 module Posts.State
 
+open System
 open Elmish
 open Elmish.Browser.Navigation
 open Posts.Types
@@ -10,49 +11,42 @@ let server = Server.createProxy()
 
 let loadPostsCmd = 
     Cmd.ofAsync server.getPosts ()
-        LoadingPostsFinished
-        (fun ex -> LoadingPostsError)
+        LoadLatestPostsFinished
+        LoadLatestPostsError
 
 let loadSinglePostCmd slug = 
     Cmd.ofAsync server.getPostBySlug slug
-        (function | Some post -> LoadPostFinished post 
-                  | None -> LoadingPostsError)
-        (fun ex -> LoadingPostsError)
+        (function | Some post -> LoadSinglePostFinished post 
+                  | None -> LoadSinglePostError (new Exception("Could not find post")))
+        LoadSinglePostError
 
 let update (state: State) (msg: Msg) = 
     match msg with
-    | LoadLatestPosts ->
-        let nextState = { state with IsLoadingPosts = true }
-        nextState, loadPostsCmd
-    | ReadPost slug ->
+    | NavigateToPost slug ->
         state, Navigation.newUrl ("#posts/" + slug)
-    | LoadPost slug ->
-        let nextState = { state with IsLoadingSinglePost = true }
+    | LoadLatestPosts ->
+        let nextState = { state with LatestPosts = Loading }
+        nextState, loadPostsCmd
+    | LoadLatestPostsFinished posts ->
+        let nextState = { state with LatestPosts = Body posts }
+        nextState, Cmd.none
+    | LoadLatestPostsError ex ->
+        let nextState = { state with LatestPosts = LoadError ex }
+        nextState, Cmd.none
+    | LoadSinglePost slug ->
+        let nextState = { state with PostContent = Loading }
         nextState, loadSinglePostCmd slug
-    | LoadPostFinished content ->
-        let nextState = { state with PostContent = Some content; IsLoadingSinglePost = false }
+    | LoadSinglePostFinished content ->
+        let nextState = { state with PostContent = Body content }
         nextState, Cmd.none
-    | LoadingPostsFinished posts ->
-        let nextState = 
-            { state with 
-               Posts = posts
-               IsLoadingPosts = false
-               Error = None }
-        nextState, Cmd.none
-    | LoadingPostsError ->
-        let nextState = 
-            { state with 
-                Posts = [] 
-                IsLoadingPosts = false
-                Error = Some "Error while loading latest posts" }
-        nextState, Cmd.none
+    | LoadSinglePostError ex ->
+        let nextState = { state with PostContent = LoadError ex }
+        nextState, Cmd.none 
+
 
 let init() =
     let initialModel =  
-     {  Posts = []
-        PostContent = None
-        IsLoadingSinglePost = false
-        IsLoadingPosts = false
-        Error = None }
+     {  LatestPosts = Empty
+        PostContent = Empty } 
 
     initialModel, Cmd.ofMsg LoadLatestPosts

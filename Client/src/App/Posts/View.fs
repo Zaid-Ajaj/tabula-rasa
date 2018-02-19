@@ -18,25 +18,16 @@ let formatDate (date : DateTime) =
 let postItem (post: BlogPostItem) dispatch = 
     div [ ClassName "card blogpost"; 
           Style [ Padding 15; Margin 20 ]
-          OnClick (fun _ -> dispatch (ReadPost post.Slug)) ]  
+          OnClick (fun _ -> dispatch (NavigateToPost post.Slug)) ]  
         [ h3 [] [ str post.Title ]
           p [ ] [ str (sprintf "Published %s" (formatDate post.DateAdded)) ] ] 
-
-let posts (state: State) dispatch = 
-    let sortedPosts = List.sortByDescending (fun post -> post.DateAdded) state.Posts
-    let allPosts = List.map (fun post -> postItem post dispatch) sortedPosts
-    if state.IsLoadingPosts 
-    then spinner
-    else div [ ] [ yield! allPosts ]
              
-let allPostsPage state dispatch =
+let latestPosts (blogPosts : list<BlogPostItem>) dispatch =
     let title = h1 [ ClassName "title" ] [ str "Latest Posts" ]
     let body =
-      match state.Error with
-      | Some errorMsg -> 
-          h1 [ Style [ Color "red" ] ] 
-             [ str errorMsg ]
-      | None -> posts state dispatch
+      let sortedPosts = List.sortByDescending (fun post -> post.DateAdded) blogPosts
+      let allPosts = List.map (fun post -> postItem post dispatch) sortedPosts
+      div [ ] [ yield! allPosts ] 
             
     div [ ] [ title; hr []; body ]   
 
@@ -44,20 +35,15 @@ open React.Marked
 
 let render currentPage (state: State) dispatch = 
     match currentPage with
-    | AllPosts -> allPostsPage state dispatch
+    | AllPosts -> 
+        match state.LatestPosts with
+        | Body posts -> latestPosts posts dispatch
+        | Loading -> spinner
+        | Empty -> div [ ] [ ]
+        | LoadError ex -> h1 [ ] [ str ex.Message ]  
     | Post _ -> 
-        if state.IsLoadingSinglePost 
-        then spinner
-        else match state.PostContent with 
-             | Some content -> marked [ Content content ]
-             | None -> div [ ] [ ]
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
+        match state.PostContent with
+        | Body post -> marked [ Content post ]
+        | Loading -> spinner
+        | Empty -> div [ ] [ ]
+        | LoadError ex -> h1 [ ] [ str ex.Message ]

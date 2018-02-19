@@ -1,7 +1,7 @@
 module App.View
 
 open App.Types
-
+open Shared.ViewModels
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
@@ -13,17 +13,17 @@ let menuItem label (page: Option<Page>) currentPage dispatcher =
         OnClick (fun _ -> dispatcher (NavigateTo page)) ]
       [ str label ]
 
-let sidebar state dispatcher =
+let sidebar (blogInfo: BlogInfo) state dispatcher =
   aside
     [ ClassName "fit-parent child-space"; Style [ TextAlign "center" ] ]
     [ div
         [ Style [ TextAlign "center" ] ]
-        [ h3 [ Style [ Color "white" ] ] [ str state.BlogInfo.Value.Name ]
+        [ h3 [ Style [ Color "white" ] ] [ str blogInfo.Name ]
           br []
-          img [ ClassName "profile-img"; Src state.BlogInfo.Value.ProfileImageUrl ] ]
+          img [ ClassName "profile-img"; Src blogInfo.ProfileImageUrl ] ]
       div
         [ ClassName "quote" ]
-        [ str state.BlogInfo.Value.About ]
+        [ str blogInfo.About ]
       
       menuItem "Posts" (Some (Posts Posts.Types.Page.AllPosts)) state.CurrentPage dispatcher
       menuItem "About" (Some Page.About) state.CurrentPage dispatcher ]
@@ -40,16 +40,16 @@ let main state dispatch =
         div [ ] [ ]
 
 let render state dispatch =
-  if state.LoadingBlogInfo 
-  then div [ ] [ ]
-  elif not state.LoadingBlogInfo && state.BlogInfo.IsNone 
-  then h1 [ ] [ str "Error loading initial blog data" ]
-  else
-  div
-    [ ]
-    [ div
-        [ ClassName "sidebar" ]
-        [ sidebar state dispatch ]
-      div
-        [ ClassName "main-content" ]
-        [ main state dispatch ] ]
+  match state.BlogInfo with
+  | Empty -> div [ ] [ ] 
+  | Loading -> div [ ] [ ]
+  | LoadError ex -> h1 [ ] [ str "Error loading initial blog data" ]
+  | Body blogInfo ->
+     div
+      [ ]
+      [ div
+          [ ClassName "sidebar" ]
+          [ sidebar blogInfo state dispatch ]
+        div
+          [ ClassName "main-content" ]
+          [ main state dispatch ] ]

@@ -10,15 +10,14 @@ type Page =
 type AppMsg =
   | LoadBlogInfo
   | BlogInfoLoaded of BlogInfo
-  | BlogInfoLoadFailed 
+  | BlogInfoLoadFailed of exn
   | UrlUpdated of Page
   | NavigateTo of Option<Page>
   | PostsMsg of Posts.Types.Msg
   | AdminMsg of Admin.Types.Msg
 
 type AppState = {
-    LoadingBlogInfo: bool
-    BlogInfo: BlogInfo option
+    BlogInfo: Remote<BlogInfo>
     CurrentPage: Option<Page>
     Posts: Posts.Types.State
     Admin: Admin.Types.State

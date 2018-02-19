@@ -4,6 +4,7 @@ open Elmish
 open Elmish.Browser.UrlParser
 open Elmish.Browser.Navigation
 open App.Types
+open Shared.ViewModels
 
 type BackofficePage = Admin.Backoffice.Types.Page
 type PostsPage = Posts.Types.Page
@@ -45,11 +46,10 @@ let init result =
   let admin, adminCmd = Admin.State.init()
   let model, cmd =
     urlUpdate result
-      { LoadingBlogInfo = false
+      { BlogInfo = Empty
         CurrentPage = None
         Admin = admin
-        Posts = posts
-        BlogInfo = None }
+        Posts = posts }
 
   model, Cmd.batch [ cmd
                      Cmd.map PostsMsg postsCmd
@@ -61,7 +61,7 @@ let server = Server.createProxy()
 let loadBlogInfoCmd = 
   Cmd.ofAsync server.getBlogInfo ()
               BlogInfoLoaded
-              (fun _ -> BlogInfoLoadFailed)
+              BlogInfoLoadFailed
 
 let showInfo msg = 
      Toastr.message msg
@@ -83,15 +83,15 @@ let update msg state =
       nextAppState, nextAppCmd
       
   | LoadBlogInfo ->
-      let nextState = { state with LoadingBlogInfo = true }
+      let nextState = { state with BlogInfo = Loading }
       nextState, loadBlogInfoCmd
       
   | BlogInfoLoaded info ->
-      let nextState = { state with BlogInfo = Some info; LoadingBlogInfo = false }
+      let nextState = { state with BlogInfo = Body info }
       nextState, Cmd.ofMsg (NavigateTo (Some (Posts PostsPage.AllPosts)))
       
-  | BlogInfoLoadFailed ->
-      let nextState = { state with BlogInfo = None; LoadingBlogInfo = false }
+  | BlogInfoLoadFailed ex ->
+      let nextState = { state with BlogInfo = LoadError ex }
       nextState, Cmd.none
       
   | NavigateTo (Some page) ->
@@ -108,7 +108,7 @@ let update msg state =
            let nextCmd =
               match page with
               | Posts.Types.Page.AllPosts ->  Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
-              | Posts.Types.Page.Post slug -> Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadPost slug))
+              | Posts.Types.Page.Post slug -> Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadSinglePost slug))
               
            nextAppState, nextCmd
       | Page.About ->

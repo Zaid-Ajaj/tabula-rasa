@@ -9,7 +9,7 @@ let fail() = Expect.isTrue false "failed"
 let securityTests = 
     testList "Security Tests" [
         testCase "verifyPassword works" <| fun _ ->
-            let guestAdmin = Admin.createGuestAdmin()
+            let guestAdmin = Admin.guestAdmin
             let salt = guestAdmin.PasswordSalt
             let hash = guestAdmin.PasswordHash
             match Security.verifyPassword "guest" salt hash with

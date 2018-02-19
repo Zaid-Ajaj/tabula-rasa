@@ -66,6 +66,5 @@ let getPostBySlug (database: LiteDatabase) (slug: string) =
    let query = Query.EQ("Slug", BsonValue(slug))
    posts.Find(query)
    |> List.ofSeq
-   |> function 
-       | [ post ] -> Some post.Content
-       | _ -> None
+   |> List.tryHead
+   |> Option.map (fun post -> post.Content)

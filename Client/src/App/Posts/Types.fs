@@ -6,18 +6,16 @@ type Page =
     | AllPosts
     | Post of slug:string 
 
-type Msg = 
-    | LoadLatestPosts
-    | LoadingPostsFinished of list<BlogPostItem>
-    | LoadPost of slug:string
-    | LoadPostFinished of content:string
-    | LoadingPostsError 
-    | ReadPost of slug:string
-
+type Msg =
+    | LoadLatestPosts  
+    | LoadLatestPostsFinished of list<BlogPostItem>
+    | LoadLatestPostsError of exn
+    | LoadSinglePost of slug:string
+    | LoadSinglePostFinished of content:string
+    | LoadSinglePostError of exn
+    | NavigateToPost of slug:string
+     
 type State = {
-    IsLoadingPosts: bool
-    IsLoadingSinglePost : bool
-    PostContent : string option
-    Posts: BlogPostItem list 
-    Error: string option
+    PostContent : Remote<string>
+    LatestPosts: Remote<list<BlogPostItem>> 
 }

@@ -14,6 +14,12 @@ type LoginInfo = {
     Password: string
 }
 
+type Remote<'a> = 
+    | Empty
+    | Loading
+    | LoadError of exn
+    | Body of 'a
+
 type LoginResult = 
     | Success of token: string
     | UsernameDoesNotExist

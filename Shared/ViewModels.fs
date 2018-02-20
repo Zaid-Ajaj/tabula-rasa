@@ -17,7 +17,7 @@ type LoginInfo = {
 type Remote<'a> = 
     | Empty
     | Loading
-    | LoadError of exn
+    | LoadError of string
     | Body of 'a
 
 type LoginResult = 

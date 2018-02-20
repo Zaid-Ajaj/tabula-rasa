@@ -56,13 +56,6 @@ let init result =
                      Cmd.map AdminMsg adminCmd
                      Cmd.ofMsg LoadBlogInfo ]
 
-let server = Server.createProxy()
-
-let loadBlogInfoCmd = 
-  Cmd.ofAsync server.getBlogInfo ()
-              BlogInfoLoaded
-              BlogInfoLoadFailed
-
 let showInfo msg = 
      Toastr.message msg
      |> Toastr.withTitle "Tabula Rasa"
@@ -84,14 +77,14 @@ let update msg state =
       
   | LoadBlogInfo ->
       let nextState = { state with BlogInfo = Loading }
-      nextState, loadBlogInfoCmd
+      nextState, Http.loadBlogInfo
       
   | BlogInfoLoaded info ->
       let nextState = { state with BlogInfo = Body info }
       nextState, Cmd.ofMsg (NavigateTo (Some (Posts PostsPage.AllPosts)))
       
-  | BlogInfoLoadFailed ex ->
-      let nextState = { state with BlogInfo = LoadError ex }
+  | BlogInfoLoadFailed msg ->
+      let nextState = { state with BlogInfo = LoadError msg }
       nextState, Cmd.none
       
   | NavigateTo (Some page) ->
@@ -111,9 +104,11 @@ let update msg state =
               | Posts.Types.Page.Post slug -> Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadSinglePost slug))
               
            nextAppState, nextCmd
+
       | Page.About ->
            let nextState = { state with CurrentPage = Some Page.About }
            nextState, Cmd.none
+
       | Admin adminPage ->
         let nextAdminCmd = 
           match adminPage with

@@ -1,6 +1,5 @@
 module Posts.Types
 open Shared.ViewModels
-open System
 
 type Page = 
     | AllPosts
@@ -9,10 +8,10 @@ type Page =
 type Msg =
     | LoadLatestPosts  
     | LoadLatestPostsFinished of list<BlogPostItem>
-    | LoadLatestPostsError of exn
+    | LoadLatestPostsError of error:string
     | LoadSinglePost of slug:string
     | LoadSinglePostFinished of content:string
-    | LoadSinglePostError of exn
+    | LoadSinglePostError of error:string
     | NavigateToPost of slug:string
      
 type State = {

@@ -29,11 +29,13 @@
     <!-- Posts -->
     <Compile Include="App/Posts/Types.fs" />
     <Compile Include="App/Posts/View.fs" />
+    <Compile Include="App/Posts/Http.fs" />
     <Compile Include="App/Posts/State.fs" />
     <!-- About -->
     <Compile Include="App/About/View.fs" />
     <!-- App -->
     <Compile Include="App/Types.fs" />
+    <Compile Include="App/Http.fs" />
     <Compile Include="App/State.fs" />    
     <Compile Include="App/View.fs" />
 

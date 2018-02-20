@@ -10,7 +10,7 @@ type Page =
 type AppMsg =
   | LoadBlogInfo
   | BlogInfoLoaded of BlogInfo
-  | BlogInfoLoadFailed of exn
+  | BlogInfoLoadFailed of error:string
   | UrlUpdated of Page
   | NavigateTo of Option<Page>
   | PostsMsg of Posts.Types.Msg

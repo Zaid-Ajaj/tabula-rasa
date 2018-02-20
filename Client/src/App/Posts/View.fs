@@ -40,10 +40,10 @@ let render currentPage (state: State) dispatch =
         | Body posts -> latestPosts posts dispatch
         | Loading -> spinner
         | Empty -> div [ ] [ ]
-        | LoadError ex -> h1 [ ] [ str ex.Message ]  
+        | LoadError msg -> h1 [ ] [ str msg ]  
     | Post _ -> 
         match state.PostContent with
         | Body post -> marked [ Content post ]
         | Loading -> spinner
         | Empty -> div [ ] [ ]
-        | LoadError ex -> h1 [ ] [ str ex.Message ]
+        | LoadError msg -> h1 [ ] [ str msg ]

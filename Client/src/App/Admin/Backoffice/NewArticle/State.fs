@@ -2,6 +2,7 @@ module Admin.Backoffice.NewArticle.State
 
 open Elmish
 open Admin.Backoffice.NewArticle.Types
+open Elmish.Browser.Navigation
 open Fable.PowerPack
 open Shared.ViewModels
 
@@ -59,7 +60,11 @@ let update authToken msg (state: NewArticleState) =
                                    (fun result -> Published) 
                                    (fun ex -> PublishError "Could not publish post")
     | Published ->
-        { state with IsPublishing = false }, Toastr.message "Post published successfully" |> Toastr.success
+        // reset state and navigate to newly created post
+        let slug = state.Slug
+        let nextState, _ = init()
+        nextState, Cmd.batch [ Toastr.success (Toastr.message "Post published successfully")
+                               Navigation.newUrl ("#posts/" + slug) ]
     
     | AddTag tag ->
         let existingTag = List.tryFind ((=) tag) state.Tags

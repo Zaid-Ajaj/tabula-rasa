@@ -10,11 +10,11 @@ type Msg =
     | LoadLatestPostsFinished of list<BlogPostItem>
     | LoadLatestPostsError of error:string
     | LoadSinglePost of slug:string
-    | LoadSinglePostFinished of content:string
+    | LoadSinglePostFinished of BlogPostItem
     | LoadSinglePostError of error:string
     | NavigateToPost of slug:string
      
 type State = {
-    PostContent : Remote<string>
+    Post : Remote<BlogPostItem>
     LatestPosts: Remote<list<BlogPostItem>> 
 }

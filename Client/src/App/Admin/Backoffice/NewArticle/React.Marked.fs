@@ -17,9 +17,9 @@ type IMarkedOptions =
 type IMarkedProps = 
     | [<CompiledName("value")>] Content of string
     | [<CompiledName("markedOptions")>] Options of IMarkedOptions list
-    interface IProp 
+    interface IHTMLProp 
 
-let marked (props : IMarkedProps list) = 
+let marked (props : IHTMLProp list) = 
     ofImport "MarkdownPreview" 
              "react-marked-markdown"
              (keyValueList CaseRules.LowerFirst props)

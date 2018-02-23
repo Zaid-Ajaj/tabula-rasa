@@ -19,19 +19,19 @@ let update (state: State) (msg: Msg) =
         let nextState = { state with LatestPosts = LoadError ex }
         nextState, Cmd.none
     | LoadSinglePost slug ->
-        let nextState = { state with PostContent = Loading }
+        let nextState = { state with Post = Loading }
         nextState, Http.loadSinglePost slug
     | LoadSinglePostFinished content ->
-        let nextState = { state with PostContent = Body content }
+        let nextState = { state with Post = Body content }
         nextState, Cmd.none
     | LoadSinglePostError errorMsg ->
-        let nextState = { state with PostContent = LoadError errorMsg }
+        let nextState = { state with Post = LoadError errorMsg }
         nextState, Cmd.none 
 
 
 let init() =
     let initialModel =  
      {  LatestPosts = Empty
-        PostContent = Empty } 
+        Post = Empty } 
 
     initialModel, Cmd.ofMsg LoadLatestPosts

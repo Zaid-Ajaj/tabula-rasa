@@ -45,6 +45,8 @@ type BlogPostItem = {
     Id : int
     Title : string
     Slug : string
+    Content : string
+    Featured : bool
     DateAdded : DateTime
 }
 

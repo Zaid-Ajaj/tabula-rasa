@@ -1,11 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../Shared/DomainModels.fs"/>
-    <Compile Include="../../Shared/ViewModels.fs"/>
-    <Compile Include="../../Shared/ClientServer.fs"/>
+    <Compile Include="../../Shared/DomainModels.fs" />
+    <Compile Include="../../Shared/ViewModels.fs" />
+    <Compile Include="../../Shared/ClientServer.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
     <!-- Admin Backoffice NewArticle -->
@@ -28,6 +28,7 @@
     <Compile Include="App/Admin/State.fs" />
     <!-- Posts -->
     <Compile Include="App/Posts/Types.fs" />
+    <Compile Include="App/Posts/React.EventTimeline.fs" />
     <Compile Include="App/Posts/View.fs" />
     <Compile Include="App/Posts/Http.fs" />
     <Compile Include="App/Posts/State.fs" />
@@ -36,9 +37,8 @@
     <!-- App -->
     <Compile Include="App/Types.fs" />
     <Compile Include="App/Http.fs" />
-    <Compile Include="App/State.fs" />    
+    <Compile Include="App/State.fs" />
     <Compile Include="App/View.fs" />
-
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

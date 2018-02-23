@@ -32,41 +32,85 @@ let onTextChanged disptach =
     let value : string = !!ev.target?value
     value |> disptach 
 
+let spacing = Style [ Margin 5 ]
+ 
 let contentEditor state dispatch = 
-  textarea 
-    [ ClassName "form-control"
-      Rows 13.0 
-      DefaultValue state.Content
-      onTextChanged (SetContent >> dispatch) ] 
-    [ ] 
+   div 
+     [ ClassName "form-group"; spacing ]
+     [ label [] [ str "Content" ]
+       textarea 
+           [ ClassName "form-control"
+             Rows 13.0 
+             DefaultValue state.Content
+             onTextChanged (SetContent >> dispatch) ] 
+           [ ] ]
 
+let tagsEditor state dispatch = 
+  let btnStyle = 
+    if List.contains state.NewTag state.Tags 
+    then "btn btn-info"
+    else "btn btn-success"
+    
+  form  
+    [ ClassName "form-inline"; Style [ MarginLeft 10 ] ]
+    [ div
+        [ ClassName "form-group" ]
+        [ str "Tags" ] 
+      div 
+        [ ClassName "form-group mx-sm-3" ] 
+        [ label [ ClassName "sr-only" ] [ str "Tags: " ] 
+          input [ ClassName "form-control";
+                  DefaultValue state.Slug
+                  Placeholder "New Tag"
+                  onTextChanged (SetTag >> dispatch) ] ]  
+      div 
+        [ ClassName ("btn " + btnStyle)
+          OnClick (fun _ -> dispatch AddTag) ] 
+        [ i [ ClassName "fa fa-plus" ] [ ] ] ]  
+        
+
+let titleAndSlug state dispatch = 
+  div 
+    [ ClassName "row" ]
+    [ div 
+        [ ClassName "col"; spacing ]
+        [ label [ spacing ] [ str "Title" ] 
+          input [ ClassName "form-control"; 
+                  DefaultValue state.Title
+                  onTextChanged (SetTitle >> dispatch)
+                  spacing ] ]
+      div 
+        [ ClassName "col"; spacing ]
+        [ label [ spacing ] [ str "Slug" ] 
+          input [ ClassName "form-control";
+                  DefaultValue state.NewTag
+                  onTextChanged (SetSlug >> dispatch)
+                  spacing ] ] ] 
+
+let tagsView tags dispatch = 
+  let tags = List.rev tags
+  if List.isEmpty tags then ofOption None 
+  else 
+   div [ ClassName "form-group"; Style [ Margin 10 ] ]
+       [ for tag in tags -> 
+           div [ ClassName "btn btn-info"; 
+                 Style [ Margin 5 ]
+                 OnClick (fun _ -> (RemoveTag >> dispatch) tag)] 
+               [ str tag ] ] 
+  
 let editor state dispatch = 
- let spacing = Style [ Margin 5 ]
- div
-  [ ]  
-  [ div 
-      [ ClassName "row" ]
-      [ div 
-          [ ClassName "col"; spacing ]
-          [ label [ spacing ] [ str "Title" ] 
-            input [ ClassName "form-control"; 
-                    DefaultValue state.Title
-                    onTextChanged (SetTitle >> dispatch)
-                    spacing ] ]
-        div 
-          [ ClassName "col"; spacing ]
-          [ label [ spacing ] [ str "Slug" ] 
-            input [ ClassName "form-control";
-                    DefaultValue state.Slug
-                    onTextChanged (SetSlug >> dispatch)
-                    spacing ] ] ]
-    form 
-      [ Style [ Margin 10 ] ]
-      [ div 
-          [ ClassName "form-group" ]
-          [ label [] [ str "Content" ]
-            contentEditor state dispatch ] ] ]
-                
+  div  
+    [ Style [ Margin 10 ] ]
+    [ form 
+        [ ] 
+        [ titleAndSlug state dispatch
+          br [ ]
+          tagsEditor state dispatch
+          tagsView state.Tags dispatch
+          br [ ]
+          contentEditor state dispatch ] ]
+
+     
 let preview state = 
   div 
     [ ClassName "card"; Style [ Padding 20 ] ] 

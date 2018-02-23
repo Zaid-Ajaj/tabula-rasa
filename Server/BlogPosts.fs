@@ -51,20 +51,23 @@ let publishNewPost (req: SecureRequest<NewBlogPostReq>) (database: LiteDatabase)
       | None -> Error "Could not add the new blog post to the database"
       | Some id -> Ok id                 
     
+let toBlogPostItem (post: BlogPost) = 
+    { Id = post.Id; 
+      Title = post.Title; 
+      Slug = post.Slug;
+      Content = post.Content;
+      Featured = post.IsFeatured;
+      DateAdded = post.DateAdded }
+        
 let getAll (database: LiteDatabase) : list<BlogPostItem> = 
     let posts = database.GetCollection<BlogPost> "posts"
     posts.FindAll()
-    |> Seq.map (fun post -> 
-       { Id = post.Id; 
-         Title = post.Title; 
-         Slug = post.Slug;
-         DateAdded = post.DateAdded })
+    |> Seq.map toBlogPostItem
     |> List.ofSeq
      
 let getPostBySlug (database: LiteDatabase) (slug: string) =
    let posts = database.GetCollection<BlogPost> "posts"
    let query = Query.EQ("Slug", BsonValue(slug))
    posts.Find(query)
-   |> List.ofSeq
-   |> List.tryHead
-   |> Option.map (fun post -> post.Content)
+   |> Seq.tryHead
+   |> Option.map toBlogPostItem

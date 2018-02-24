@@ -47,7 +47,7 @@ let contentEditor state dispatch =
 
 let tagsEditor state dispatch = 
   let btnStyle = 
-    if List.contains state.NewTag state.Tags 
+    if List.contains state.NewTag state.Tags || state.NewTag = ""
     then "btn btn-info"
     else "btn btn-success"
     
@@ -60,7 +60,7 @@ let tagsEditor state dispatch =
         [ ClassName "form-group mx-sm-3" ] 
         [ label [ ClassName "sr-only" ] [ str "Tags: " ] 
           input [ ClassName "form-control";
-                  DefaultValue state.Slug
+                  DefaultValue state.NewTag
                   Placeholder "New Tag"
                   onTextChanged (SetTag >> dispatch) ] ]  
       div 
@@ -97,7 +97,7 @@ let tagsView tags dispatch =
                  Style [ Margin 5 ]
                  OnClick (fun _ -> (RemoveTag >> dispatch) tag)] 
                [ str tag ] ] 
-  
+                
 let editor state dispatch = 
   div  
     [ Style [ Margin 10 ] ]
@@ -114,7 +114,7 @@ let editor state dispatch =
 let preview state = 
   div 
     [ ClassName "card"; Style [ Padding 20 ] ] 
-    [ marked [ Content state.Content ] ] 
+    [ marked [ Content state.Content; Options [ Sanitize false ] ] ] 
 
 let body state dispatch = 
   if state.Preview 

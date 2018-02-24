@@ -11,10 +11,11 @@ type AdminInfo = {
     PasswordSalt: string
     Email: string
     About: string
+    Bio : string
     ProfileImageUrl: string
 }
 
-/// Creates an admin user if admin data does not exist and saves to a json file
+/// Creates an admin user data
 let create (info: CreateAdminReq)  = 
     let salt = createRandomKey()
     let password = utf8Bytes info.Password
@@ -27,6 +28,7 @@ let create (info: CreateAdminReq)  =
         PasswordHash = base64 passwordHash
         Email = info.Email
         About = info.About
+        Bio = info.Bio
         ProfileImageUrl = info.ProfileImageUrl }
 
 let guestAdmin = 
@@ -36,12 +38,15 @@ let guestAdmin =
           Username = "guest"
           Password = "guest"
           Email = "example@guest.com"
-          About = "Here is where you tell a little bit about yourself, adjust it from the settings"
+          About = "#About"
+          Bio = "Here is where you tell a little bit about yourself, adjust it from the settings"
           ProfileImageUrl = "https://user-images.githubusercontent.com/13316248/31862023-6bb4bb10-b737-11e7-9de3-58ca0b1644c3.jpg" }
     create info
 
 
-let writeAdminIfDoesNotExists (adminInfo: AdminInfo) (writeFile: string -> string -> unit) (readFile: string -> string option) = 
+let writeAdminIfDoesNotExists (adminInfo: AdminInfo) 
+                              (writeFile: string -> string -> unit) 
+                              (readFile: string -> string option) = 
     let adminPath = Environment.adminFile
     match readFile adminPath with
     | None ->
@@ -81,11 +86,12 @@ let login (readFile: string -> string option) (loginInfo: LoginInfo)  =
             if passwordDidNotMatch then 
                 PasswordIncorrect
             else
-            let userInfo = { Username = username; Claims = [| "admin" |] }
+            let userInfo : UserInfo = { Username = username; Claims = [| "admin" |] }
             let token = encodeJwt userInfo
             Success token
 
 let blogInfoFromAdmin (admin: AdminInfo) : BlogInfo = 
     { Name = admin.Name; 
-      About = admin.About; 
+      Bio = admin.Bio;
+      About = admin.About
       ProfileImageUrl = admin.ProfileImageUrl }

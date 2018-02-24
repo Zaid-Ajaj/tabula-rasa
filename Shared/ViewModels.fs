@@ -7,6 +7,7 @@ type BlogInfo = {
     Name: string
     ProfileImageUrl: string
     About: string
+    Bio : string
 }
 
 type LoginInfo = {
@@ -34,6 +35,7 @@ type CreateAdminReq = {
     About: string
     BlogTitle: string
     ProfileImageUrl: string
+    Bio : string
 }
 
 type CreateAdminRespose = 
@@ -48,6 +50,7 @@ type BlogPostItem = {
     Content : string
     Featured : bool
     DateAdded : DateTime
+    Tags : string list
 }
 
 type SecureRequest<'t> = {

@@ -16,5 +16,5 @@ type Msg =
      
 type State = {
     Post : Remote<BlogPostItem>
-    LatestPosts: Remote<list<BlogPostItem>> 
+    LatestPosts: Remote<list<BlogPostItem>>
 }

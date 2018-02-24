@@ -8,7 +8,7 @@ open Fable.Core.JsInterop
 type IMarkedOptions = 
     | [<CompiledName("gfc")>] GithubFlavoured
     | Tables
-    | Sanitize
+    | Sanitize of bool
     | SmartLists
     | Pedantic
     | Breaks

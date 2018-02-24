@@ -57,7 +57,8 @@ let toBlogPostItem (post: BlogPost) =
       Slug = post.Slug;
       Content = post.Content;
       Featured = post.IsFeatured;
-      DateAdded = post.DateAdded }
+      DateAdded = post.DateAdded;
+      Tags = post.Tags }
         
 let getAll (database: LiteDatabase) : list<BlogPostItem> = 
     let posts = database.GetCollection<BlogPost> "posts"

@@ -23,7 +23,7 @@ let sidebar (blogInfo: BlogInfo) state dispatcher =
           img [ ClassName "profile-img"; Src blogInfo.ProfileImageUrl ] ]
       div
         [ ClassName "quote" ]
-        [ str blogInfo.About ]
+        [ str blogInfo.Bio ]
       
       menuItem "Posts" (Some (Posts Posts.Types.Page.AllPosts)) state.CurrentPage dispatcher
       menuItem "About" (Some Page.About) state.CurrentPage dispatcher ]
@@ -31,7 +31,7 @@ let sidebar (blogInfo: BlogInfo) state dispatcher =
 let main state dispatch = 
     match state.CurrentPage with
     | Some Page.About -> 
-        About.View.render()
+        About.View.render state.BlogInfo
     | Some (Posts postsPage) -> 
         Posts.View.render postsPage state.Posts (PostsMsg >> dispatch)
     | Some (Admin adminPage) -> 

@@ -81,7 +81,7 @@ let update msg state =
       
   | BlogInfoLoaded info ->
       let nextState = { state with BlogInfo = Body info }
-      nextState, Cmd.ofMsg (NavigateTo (Some (Posts PostsPage.AllPosts)))
+      nextState, Cmd.none
       
   | BlogInfoLoadFailed msg ->
       let nextState = { state with BlogInfo = LoadError msg }

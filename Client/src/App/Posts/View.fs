@@ -39,20 +39,22 @@ let formatDate (date : DateTime) =
 let postItem (post: BlogPostItem) dispatch = 
     let datePublished = formatDate post.DateAdded
     let createdAt = sprintf "Published %s" datePublished
+    let subtitle = sprintf "Tags: %s" (String.concat ", " post.Tags) 
     let color = if post.Featured then "blue" else "green"  
     let icon = 
         if post.Featured 
         then i [ ClassName "fa fa-star" ] [ ]
-        else i [ ClassName "fa fa-calendar" ] [ ]
+        else i [ ClassName "fa fa-calendar " ] [ ]
     
     timelineEvent 
         [ ClassName "blogpost"
           Style [ Padding 10; BorderRadius 5 ]
+          OnClick (fun _ -> dispatch (NavigateToPost post.Slug)) 
           Title (h5 [ ] [ str post.Title ])
+          Subtitle subtitle
           CreatedAt createdAt
           Icon icon
-          IconColor color
-          OnClick (fun _ -> dispatch (NavigateToPost post.Slug)) ] 
+          IconColor color ] 
         [  ]
              
 let timelineEvents name (blogPosts : list<BlogPostItem>) dispatch =
@@ -71,17 +73,21 @@ let latestPosts (blogPosts : list<BlogPostItem>) dispatch =
         timelineEvents title posts dispatch)
     |> div [ ]
 
+let errorMsg msg = 
+    h1 [ Style [ Color "crimson"; Margin 20 ] ] 
+       [ str msg ]
+       
 let render currentPage (state: State) dispatch = 
     match currentPage with
     | AllPosts -> 
         match state.LatestPosts with
-        | Body posts -> div [ ] [ latestPosts posts dispatch; latestPosts posts dispatch]
+        | Body posts -> div [ ] [ latestPosts posts dispatch ]
         | Loading -> spinner
         | Empty -> div [ ] [ ]
-        | LoadError msg -> h1 [ ] [ str msg ]  
+        | LoadError msg -> errorMsg msg
     | Post _ -> 
         match state.Post with
-        | Body post -> marked [ Content post.Content ]
+        | Body post -> marked [ Content post.Content; Options [ Sanitize false ] ]
         | Loading -> spinner
         | Empty -> div [ ] [ ]
-        | LoadError msg -> h1 [ ] [ str msg ]
+        | LoadError msg -> errorMsg msg

@@ -6,7 +6,6 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Fable.Import.React
 
-
 type IEventProps = 
     | Title of ReactElement
     | CreatedAt of string 

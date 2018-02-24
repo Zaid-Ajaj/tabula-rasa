@@ -6,11 +6,13 @@
     <Compile Include="../../Shared/DomainModels.fs" />
     <Compile Include="../../Shared/ViewModels.fs" />
     <Compile Include="../../Shared/ClientServer.fs" />
+    
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
     <!-- Admin Backoffice NewArticle -->
     <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/React.Marked.fs" />
+    <Compile Include="App/Admin/Backoffice/NewArticle/React.Select.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/View.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/State.fs" />
     <!-- Admin Backoffice -->

@@ -5,7 +5,9 @@ open Admin.Backoffice.NewArticle.Types
 open Fable.Helpers.React.Props
 open Fable.Helpers.React
 open Fable.Core.JsInterop
+open React
 open React.Marked
+open React.Select
 
 let title state dispatch = 
   let publishBtnContent = 
@@ -45,30 +47,6 @@ let contentEditor state dispatch =
              onTextChanged (SetContent >> dispatch) ] 
            [ ] ]
 
-let tagsEditor state dispatch = 
-  let btnStyle = 
-    if List.contains state.NewTag state.Tags || state.NewTag = ""
-    then "btn btn-info"
-    else "btn btn-success"
-    
-  form  
-    [ ClassName "form-inline"; Style [ MarginLeft 10 ] ]
-    [ div
-        [ ClassName "form-group" ]
-        [ str "Tags" ] 
-      div 
-        [ ClassName "form-group mx-sm-3" ] 
-        [ label [ ClassName "sr-only" ] [ str "Tags: " ] 
-          input [ ClassName "form-control";
-                  DefaultValue state.NewTag
-                  Placeholder "New Tag"
-                  onTextChanged (SetTag >> dispatch) ] ]  
-      div 
-        [ ClassName ("btn " + btnStyle)
-          OnClick (fun _ -> dispatch AddTag) ] 
-        [ i [ ClassName "fa fa-plus" ] [ ] ] ]  
-        
-
 let titleAndSlug state dispatch = 
   div 
     [ ClassName "row" ]
@@ -87,26 +65,35 @@ let titleAndSlug state dispatch =
                   onTextChanged (SetSlug >> dispatch)
                   spacing ] ] ] 
 
-let tagsView tags dispatch = 
-  let tags = List.rev tags
-  if List.isEmpty tags then ofOption None 
-  else 
-   div [ ClassName "form-group"; Style [ Margin 10 ] ]
-       [ for tag in tags -> 
-           div [ ClassName "btn btn-info"; 
-                 Style [ Margin 5 ]
-                 OnClick (fun _ -> (RemoveTag >> dispatch) tag)] 
-               [ str tag ] ] 
-                
+let tagsCreatable state dispatch = 
+  let options = 
+    state.Tags
+    |> List.rev
+    |> List.map (fun tag -> { value = tag; label = tag })
+    |> Array.ofList
+  
+  let asTag { value = tag; label = _ } = tag  
+  
+  div 
+    [ ClassName "row"; Style [ MarginLeft -3 ] ] 
+    [ div 
+       [ ClassName "col-md-1" ] 
+       [ label [ spacing ] [ str "Tags" ] ]
+      div
+       [ ClassName "col-md-8" ]
+       [ creatable [ Multi true; 
+                     SelectableOptions options;
+                     Values (Array.ofList state.Tags)
+                     OnValuesChanged (Array.map asTag >> AddTags >> dispatch) ] ] ]
+                 
 let editor state dispatch = 
   div  
     [ Style [ Margin 10 ] ]
-    [ form 
+    [ div 
         [ ] 
         [ titleAndSlug state dispatch
           br [ ]
-          tagsEditor state dispatch
-          tagsView state.Tags dispatch
+          tagsCreatable state dispatch
           br [ ]
           contentEditor state dispatch ] ]
 

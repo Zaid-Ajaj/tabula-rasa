@@ -86,7 +86,11 @@ let update authToken msg (state: NewArticleState) =
         | None -> 
             let nextTags = tag :: state.Tags
             let nextState = { state with Tags = nextTags; NewTag = "" }
-            nextState, Cmd.none 
+            nextState, Cmd.none
+            
+    | AddTags tags ->
+        let nextState = { state with Tags = (Array.distinct >> List.ofArray) tags }
+        nextState, Cmd.none
             
     | RemoveTag tag ->
         let nextState = { state with Tags = List.filter ((<>) tag) state.Tags }

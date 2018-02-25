@@ -6,6 +6,7 @@ type Msg =
     | SetContent of string
     | SetTag of string
     | AddTag
+    | AddTags of string []
     | RemoveTag of string
     | Publish
     | Published 

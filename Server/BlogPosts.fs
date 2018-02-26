@@ -62,13 +62,15 @@ let toBlogPostItem (post: BlogPost) =
         
 let getAll (database: LiteDatabase) : list<BlogPostItem> = 
     let posts = database.GetCollection<BlogPost> "posts"
-    posts.FindAll()
+    let notDraft = Query.EQ("IsDraft", BsonValue(false))
+    posts.Find(notDraft)
     |> Seq.map toBlogPostItem
     |> List.ofSeq
      
 let getPostBySlug (database: LiteDatabase) (slug: string) =
    let posts = database.GetCollection<BlogPost> "posts"
-   let query = Query.EQ("Slug", BsonValue(slug))
-   posts.Find(query)
+   let bySlug = Query.EQ("Slug", BsonValue(slug))
+   let notDraft = Query.EQ("IsDraft", BsonValue(false))
+   posts.Find(Query.And(notDraft, bySlug))
    |> Seq.tryHead
    |> Option.map toBlogPostItem

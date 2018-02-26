@@ -4,6 +4,7 @@ open App.Types
 open Shared.ViewModels
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
+open React.Responsive
 
 let menuItem label (page: Option<Page>) currentPage dispatcher =
     div
@@ -28,6 +29,12 @@ let sidebar (blogInfo: BlogInfo) state dispatcher =
       menuItem "Posts" (Some (Posts Posts.Types.Page.AllPosts)) state.CurrentPage dispatcher
       menuItem "About" (Some Page.About) state.CurrentPage dispatcher ]
 
+let mobileHeader (blogInfo: BlogInfo) = 
+  div 
+   [ ClassName "mobile-header" ]
+   [ h3 [ ] [ str blogInfo.Name ]
+     div [ ] [ str blogInfo.Bio ] ]   
+
 let main state dispatch = 
     match state.CurrentPage with
     | Some Page.About -> 
@@ -39,17 +46,37 @@ let main state dispatch =
     | None -> 
         div [ ] [ ]
 
+let desktopApp blogInfo state dispatch = 
+  div
+   [ ]
+   [ div
+       [ ClassName "sidebar" ]
+       [ sidebar blogInfo state dispatch ]
+     div
+       [ ClassName "main-content" ]
+       [ main state dispatch ] ] 
+         
+let mobileApp blogInfo state dispatch = 
+  div 
+   [ ]
+   [ mobileHeader blogInfo 
+     div 
+       [ Style [ Padding 20 ] ]
+       [ main state dispatch ] ]
+  
+let app blogInfo state dispatch =
+  div 
+   [ ]
+   [ mediaQuery 
+      [ MinWidth 768 ]
+      [ desktopApp blogInfo state dispatch ]
+     mediaQuery 
+      [ MaxWidth 767 ] 
+      [ mobileApp blogInfo state dispatch ] ]
+
 let render state dispatch =
   match state.BlogInfo with
   | Empty -> div [ ] [ ] 
   | Loading -> div [ ] [ ]
   | LoadError ex -> h1 [ ] [ str "Error loading initial blog data" ]
-  | Body blogInfo ->
-     div
-      [ ]
-      [ div
-          [ ClassName "sidebar" ]
-          [ sidebar blogInfo state dispatch ]
-        div
-          [ ClassName "main-content" ]
-          [ main state dispatch ] ]
+  | Body blogInfo -> app blogInfo state dispatch    

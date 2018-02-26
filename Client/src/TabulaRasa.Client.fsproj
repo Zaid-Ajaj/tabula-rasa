@@ -6,13 +6,14 @@
     <Compile Include="../../Shared/DomainModels.fs" />
     <Compile Include="../../Shared/ViewModels.fs" />
     <Compile Include="../../Shared/ClientServer.fs" />
-    
+    <Compile Include="Components/React.EventTimeline.fs" />
+    <Compile Include="Components/React.Marked.fs" />
+    <Compile Include="Components/React.Responsive.fs" />
+    <Compile Include="Components/React.Select.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
     <!-- Admin Backoffice NewArticle -->
     <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />
-    <Compile Include="App/Admin/Backoffice/NewArticle/React.Marked.fs" />
-    <Compile Include="App/Admin/Backoffice/NewArticle/React.Select.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/View.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/State.fs" />
     <!-- Admin Backoffice -->
@@ -30,7 +31,6 @@
     <Compile Include="App/Admin/State.fs" />
     <!-- Posts -->
     <Compile Include="App/Posts/Types.fs" />
-    <Compile Include="App/Posts/React.EventTimeline.fs" />
     <Compile Include="App/Posts/View.fs" />
     <Compile Include="App/Posts/Http.fs" />
     <Compile Include="App/Posts/State.fs" />

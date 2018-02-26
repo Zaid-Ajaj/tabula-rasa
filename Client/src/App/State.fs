@@ -37,7 +37,7 @@ let pageParser: Parser<Page -> Page, Page> =
 let urlUpdate (parsedPage: Option<Page>) currentState =
   match parsedPage with
   | None ->
-      currentState, Cmd.none
+      currentState, Navigation.newUrl "#posts"
   | Some page ->
       currentState, Cmd.ofMsg (UrlUpdated page)
 

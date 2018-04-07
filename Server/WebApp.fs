@@ -16,11 +16,6 @@ open Suave.Operators
 open Suave.Writers
 open Suave.Filters
 
-module Async = 
-    let lift (x: 'a) =
-        async { return x }
-
-
 /// Composition root of the application
 let createUsing store = 
     let database = Storage.createDatabaseUsing store
@@ -30,11 +25,11 @@ let createUsing store =
     // create initial admin guest admin if one does not exists
     Admin.writeAdminIfDoesNotExists Admin.guestAdmin writeFile readFile
     let adminData = Admin.readAdminData readFile
-    
-    
+   
     let login info = async { return Admin.login readFile info }
     let getBlogInfo() = async {  return Admin.blogInfoFromAdmin adminData }
-    let publishNewPost req = async { return BlogPosts.publishNewPost req database }
+    let publishNewPost req = async { return BlogPosts.publishNewPost database req  }
+    let savePostAsDraft req = async { return BlogPosts.saveAsDraft database req  }  
     let getPosts() = async { return BlogPosts.getAll database }    
     let getPostBySlug slug = async { return BlogPosts.getPostBySlug database slug }
     
@@ -43,7 +38,8 @@ let createUsing store =
            login = login
            publishNewPost = publishNewPost
            getPosts = getPosts
-           getPostBySlug =  getPostBySlug }
+           getPostBySlug =  getPostBySlug
+           savePostAsDraft = savePostAsDraft }
     
     let clientServerProtocol = FableSuaveAdapter.webPartWithBuilderFor serverProtocol routeBuilder
    

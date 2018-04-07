@@ -33,23 +33,25 @@ let storageTests =
         testCase "Error message is returned with trying to publish existing post" <| fun _ ->
           withDatabase <| fun database -> 
             let blogPostReq : NewBlogPostReq = 
-              { Title = "title"; Slug = "slug"; Tags = []; Content = "irrelevant" }
+              { Title = "title"; 
+                Slug = "slug"; 
+                Tags = []; 
+                Content = "irrelevant" }
             
-            match BlogPosts.publishPost blogPostReq database with 
+            match BlogPosts.publishPost database blogPostReq  with 
             | Error _ -> failedWith "Shouldn't get an error message just yet"
             | Ok id -> 
               // post added, now add again     
               let sameBlogDifferentSlug = { blogPostReq with Slug = "something" } 
-              match BlogPosts.publishPost sameBlogDifferentSlug database with
+              match BlogPosts.publishPost database sameBlogDifferentSlug  with
               | Ok _ -> failedWith "Shouldn't add a new post with the same title" 
               | Error "A post with title 'title' already exists" -> 
                   // then this is the correct error
                   // now check the slug 
                   let sameSlugWithDifferentTitle = { blogPostReq with Title = "something" }
-                  match BlogPosts.publishPost sameSlugWithDifferentTitle database with
+                  match BlogPosts.publishPost database sameSlugWithDifferentTitle   with
                   | Ok _ -> failedWith "Shouldn't add a new post with the same slug"
                   | Error "A post with slug 'slug' already exists" -> pass() 
                   | Error otherError -> failwith "Shouldn't fail with now" 
               | Error otherError -> failwith "Shouldn't fail with now" 
         ]
-       

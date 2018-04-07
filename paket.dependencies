@@ -21,3 +21,8 @@ nuget LiteDB.FSharp
 nuget Fable.JsonConverter
 
 clitool dotnet-fable
+
+group Build
+    framework >= net45
+    source https://www.nuget.org/api/v2
+    nuget FAKE

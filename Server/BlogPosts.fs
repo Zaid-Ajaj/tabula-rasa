@@ -50,7 +50,7 @@ let postAlreadyPublished (req: NewBlogPostReq) (db : LiteDatabase) =
                 | Some _ -> Some (sprintf "A post with slug '%s' already exists" req.Slug)
                 | None -> None 
                  
-let publishPost (req: NewBlogPostReq) (db : LiteDatabase) = 
+let publishPost (db : LiteDatabase) (req: NewBlogPostReq)  = 
   let posts = db.GetCollection<BlogPost> "posts"
   try 
     match postAlreadyPublished req db with
@@ -62,12 +62,12 @@ let publishPost (req: NewBlogPostReq) (db : LiteDatabase) =
   with 
   | ex -> Error "Could not add the new blog post to the database"
       
-let publishNewPost (req: SecureRequest<NewBlogPostReq>) (database: LiteDatabase) = 
+let publishNewPost (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>)  = 
    match Security.validateJwt req.Token with
    | None -> Error "Authorization token was invalid"
-   | Some user -> publishPost req.Body database   
+   | Some user -> publishPost database req.Body    
           
-let saveAsDraft (req: SecureRequest<NewBlogPostReq>) (database: LiteDatabase) = 
+let saveAsDraft (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>) = 
    match Security.validateJwt req.Token with
    | None -> Error "Authorization token was invalid"
    | Some user ->
@@ -75,7 +75,8 @@ let saveAsDraft (req: SecureRequest<NewBlogPostReq>) (database: LiteDatabase) =
        let draft = { toBlogPost req.Body with IsDraft = true }
        try 
         let result : BsonValue = posts.Insert(draft)
-        Ok (Bson.deserializeField<int> result) 
+        let insertedPostId = Bson.deserializeField<int> result
+        Ok insertedPostId
        with 
        | ex -> 
          // TODO: log ex 
@@ -101,6 +102,5 @@ let getPostBySlug (database: LiteDatabase) (slug: string) =
    let posts = database.GetCollection<BlogPost> "posts"
    let bySlug = Query.EQ("Slug", BsonValue(slug))
    let notDraft = Query.EQ("IsDraft", BsonValue(false))
-   posts.Find(Query.And(notDraft, bySlug))
-   |> Seq.tryHead
+   posts.TryFind(Query.And(notDraft, bySlug))
    |> Option.map toBlogPostItem

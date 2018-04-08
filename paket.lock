@@ -159,6 +159,8 @@ NUGET
       System.Runtime.InteropServices (>= 4.3) - restriction: >= netstandard1.1
       System.Text.Encoding (>= 4.3) - restriction: >= netstandard1.1
       System.Threading (>= 4.3) - restriction: >= netstandard1.1
+    Microsoft.DotNet.Watcher.Tools (2.0.1) - clitool: true
+      Microsoft.NETCore.App (>= 2.0.6) - restriction: >= netcoreapp2.0
     Microsoft.Net.Compilers (2.7) - restriction: >= netcoreapp2.0
     Microsoft.NETCore.App (2.0.6) - restriction: >= netcoreapp2.0
       Microsoft.NETCore.DotNetHostPolicy (>= 2.0.6) - restriction: >= netcoreapp2.0

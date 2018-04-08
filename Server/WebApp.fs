@@ -1,19 +1,10 @@
 module WebApp
 
-open System
-open Shared.ViewModels
-open Shared.DomainModels
-open LiteDB.FSharp
 open ClientServer
-open Security
 open Fable.Remoting.Suave
 
-
-open Shared.ViewModels
 open Suave
-open Suave.Successful
 open Suave.Operators
-open Suave.Writers
 open Suave.Filters
 
 /// Composition root of the application

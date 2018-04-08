@@ -16,6 +16,7 @@ let run fileName args workingDir =
     if not ok then failwith (sprintf "'%s> %s %s' task failed" workingDir fileName args)
 
 let dotnet = "dotnet"
+let npm = "npm"
 let projects =  [ "Server"; "Server.Tests"; "Client" </> "src" ]
 
 Target "Clean" <| fun _ ->
@@ -30,9 +31,39 @@ Target "DotnetRestore" <| fun _ ->
 Target "ServerTests" <| fun _ ->
     run dotnet "run" "Server.Tests"
 
+Target "NpmInstall" <| fun _ ->
+    run npm "install" "Client"
+
+Target "Run" <| fun () ->
+  [ async { run dotnet "watch run" "Server" }; 
+    async { run dotnet "fable npm-run start" ("Client" </> "src") } ]
+  |> Async.Parallel
+  |> Async.RunSynchronously
+  |> ignore
+
+Target "Release" <| fun _ ->
+  CleanDir "dist"
+  [ async { run dotnet "build --configuration Release --output ../dist" "Server" }
+    async { 
+        run dotnet "fable npm-run build" ("Client" </> "src") 
+        CopyRecursive ("Client" </> "public") ("dist" </> "client") true |> ignore
+    } ]
+  |> Async.Parallel
+  |> Async.RunSynchronously
+  |> ignore
 
 "Clean" 
   ==> "DotnetRestore"
   ==> "ServerTests"
+
+"Clean" 
+  ==> "NpmInstall"
+  ==> "DotnetRestore"
+  ==> "Run"
+
+"Clean" 
+  ==> "NpmInstall"
+  ==> "DotnetRestore"
+  ==> "Release"
 
 RunTargetOrDefault "Clean"

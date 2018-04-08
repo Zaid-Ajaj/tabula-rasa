@@ -5,3 +5,4 @@ Fable.JsonConverter
 Suave
 jose-jwt
 Fable.Remoting.Suave
+Microsoft.DotNet.Watcher.Tools

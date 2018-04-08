@@ -1,8 +1,12 @@
 ﻿module Program
 
 open Suave
+open Suave.Operators
+open Suave.Filters
+open Suave.Successful
 open Environment
 open Fable.Remoting.Suave
+open Suave.RequestErrors
 
 FableSuaveAdapter.logger <- Some (printfn "%s")
 
@@ -23,6 +27,14 @@ let main argv =
     let webAppConfig = 
         { defaultConfig with 
             homeFolder = Some clientPath }
+
+    let webApp = 
+        choose [
+            GET >=> path "/" >=> Files.browseFileHome "index.html"
+            Files.browseHome
+            webApp
+            NOT_FOUND "The resource you requested was not found"
+        ]
 
     startWebServer webAppConfig webApp
     printfn "Hello from F#!"

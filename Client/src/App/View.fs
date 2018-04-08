@@ -76,7 +76,7 @@ let app blogInfo state dispatch =
 
 let render state dispatch =
   match state.BlogInfo with
-  | Empty -> div [ ] [ ] 
+  | Remote.Empty -> div [ ] [ ] 
   | Loading -> div [ ] [ ]
   | LoadError ex -> h1 [ ] [ str "Error loading initial blog data" ]
   | Body blogInfo -> app blogInfo state dispatch    

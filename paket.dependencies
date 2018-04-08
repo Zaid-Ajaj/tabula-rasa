@@ -21,6 +21,7 @@ nuget LiteDB.FSharp
 nuget Fable.JsonConverter
 
 clitool dotnet-fable
+clitool Microsoft.DotNet.Watcher.Tools
 
 group Build
     framework >= net45

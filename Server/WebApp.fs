@@ -1,6 +1,8 @@
 module WebApp
 
 open ClientServer
+open Shared.ViewModels
+open Shared.DomainModels
 open Fable.Remoting.Suave
 
 open Suave
@@ -23,19 +25,28 @@ let createUsing store =
     let savePostAsDraft req = async { return BlogPosts.saveAsDraft database req  }  
     let getPosts() = async { return BlogPosts.getAll database }    
     let getPostBySlug slug = async { return BlogPosts.getPostBySlug database slug }
-    
+    let getDrafts (AuthToken(authToken)) = 
+        async {
+            match Security.validateJwt authToken with 
+            | Some user -> 
+                let drafts = BlogPosts.getAllDrafts database 
+                return Ok drafts 
+            | None ->
+                return Error "Authorization token is not valid or has expired"
+        }
+
     let serverProtocol =
         {  getBlogInfo = getBlogInfo 
            login = login
            publishNewPost = publishNewPost
            getPosts = getPosts
            getPostBySlug =  getPostBySlug
-           savePostAsDraft = savePostAsDraft }
+           savePostAsDraft = savePostAsDraft
+           getDrafts = getDrafts }
     
-    let clientServerProtocol = FableSuaveAdapter.webPartWithBuilderFor serverProtocol routeBuilder
-   
-    let webApp = 
-        choose 
-          [ GET >=> Files.browseHome
-            clientServerProtocol ]
-    webApp
+    let clientServerProtocol = 
+        remoting serverProtocol {
+            use_route_builder routeBuilder
+        }
+
+    clientServerProtocol

@@ -19,6 +19,7 @@ importAll "../sass/spinner.css"
 Program.mkProgram init update render
 |> Program.toNavigable (parseHash pageParser) urlUpdate
 #if DEBUG
+|> Program.withConsoleTrace
 |> Program.withDebugger
 |> Program.withHMR
 #endif

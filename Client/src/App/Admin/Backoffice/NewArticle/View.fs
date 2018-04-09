@@ -5,7 +5,6 @@ open Admin.Backoffice.NewArticle.Types
 open Fable.Helpers.React.Props
 open Fable.Helpers.React
 open Fable.Core.JsInterop
-open React.Marked
 open React.Select
 
 let title state dispatch = 
@@ -108,7 +107,7 @@ let editor state dispatch =
 let preview state = 
   div 
     [ ClassName "card"; Style [ Padding 20 ] ] 
-    [ marked [ Content state.Content; Options [ Sanitize false ] ] ] 
+    [ Marked.marked [ Marked.Content state.Content; Marked.Options [ Marked.Sanitize false ] ] ] 
 
 let body state dispatch = 
   if state.Preview 

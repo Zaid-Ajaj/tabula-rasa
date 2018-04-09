@@ -1,4 +1,4 @@
-module React.Marked
+module Marked
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props

@@ -10,12 +10,17 @@
     <Compile Include="Components/React.Marked.fs" />
     <Compile Include="Components/React.Responsive.fs" />
     <Compile Include="Components/React.Select.fs" />
+    <Compile Include="Components/Common.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
     <!-- Admin Backoffice NewArticle -->
     <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/View.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/State.fs" />
+        <!-- Admin Backoffice Drafts -->
+    <Compile Include="App/Admin/Backoffice/Drafts/Types.fs" />
+    <Compile Include="App/Admin/Backoffice/Drafts/View.fs" />
+    <Compile Include="App/Admin/Backoffice/Drafts/State.fs" />
     <!-- Admin Backoffice -->
     <Compile Include="App/Admin/Backoffice/Types.fs" />
     <Compile Include="App/Admin/Backoffice/View.fs" />

@@ -5,13 +5,7 @@ open System
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Shared.ViewModels
-open React.Marked
 open React.EventTimeline
-
-let spinner = 
-  div 
-    [ ClassName "cssload-container" ]
-    [ div [ ClassName "cssload-whirlpool" ] [ ] ]
 
 let monthName = function 
     | 1 -> "January" 
@@ -73,21 +67,30 @@ let latestPosts (blogPosts : list<BlogPostItem>) dispatch =
         timelineEvents title posts dispatch)
     |> div [ ]
 
-let errorMsg msg = 
-    h1 [ Style [ Color "crimson"; Margin 20 ] ] 
-       [ str msg ]
+let msgStyle color = 
+    Style [ Color color; 
+            Margin 20;
+            Padding 20 
+            Border (sprintf "2px solid %s" color); 
+            BorderRadius 10 ]
+
+let errorMsg msg = h2 [ msgStyle "crimson" ] [ str msg ]
        
+let infoMsg msg = h2 [ msgStyle "green" ] [ str msg ]
+    
+
 let render currentPage (state: State) dispatch = 
     match currentPage with
     | AllPosts -> 
         match state.LatestPosts with
-        | Body posts -> div [ ] [ latestPosts posts dispatch ]
-        | Loading -> spinner
+        | Body [] -> infoMsg "There aren't any stories published yet"
+        | Body posts -> latestPosts posts dispatch
+        | Loading -> Common.spinner
         | Empty -> div [ ] [ ]
         | LoadError msg -> errorMsg msg
     | Post _ -> 
         match state.Post with
-        | Body post -> marked [ Content post.Content; Options [ Sanitize false ] ]
-        | Loading -> spinner
+        | Body post -> Marked.marked [ Marked.Content post.Content; Marked.Options [ Marked.Sanitize false ] ]
+        | Loading -> Common.spinner
         | Empty -> div [ ] [ ]
         | LoadError msg -> errorMsg msg

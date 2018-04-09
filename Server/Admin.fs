@@ -38,7 +38,7 @@ let guestAdmin =
           Username = "guest"
           Password = "guest"
           Email = "example@guest.com"
-          About = "#About"
+          About = "# About"
           Bio = "Here is where you tell a little bit about yourself, adjust it from the settings"
           ProfileImageUrl = "https://user-images.githubusercontent.com/13316248/31862023-6bb4bb10-b737-11e7-9de3-58ca0b1644c3.jpg" }
     create info

@@ -7,6 +7,8 @@ type UserInfo = {
     Password: string 
 }
 
+type AuthToken = AuthToken of string
+
 /// Github-style reactions for blog posts
 type SocialReaction = 
     | Like

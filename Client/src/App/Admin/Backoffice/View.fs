@@ -82,5 +82,7 @@ let render currentPage (state: State) dispatch =
         homePage dispatch
     | NewArticle ->
         NewArticle.View.render state.NewArticleState (NewArticleMsg >> dispatch)
-    | _ -> 
+    | Drafts -> 
+        Drafts.View.render state.DraftsState (DraftsMsg >> dispatch) 
+    | _ ->
         div [ ] [ ]

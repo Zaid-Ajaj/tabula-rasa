@@ -43,10 +43,13 @@ let update msg (state: State) =
             let nextState, _ = init()
             nextState, Navigation.newUrl "/#posts"
         | _ -> 
-            let prevBackofficeState = state.Backoffice
-            let nextBackofficeState, nextBackofficeCmd = 
-                // pass auth token down to backoffice
-                let authToken = state.SecurityToken.Value
-                Backoffice.State.update authToken msg prevBackofficeState
-            let nextAdminState = { state with Backoffice = nextBackofficeState }
-            nextAdminState, Cmd.map BackofficeMsg nextBackofficeCmd
+            match state.SecurityToken with 
+            | Some token -> 
+                let prevBackofficeState = state.Backoffice
+                let nextBackofficeState, nextBackofficeCmd = 
+                    // pass auth token down to backoffice
+                    Backoffice.State.update token msg prevBackofficeState
+                let nextAdminState = { state with Backoffice = nextBackofficeState }
+                nextAdminState, Cmd.map BackofficeMsg nextBackofficeCmd
+            | None ->
+                state, Cmd.none

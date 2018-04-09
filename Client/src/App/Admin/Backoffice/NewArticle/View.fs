@@ -5,7 +5,6 @@ open Admin.Backoffice.NewArticle.Types
 open Fable.Helpers.React.Props
 open Fable.Helpers.React
 open Fable.Core.JsInterop
-open React
 open React.Marked
 open React.Select
 
@@ -14,7 +13,10 @@ let title state dispatch =
     if state.IsPublishing 
     then i [ ClassName "fa fa-circle-o-notch fa-spin" ] [ ]
     else str "Publish" 
-    
+  let saveDraftContent = 
+    if state.IsSavingDraft 
+    then i [ ClassName "fa fa-circle-o-notch fa-spin" ] [ ]
+    else str "Save As Draft" 
   h1 
     [ ] 
     [ str "New Post" 
@@ -24,15 +26,20 @@ let title state dispatch =
           OnClick (fun _ -> dispatch TogglePreview) ] 
         [ str (if state.Preview then "Back to Post" else "Preview") ]
       button 
+        [ ClassName "btn btn-info"
+          Style [ MarginLeft 15 ]
+          OnClick (fun _ -> dispatch SaveAsDraft) ] 
+        [ saveDraftContent ]
+      button 
         [ ClassName "btn btn-success"
           Style [ MarginLeft 15 ]
           OnClick (fun _ -> dispatch Publish) ] 
         [ publishBtnContent ] ]
         
-let onTextChanged disptach = 
+let onTextChanged doSomethingWith = 
   OnChange <| fun (ev: Fable.Import.React.FormEvent) ->
-    let value : string = !!ev.target?value
-    value |> disptach 
+    let inputTextValue : string = !!ev.target?value
+    doSomethingWith inputTextValue
 
 let spacing = Style [ Margin 5 ]
  

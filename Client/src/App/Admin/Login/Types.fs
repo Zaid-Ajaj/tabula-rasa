@@ -7,6 +7,7 @@ type Msg =
     | LoginSuccess of adminSecureToken: string
     | LoginFailed of error:string
     | UpdateValidationErrors 
+    | UpdateCanLogin
 
 type State = {
     LoggingIn: bool
@@ -16,4 +17,5 @@ type State = {
     InputPassword: string
     HasTriedToLogin: bool
     LoginError: string option
+    CanLogin : bool
 }

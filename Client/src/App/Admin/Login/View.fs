@@ -1,11 +1,9 @@
 module Admin.Login.View
 
-open System
 open Fable.Core.JsInterop
 open Admin.Login.Types
 
 open Fable.Core
-open Fable.Core.JsInterop
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Fable.Import.React
@@ -56,16 +54,11 @@ let render (state: State) dispatch =
       if state.LoggingIn then i [ ClassName "fa fa-circle-o-notch fa-spin" ] []
       else str "Login"
 
-    let validationRules = 
-      [ state.InputUsername.Trim().Length >= 5
-        state.InputPassword.Trim().Length >= 5 ]
-    
-    let canLogin = Seq.forall id validationRules
-
     let btnClass = 
-      if canLogin 
+      if state.CanLogin 
       then "btn btn-success btn-lg"
       else "btn btn-info btn-lg"
+
     div 
       [ ClassName "container" ; loginFormStyle ]
       [ div 

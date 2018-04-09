@@ -9,6 +9,8 @@ type Msg =
     | AddTags of string []
     | RemoveTag of string
     | Publish
+    | SaveAsDraft
+    | DraftSaved
     | Published 
     | PublishError of string
     | TogglePreview
@@ -22,6 +24,7 @@ type NewArticleState = {
     Content: string
     Preview : bool
     IsPublishing : bool
+    IsSavingDraft : bool
 }
  
 

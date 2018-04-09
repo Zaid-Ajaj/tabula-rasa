@@ -12,6 +12,7 @@ let init() =
       PasswordValidationErrors =  [ ]
       HasTriedToLogin = false
       LoginError = None
+      CanLogin = false
       LoggingIn = false }, Cmd.batch [ Cmd.ofMsg UpdateValidationErrors ]
 
 let validateInput (state: State) =  
@@ -45,6 +46,13 @@ let update msg (state: State) =
         let nextState =
             { state with UsernameValidationErrors = usernameErrors
                          PasswordValidationErrors = passwordErrors }
+        nextState, Cmd.ofMsg UpdateCanLogin
+    | UpdateCanLogin -> 
+        let canLogin = 
+            [ state.InputUsername.Trim().Length >= 5
+              state.InputPassword.Trim().Length >= 5 ]
+            |> Seq.forall id 
+        let nextState = { state with CanLogin = canLogin } 
         nextState, Cmd.none
     | Login ->
         let state = { state with HasTriedToLogin = true }

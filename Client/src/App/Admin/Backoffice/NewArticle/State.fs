@@ -14,6 +14,7 @@ let init() =
         Title = ""
         NewTag = ""
         Preview = false
+        IsSavingDraft = false
         IsPublishing = false
     }
 
@@ -63,16 +64,41 @@ let update authToken msg (state: NewArticleState) =
                        Slug = state.Slug; 
                        Content = state.Content; 
                        Tags = state.Tags } }
-          
           nextState, Cmd.ofAsync server.publishNewPost request
-                                   (fun result -> Published) 
-                                   (fun ex -> PublishError "Could not publish post")
+                                 (fun result -> Published) 
+                                 (fun ex -> PublishError "Could not publish post")
+    | SaveAsDraft -> 
+        if state.IsPublishing 
+        then state, warning "Publishing in progress..."
+        elif state.Title = "" 
+        then state, warning "Title of your blog post cannot be empty" 
+        elif state.Slug = "" 
+        then state, warning "The slug cannot be empty"
+        else 
+          let nextState = { state with IsSavingDraft = true }
+          let server = Server.createProxy()
+          let request : SecureRequest<NewBlogPostReq> = 
+            { Token = authToken
+              Body = { Title = state.Title; 
+                       Slug = state.Slug; 
+                       Content = state.Content; 
+                       Tags = state.Tags } }
+          nextState, Cmd.ofAsync server.savePostAsDraft request
+                                 (function 
+                                    | Ok draftId -> DraftSaved
+                                    | Error errorMsg -> PublishError errorMsg) 
+                                 (fun ex -> PublishError "Could not publish post")
     | Published ->
         // reset state and navigate to newly created post
         let slug = state.Slug
         let nextState, _ = init()
         nextState, Cmd.batch [ Toastr.success (Toastr.message "Post published successfully")
                                Navigation.newUrl ("#posts/" + slug) ]
+    | DraftSaved ->
+        // reset state and navigate to newly created post
+        let nextState, _ = init()
+        nextState, Cmd.batch [ Toastr.success (Toastr.message "Post saved as draft!")
+                               Navigation.newUrl "#admin" ] 
     
     | AddTag ->
         let tag = state.NewTag

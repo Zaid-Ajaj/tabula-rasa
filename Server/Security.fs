@@ -7,8 +7,7 @@ open System.Text
 open Newtonsoft.Json
 open System.Security.Cryptography
 
-open Shared.DomainModels
-open Shared.ViewModels
+open Shared
 
 type UserInfo = {
     Username: string
@@ -19,9 +18,9 @@ type UserInfo = {
 //  This module uses the JOSE-JWT library https://github.com/dvsekhvalnov/jose-jwt
 
 let createRandomKey() = 
-    let crypto = System.Security.Cryptography.RandomNumberGenerator.Create()
+    let generator = System.Security.Cryptography.RandomNumberGenerator.Create()
     let randomNumber = Array.init 32 byte
-    crypto.GetBytes(randomNumber)
+    generator.GetBytes(randomNumber)
     randomNumber
 
 let private passPhrase =

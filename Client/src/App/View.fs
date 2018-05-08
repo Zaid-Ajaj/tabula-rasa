@@ -1,7 +1,7 @@
 module App.View
 
 open App.Types
-open Shared.ViewModels
+open Shared
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open React.Responsive

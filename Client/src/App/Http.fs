@@ -2,9 +2,9 @@ module App.Http
 
 open App.Types
 open Elmish
-let server = Server.createProxy()
+open Shared
 
 let loadBlogInfo = 
-  Cmd.ofAsync server.getBlogInfo ()
+  Cmd.ofAsync Server.api.getBlogInfo ()
               BlogInfoLoaded
               (fun _ -> BlogInfoLoadFailed "Network error: could not retrieve initial blog information from server")

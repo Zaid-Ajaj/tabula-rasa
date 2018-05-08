@@ -3,7 +3,7 @@ module Admin.Login.State
 open System
 open Elmish
 open Admin.Login.Types
-open Shared.ViewModels
+open Shared
 
 let init() = 
     { InputUsername = ""
@@ -50,7 +50,9 @@ let update msg (state: State) =
     | UpdateCanLogin -> 
         let canLogin = 
             [ state.InputUsername.Trim().Length >= 5
-              state.InputPassword.Trim().Length >= 5 ]
+              state.InputPassword.Trim().Length >= 5
+              List.isEmpty state.UsernameValidationErrors
+              List.isEmpty state.PasswordValidationErrors ]
             |> Seq.forall id 
         let nextState = { state with CanLogin = canLogin } 
         nextState, Cmd.none
@@ -70,6 +72,7 @@ let update msg (state: State) =
               Password = state.InputPassword  }
           nextState, Http.login credentials
     | LoginSuccess token -> 
+        // this message is *intercepted* by parent component
         let nextState = { state with LoggingIn = false }
         let successFeedback = 
             Toastr.message "Login succesful"

@@ -1,19 +1,11 @@
 module Admin
 
-open Shared.ViewModels
+open Shared
+open StorageTypes
 open Security
 
-type AdminInfo = {
-    BlogTitle: string
-    Name: string
-    Username: string
-    PasswordHash: string
-    PasswordSalt: string
-    Email: string
-    About: string
-    Bio : string
-    ProfileImageUrl: string
-}
+open LiteDB
+open LiteDB.FSharp.Extensions
 
 /// Creates an admin user data
 let create (info: CreateAdminReq)  = 
@@ -21,7 +13,8 @@ let create (info: CreateAdminReq)  =
     let password = utf8Bytes info.Password
     let saltyPassword = Array.concat [ salt; password ]
     let passwordHash = sha256Hash saltyPassword
-    {   Name = info.Name
+    {   Id = 0
+        Name = info.Name
         BlogTitle = info.BlogTitle
         Username = info.Username
         PasswordSalt = base64 salt
@@ -31,7 +24,8 @@ let create (info: CreateAdminReq)  =
         Bio = info.Bio
         ProfileImageUrl = info.ProfileImageUrl }
 
-let guestAdmin = 
+/// Default admin if there isn't one
+let guestAdmin : AdminInfo = 
     let info : CreateAdminReq = 
         { Name = "Guest Guest"
           BlogTitle = "Blog title"
@@ -43,53 +37,40 @@ let guestAdmin =
           ProfileImageUrl = "https://user-images.githubusercontent.com/13316248/31862023-6bb4bb10-b737-11e7-9de3-58ca0b1644c3.jpg" }
     create info
 
+/// If no admin exists in the database, then 
+let writeAdminIfDoesNotExists (db: LiteDatabase) (adminInfo: AdminInfo)  =     
+    let admins = db.GetCollection<AdminInfo> "admins"
+    if admins.Count() = 0 then ignore (admins.Insert adminInfo)
 
-let writeAdminIfDoesNotExists (adminInfo: AdminInfo) 
-                              (writeFile: string -> string -> unit) 
-                              (readFile: string -> string option) = 
-    let adminPath = Environment.adminFile
-    match readFile adminPath with
-    | None ->
-        // no file found, write data
-        let data = Json.serialize adminInfo
-        writeFile adminPath data 
-    | Some _ ->
-        // there already exists some data, don't do anything
-        ()
-
-let readAdminData (readFile: string -> string option)  =
-    let adminPath = Environment.adminFile
-    readFile adminPath
-    |> Option.map Json.deserialize<AdminInfo>
+/// Reads admin data from the database. There must be atleast one admn    
+let readAdminData (db: LiteDatabase)  =
+    let admins = db.GetCollection<AdminInfo> "admins"
+    admins.FindAll() 
+    |> Seq.tryHead
     |> function 
         | Some admin -> admin
-        | None -> failwith "Could not read admin data for initial render"
+        | None -> failwith "Expected at least one admin to be present in the database"
 
-let login (readFile: string -> string option) (loginInfo: LoginInfo)  = 
+let login (db: LiteDatabase) (loginInfo: LoginInfo)  = 
+    let admins = db.GetCollection<AdminInfo> "admins"
     let username = loginInfo.Username
     let password = loginInfo.Password
-    match readFile Environment.adminFile with
-    | None ->
-        LoginError "Could not read admin information from data store"
-    | Some adminInfoContent -> 
-        let adminInfo = Json.tryDeserialize<AdminInfo> adminInfoContent
-        match adminInfo with
-        | None ->
-            LoginError "Admin data is corrupt and is not readable as Json-formatted text"
-        | Some adminInfo -> 
-            if adminInfo.Username <> username then
-                UsernameDoesNotExist
-            else
-            let salt = adminInfo.PasswordSalt
-            let hash = adminInfo.PasswordHash
-            let passwordDidNotMatch = verifyPassword password salt hash |> not
-            if passwordDidNotMatch then 
-                PasswordIncorrect
-            else
-            let userInfo : UserInfo = { Username = username; Claims = [| "admin" |] }
-            let token = encodeJwt userInfo
-            Success token
+    
+    let byUsername = Query.EQ("Username", BsonValue(username))
 
+    match admins.TryFind(byUsername) with 
+    | None -> UsernameDoesNotExist
+    | Some user -> 
+        let salt = user.PasswordSalt
+        let hash = user.PasswordHash
+        let passwordDidNotMatch = Security.verifyPassword password salt hash |> not
+        if passwordDidNotMatch then 
+            PasswordIncorrect
+        else
+        let userInfo : UserInfo = { Username = username; Claims = [| "admin" |] }
+        let token = encodeJwt userInfo
+        Success token
+                
 let blogInfoFromAdmin (admin: AdminInfo) : BlogInfo = 
     { Name = admin.Name; 
       Bio = admin.Bio;

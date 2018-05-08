@@ -4,23 +4,9 @@ open System
 open LiteDB
 open LiteDB.FSharp
 open LiteDB.FSharp.Extensions
-open Shared.DomainModels
-open Shared.ViewModels
+open Shared
 
-/// How a blogpost is represented in the database
-[<CLIMutable>]
-type BlogPost = {
-    Id: int
-    Title: string
-    Content: string
-    IsDraft: bool
-    IsFeatured: bool
-    Slug: string
-    Tags : string list
-    DateAdded: DateTime
-    Comments: Comment list
-    Reactions: (SocialReaction * int) list
-}
+open StorageTypes
 
 let toBlogPost (req : NewBlogPostReq) = 
     {  Id = 0 // by default, it will be auto incremented
@@ -29,59 +15,87 @@ let toBlogPost (req : NewBlogPostReq) =
        Slug = req.Slug
        Tags = req.Tags
        DateAdded = DateTime.Now
-       Reactions = []
-       Comments = []
        IsDraft = false
        IsFeatured = false }
 
-let postAlreadyPublished (req: NewBlogPostReq) (db : LiteDatabase) = 
+let validatePost (req: NewBlogPostReq) (db : LiteDatabase) = 
     let posts = db.GetCollection<BlogPost> "posts"
     let noDraft = Query.EQ("IsDraft", BsonValue(false))
     let byTitle = Query.EQ("Title", BsonValue(req.Title)) 
     posts.Find(Query.And(noDraft, byTitle)) 
     |> Seq.tryHead
     |> function 
-        | Some _ -> Some (sprintf "A post with title '%s' already exists" req.Title) 
+        | Some _ -> Some PostWithSameTitleAlreadyExists 
         | None -> 
             let bySlug = Query.EQ("Slug", BsonValue(req.Slug)) 
             posts.Find(Query.And(noDraft, bySlug)) 
             |> Seq.tryHead 
             |> function 
-                | Some _ -> Some (sprintf "A post with slug '%s' already exists" req.Slug)
+                | Some _ -> Some PostWithSameSlugAlreadyExists
                 | None -> None 
                  
 let publishPost (db : LiteDatabase) (req: NewBlogPostReq)  = 
   let posts = db.GetCollection<BlogPost> "posts"
   try 
-    match postAlreadyPublished req db with
-    | Some errorMessage -> Error errorMessage 
+    match validatePost req db with
+    | Some validationError -> validationError 
     | None -> 
         let newPost = toBlogPost req
-        let result : BsonValue = posts.Insert(newPost)
-        Ok (Bson.deserializeField<int> result)
+        let result = posts.Insert(newPost)
+        AddedPostId (Bson.deserializeField<int> result)
   with 
-  | ex -> Error "Could not add the new blog post to the database"
+  | _ -> DatabaseErrorWhileAddingPost
       
 let publishNewPost (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>)  = 
    match Security.validateJwt req.Token with
-   | None -> Error "Authorization token was invalid"
+   | None -> AddPostResult.AuthError UserUnauthorized
    | Some user -> publishPost database req.Body    
           
 let saveAsDraft (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>) = 
    match Security.validateJwt req.Token with
-   | None -> Error "Authorization token was invalid"
+   | None -> AddPostResult.AuthError UserUnauthorized
    | Some user ->
-       let posts = database.GetCollection<BlogPost> "posts"
        let draft = { toBlogPost req.Body with IsDraft = true }
+       let posts = database.GetCollection<BlogPost> "posts"
+       match validatePost req.Body database with 
+       | Some validationError -> validationError 
+       | None -> 
        try 
-        let result : BsonValue = posts.Insert(draft)
-        let insertedPostId = Bson.deserializeField<int> result
-        Ok insertedPostId
+        let result = posts.Insert(draft)
+        let postId = Bson.deserializeField<int> result
+        AddedPostId postId
        with 
-       | ex -> 
-         // TODO: log ex 
-         Error "Could not add the draft to the database"                   
-    
+       | ex -> DatabaseErrorWhileAddingPost
+
+let deleteDraft (db: LiteDatabase) (draftReq: SecureRequest<int>) = 
+    match Security.validateJwt draftReq.Token with 
+    | None -> DeleteDraftResult.AuthError UserUnauthorized
+    | Some user -> 
+        let posts = db.GetCollection<BlogPost> "posts"                         
+        let postById = Query.EQ("_id", BsonValue(draftReq.Body))
+        let postIsDraft = Query.EQ("IsDraft", BsonValue(true))
+        let draftById = Query.And(postById, postIsDraft)
+        match posts.TryFind(draftById) with 
+        | None -> DeleteDraftResult.DraftDoesNotExist 
+        | Some _ -> 
+            if posts.Delete(postById) > 0 then DraftDeleted
+            else DeleteDraftResult.DatabaseErrorWhileDeletingDraft
+
+let publishDraft (db: LiteDatabase) (draftReq: SecureRequest<int>) = 
+    match Security.validateJwt draftReq.Token with 
+    | None -> PublishDraftResult.AuthError UserUnauthorized
+    | Some user -> 
+        let posts = db.GetCollection<BlogPost> "posts"                         
+        let postById = Query.EQ("_id", BsonValue(draftReq.Body))
+        let postIsDraft = Query.EQ("IsDraft", BsonValue(true))
+        let draftById = Query.And(postById, postIsDraft)
+        match posts.TryFind(draftById) with 
+        | None -> PublishDraftResult.DraftDoesNotExist 
+        | Some draft ->
+            let post = { draft with IsDraft = false } 
+            if posts.Update(post) then DraftPublished 
+            else PublishDraftResult.DatabaseErrorWhilePublishingDraft
+
 let toBlogPostItem (post: BlogPost) = 
     { Id = post.Id; 
       Title = post.Title; 

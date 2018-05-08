@@ -4,7 +4,7 @@ open Elmish
 open Elmish.Browser.UrlParser
 open Elmish.Browser.Navigation
 open App.Types
-open Shared.ViewModels
+open Shared
 
 type BackofficePage = Admin.Backoffice.Types.Page
 type PostsPage = Posts.Types.Page

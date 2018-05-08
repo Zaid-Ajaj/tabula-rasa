@@ -3,9 +3,10 @@
 open Suave
 open Suave.Operators
 open Suave.Filters
-open Suave.Successful
+
 open Environment
 open Fable.Remoting.Suave
+open StorageTypes
 open Suave.RequestErrors
 
 FableSuaveAdapter.logger <- Some (printfn "%s")
@@ -13,13 +14,13 @@ FableSuaveAdapter.logger <- Some (printfn "%s")
 [<EntryPoint>]
 let main argv =
 
-    let store = 
+    let storageType = 
         match argv with
-        | [| "--store"; "local-database" |] -> Storage.LocalDatabase
-        | [| "--store"; "in-memory" |] -> Storage.InMemory
-        | otherwise -> Storage.InMemory // by default
+        | [| "--store"; "localdb" |] -> Store.LocalDatabase
+        | [| "--store"; "in-memory" |] -> Store.InMemory
+        | otherwise -> Store.InMemory // by default
 
-    let webApp = WebApp.createUsing store
+    let webApp = WebApp.createUsing storageType
 
     let clientPath = solutionRoot </> "dist" </> "client"
     printfn "Client directory: %s" clientPath
@@ -37,5 +38,4 @@ let main argv =
         ]
 
     startWebServer webAppConfig webApp
-    printfn "Hello from F#!"
-    0 // return an integer exit code
+    0

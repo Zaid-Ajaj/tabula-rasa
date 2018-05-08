@@ -3,7 +3,7 @@ module StorageTests
 open Expecto
 open LiteDB
 open LiteDB.FSharp
-open Shared.ViewModels
+open Shared
 open System.IO
 
 let pass() = Expect.isTrue true "passed"
@@ -13,8 +13,8 @@ let failedWith msg = Expect.isTrue false msg
 
 let withDatabase (f: LiteDatabase -> unit) = 
   let mapper = FSharpBsonMapper()
-  let memory = new MemoryStream()
-  let database = new LiteDatabase(memory, mapper)
+  use memory = new MemoryStream()
+  use database = new LiteDatabase(memory, mapper)
   f database  
   
 let storageTests = 
@@ -38,20 +38,20 @@ let storageTests =
                 Tags = []; 
                 Content = "irrelevant" }
             
-            match BlogPosts.publishPost database blogPostReq  with 
-            | Error _ -> failedWith "Shouldn't get an error message just yet"
-            | Ok id -> 
+            match BlogPosts.publishPost database blogPostReq with 
+            | AddedPostId _ -> 
               // post added, now add again     
               let sameBlogDifferentSlug = { blogPostReq with Slug = "something" } 
               match BlogPosts.publishPost database sameBlogDifferentSlug  with
-              | Ok _ -> failedWith "Shouldn't add a new post with the same title" 
-              | Error "A post with title 'title' already exists" -> 
+              | AddedPostId _ -> failedWith "Shouldn't add a new post with the same title" 
+              | AddPostResult.PostWithSameTitleAlreadyExists -> 
                   // then this is the correct error
                   // now check the slug 
                   let sameSlugWithDifferentTitle = { blogPostReq with Title = "something" }
                   match BlogPosts.publishPost database sameSlugWithDifferentTitle   with
-                  | Ok _ -> failedWith "Shouldn't add a new post with the same slug"
-                  | Error "A post with slug 'slug' already exists" -> pass() 
-                  | Error otherError -> failwith "Shouldn't fail with now" 
-              | Error otherError -> failwith "Shouldn't fail with now" 
+                  | AddedPostId _ -> failedWith "Shouldn't add a new post with the same slug"
+                  | AddPostResult.PostWithSameSlugAlreadyExists -> pass() 
+                  | otherwise -> failwithf "Unexpected result: %A" otherwise 
+              | otherwise -> failwithf "Unexpected result: %A" otherwise  
+            | otherwise -> failwithf "Unexpected result: %A" otherwise 
         ]

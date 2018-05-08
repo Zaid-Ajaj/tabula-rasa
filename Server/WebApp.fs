@@ -1,13 +1,7 @@
 module WebApp
 
-open ClientServer
-open Shared.ViewModels
-open Shared.DomainModels
+open Shared
 open Fable.Remoting.Suave
-
-open Suave
-open Suave.Operators
-open Suave.Filters
 
 /// Composition root of the application
 let createUsing store = 
@@ -16,15 +10,29 @@ let createUsing store =
     let writeFile filename content = Storage.saveFile filename content database
 
     // create initial admin guest admin if one does not exists
-    Admin.writeAdminIfDoesNotExists Admin.guestAdmin writeFile readFile
-    let adminData = Admin.readAdminData readFile
+    Admin.writeAdminIfDoesNotExists database Admin.guestAdmin 
+    let adminData = Admin.readAdminData database
    
-    let login info = async { return Admin.login readFile info }
+    let login info = async { return Admin.login database info }
     let getBlogInfo() = async {  return Admin.blogInfoFromAdmin adminData }
     let publishNewPost req = async { return BlogPosts.publishNewPost database req  }
     let savePostAsDraft req = async { return BlogPosts.saveAsDraft database req  }  
     let getPosts() = async { return BlogPosts.getAll database }    
     let getPostBySlug slug = async { return BlogPosts.getPostBySlug database slug }
+    
+    let deleteDraft req = 
+        async { 
+            do! Async.Sleep 2000 
+            return BlogPosts.deleteDraft database req 
+        }
+
+    let publishDraft req = 
+      async {
+          do! Async.Sleep 2000
+          return BlogPosts.publishDraft database req 
+        }
+
+       
     let getDrafts (AuthToken(authToken)) = 
         async {
             match Security.validateJwt authToken with 
@@ -42,11 +50,13 @@ let createUsing store =
            getPosts = getPosts
            getPostBySlug =  getPostBySlug
            savePostAsDraft = savePostAsDraft
-           getDrafts = getDrafts }
+           getDrafts = getDrafts
+           deleteDraftById = deleteDraft 
+           publishDraft = publishDraft }
     
     let clientServerProtocol = 
         remoting serverProtocol {
-            use_route_builder routeBuilder
+            use_route_builder routes
         }
 
     clientServerProtocol

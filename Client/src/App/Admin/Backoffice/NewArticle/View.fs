@@ -67,7 +67,7 @@ let titleAndSlug state dispatch =
         [ ClassName "col"; spacing ]
         [ label [ spacing ] [ str "Slug" ] 
           input [ ClassName "form-control";
-                  DefaultValue state.NewTag
+                  DefaultValue state.Slug
                   onTextChanged (SetSlug >> dispatch)
                   spacing ] ] ] 
 

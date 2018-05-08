@@ -10,6 +10,7 @@ type Msg =
     | RemoveTag of string
     | Publish
     | SaveAsDraft
+    | SaveAsDraftError of string
     | DraftSaved
     | Published 
     | PublishError of string

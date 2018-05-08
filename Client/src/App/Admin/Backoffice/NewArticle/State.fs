@@ -3,8 +3,7 @@ module Admin.Backoffice.NewArticle.State
 open Elmish
 open Admin.Backoffice.NewArticle.Types
 open Elmish.Browser.Navigation
-open Fable.PowerPack
-open Shared.ViewModels
+open Shared
 
 let init() = 
     let initialState : NewArticleState = {
@@ -65,7 +64,9 @@ let update authToken msg (state: NewArticleState) =
                        Content = state.Content; 
                        Tags = state.Tags } }
           nextState, Cmd.ofAsync server.publishNewPost request
-                                 (fun result -> Published) 
+                                 (function 
+                                    | AddedPostId id -> Published
+                                    | other -> PublishError "Could not publish post") 
                                  (fun ex -> PublishError "Could not publish post")
     | SaveAsDraft -> 
         if state.IsPublishing 
@@ -76,18 +77,26 @@ let update authToken msg (state: NewArticleState) =
         then state, warning "The slug cannot be empty"
         else 
           let nextState = { state with IsSavingDraft = true }
-          let server = Server.createProxy()
           let request : SecureRequest<NewBlogPostReq> = 
             { Token = authToken
               Body = { Title = state.Title; 
                        Slug = state.Slug; 
                        Content = state.Content; 
                        Tags = state.Tags } }
-          nextState, Cmd.ofAsync server.savePostAsDraft request
-                                 (function 
-                                    | Ok draftId -> DraftSaved
-                                    | Error errorMsg -> PublishError errorMsg) 
-                                 (fun ex -> PublishError "Could not publish post")
+          let successHandler = function 
+            | AddedPostId draftId -> DraftSaved
+            | PostWithSameSlugAlreadyExists -> 
+                SaveAsDraftError "A post with this slug already exists"
+            | PostWithSameTitleAlreadyExists -> 
+                SaveAsDraftError "A post with this title already exists"
+            | AddPostResult.AuthError UserUnauthorized -> 
+                SaveAsDraftError "User was unauthorized to publish the draft"
+            | DatabaseErrorWhileAddingPost ->
+                SaveAsDraftError "Internal error occured on the server's database while saving the draft"
+             
+          nextState, Cmd.ofAsync Server.api.savePostAsDraft request
+                                 successHandler                             
+                                 (fun ex -> SaveAsDraftError "Could not publish post")
     | Published ->
         // reset state and navigate to newly created post
         let slug = state.Slug
@@ -99,7 +108,13 @@ let update authToken msg (state: NewArticleState) =
         let nextState, _ = init()
         nextState, Cmd.batch [ Toastr.success (Toastr.message "Post saved as draft!")
                                Navigation.newUrl "#admin" ] 
-    
+    | SaveAsDraftError errorMsg -> 
+        let errorToast =
+          Toastr.message errorMsg
+          |> Toastr.withTitle "Publish Error"
+          |> Toastr.error
+        let nextState = { state with IsSavingDraft = false }
+        nextState, errorToast
     | AddTag ->
         let tag = state.NewTag
         if String.length tag = 0 
@@ -121,5 +136,10 @@ let update authToken msg (state: NewArticleState) =
     | RemoveTag tag ->
         let nextState = { state with Tags = List.filter ((<>) tag) state.Tags }
         nextState, Cmd.none  
-    | _ ->
-        state, Cmd.none
+    | PublishError errorMsg ->
+        let errorToast =
+          Toastr.message errorMsg
+          |> Toastr.withTitle "Publish Error"
+          |> Toastr.error
+        let nextState = { state with IsPublishing = false }
+        nextState, errorToast

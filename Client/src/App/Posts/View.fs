@@ -4,7 +4,7 @@ open Posts.Types
 open System
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
-open Shared.ViewModels
+open Shared
 open React.EventTimeline
 
 let monthName = function 

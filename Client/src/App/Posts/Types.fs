@@ -1,5 +1,6 @@
 module Posts.Types
-open Shared.ViewModels
+
+open Shared
 
 type Page = 
     | AllPosts

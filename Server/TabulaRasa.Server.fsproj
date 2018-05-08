@@ -4,10 +4,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\Shared\DomainModels.fs" />
-    <Compile Include="..\Shared\ViewModels.fs" />
-    <Compile Include="..\Shared\ClientServer.fs" />
+    <Compile Include="..\Shared\Types.fs" />
     <Compile Include="Environment.fs" />
+    <Compile Include="StorageTypes.fs" />
     <Compile Include="Storage.fs" />
     <Compile Include="Json.fs" />
     <Compile Include="Security.fs" />

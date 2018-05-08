@@ -3,7 +3,7 @@ module Posts.State
 open Elmish
 open Elmish.Browser.Navigation
 open Posts.Types
-open Shared.ViewModels
+open Shared
 
 let update (state: State) (msg: Msg) = 
     match msg with
@@ -27,7 +27,6 @@ let update (state: State) (msg: Msg) =
     | LoadSinglePostError errorMsg ->
         let nextState = { state with Post = LoadError errorMsg }
         nextState, Cmd.none 
-
 
 let init() =
     let initialModel =  

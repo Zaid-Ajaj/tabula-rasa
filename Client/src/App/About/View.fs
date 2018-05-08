@@ -1,7 +1,7 @@
 module App.About.View
 
 open Fable.Helpers.React
-open Shared.ViewModels
+open Shared
 
 let render (info: Remote<BlogInfo>) = 
     match info with
@@ -10,4 +10,5 @@ let render (info: Remote<BlogInfo>) =
     | LoadError msg -> h1 [ ] [ str msg ]
     | Body blogInfo ->
         div [ ] 
-            [ Marked.marked [ Marked.Content blogInfo.About; Marked.Options [ Marked.Sanitize false ] ] ]
+            [ Marked.marked [ Marked.Content blogInfo.About; 
+                              Marked.Options [ Marked.Sanitize false ] ] ]

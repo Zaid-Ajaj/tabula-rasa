@@ -1,6 +1,6 @@
 module App.Types
 
-open Shared.ViewModels
+open Shared
 
 type Page =
   | About

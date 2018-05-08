@@ -34,8 +34,15 @@ Target "ServerTests" <| fun _ ->
 Target "NpmInstall" <| fun _ ->
     run npm "install" "Client"
 
-Target "Run" <| fun () ->
+Target "Watch" <| fun () ->
   [ async { run dotnet "watch run" "Server" }; 
+    async { run dotnet "fable npm-run start" ("Client" </> "src") } ]
+  |> Async.Parallel
+  |> Async.RunSynchronously
+  |> ignore
+
+Target "WatchLocal" <| fun () ->
+  [ async { run dotnet "watch run --store localdb" "Server" }; 
     async { run dotnet "fable npm-run start" ("Client" </> "src") } ]
   |> Async.Parallel
   |> Async.RunSynchronously
@@ -59,7 +66,12 @@ Target "Release" <| fun _ ->
 "Clean" 
   ==> "NpmInstall"
   ==> "DotnetRestore"
-  ==> "Run"
+  ==> "Watch"
+
+"Clean" 
+  ==> "NpmInstall"
+  ==> "DotnetRestore"
+  ==> "WatchLocal"
 
 "Clean" 
   ==> "NpmInstall"

@@ -94,6 +94,12 @@ type PublishDraftResult =
     | AuthError of AuthError
     | DatabaseErrorWhilePublishingDraft
 
+type MakeDraftResult = 
+    | ArticleDoesNotExist
+    | ArticleTurnedToDraft
+    | AuthError of AuthError
+    | DatabaseErrorWhileMakingDraft    
+
 let routes typeName methodName = 
  sprintf "/api/%s/%s" typeName methodName
  
@@ -107,4 +113,5 @@ type Protocol =
        savePostAsDraft : SecureRequest<NewBlogPostReq> -> Async<AddPostResult>
        deleteDraftById : SecureRequest<int> -> Async<DeleteDraftResult>
        publishDraft : SecureRequest<int> -> Async<PublishDraftResult>
-       deletePublishedArticleById : SecureRequest<int> -> Async<DeleteArticleResult> }
+       deletePublishedArticleById : SecureRequest<int> -> Async<DeleteArticleResult>
+       turnArticleToDraft: SecureRequest<int> -> Async<MakeDraftResult> }

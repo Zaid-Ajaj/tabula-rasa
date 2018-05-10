@@ -16,7 +16,8 @@ type Msg =
     | DeleteArticle of articleId:int
     | CancelArticleDeletion 
     | ArticleDeleted
-    | MakeIntoDraft of articleId:int
-    | DeleteCancelled 
+    | MakeIntoDraft of articleId:int 
+    | DraftMade 
+    | MakeDraftError of errorMsg:string
     | DeleteArticleError of string
     | DoNothing

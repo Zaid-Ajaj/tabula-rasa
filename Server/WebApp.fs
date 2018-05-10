@@ -2,6 +2,7 @@ module WebApp
 
 open Shared
 open Fable.Remoting.Suave
+open BlogPosts
 
 /// Composition root of the application
 let createUsing store = 
@@ -45,7 +46,7 @@ let createUsing store =
                 return Error "Authorization token is not valid or has expired"
         }
 
-    let serverProtocol =
+    let serverProtocol : Protocol =
         {  getBlogInfo = getBlogInfo 
            login = login
            publishNewPost = publishNewPost
@@ -55,7 +56,8 @@ let createUsing store =
            getDrafts = getDrafts
            deleteDraftById = deleteDraft 
            publishDraft = publishDraft
-           deletePublishedArticleById = deletePublishedArticle }
+           deletePublishedArticleById = deletePublishedArticle
+           turnArticleToDraft = fun req -> async { return BlogPosts.turnArticleToDraft database req }  }
     
     let clientServerProtocol = 
         remoting serverProtocol {

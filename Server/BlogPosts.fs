@@ -110,6 +110,22 @@ let publishDraft (db: LiteDatabase) (draftReq: SecureRequest<int>) =
             if posts.Update(post) then DraftPublished 
             else PublishDraftResult.DatabaseErrorWhilePublishingDraft
 
+let turnArticleToDraft (db: LiteDatabase) (req: SecureRequest<int>) = 
+    match Security.validateJwt req.Token with 
+    | None -> MakeDraftResult.AuthError UserUnauthorized
+    | Some user -> 
+        let posts = db.GetCollection<BlogPost> "posts"                         
+        let postById = Query.EQ("_id", BsonValue(req.Body))
+        let postIsPublished = Query.EQ("IsDraft", BsonValue(false))
+        let draftById = Query.And(postById, postIsPublished)
+        match posts.TryFind(draftById) with 
+        | None -> MakeDraftResult.ArticleDoesNotExist 
+        | Some draft ->
+            let post = { draft with IsDraft = true } 
+            if posts.Update(post) then ArticleTurnedToDraft 
+            else MakeDraftResult.DatabaseErrorWhileMakingDraft 
+
+
 let toBlogPostItem (post: BlogPost) = 
     { Id = post.Id; 
       Title = post.Title; 

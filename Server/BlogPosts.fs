@@ -125,7 +125,23 @@ let turnArticleToDraft (db: LiteDatabase) (req: SecureRequest<int>) =
             if posts.Update(post) then ArticleTurnedToDraft 
             else MakeDraftResult.DatabaseErrorWhileMakingDraft 
 
-
+let savePostChanges (db: LiteDatabase) (req: SecureRequest<BlogPostItem>) = 
+    match Security.validateJwt req.Token with 
+    | None -> Error "User unauthorized"
+    | Some user -> 
+        let posts = db.GetCollection<BlogPost> "posts"
+        match posts.TryFindById(BsonValue(req.Body.Id)) with 
+        | None -> Error "Could not find the post"
+        | Some blogPost -> 
+            let updatedBlogPost = 
+                { blogPost with
+                    Title = req.Body.Title
+                    Slug = req.Body.Slug 
+                    Content = req.Body.Content
+                    Tags = req.Body.Tags  }
+            if posts.Update updatedBlogPost then Ok true 
+            else Error "Error occured while updating the blog post"
+            
 let toBlogPostItem (post: BlogPost) = 
     { Id = post.Id; 
       Title = post.Title; 

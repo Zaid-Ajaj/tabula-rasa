@@ -115,4 +115,5 @@ type Protocol =
        publishDraft : SecureRequest<int> -> Async<PublishDraftResult>
        deletePublishedArticleById : SecureRequest<int> -> Async<DeleteArticleResult>
        turnArticleToDraft: SecureRequest<int> -> Async<MakeDraftResult>
-       getPostById : SecureRequest<int> -> Async<Result<BlogPostItem, string>> }
+       getPostById : SecureRequest<int> -> Async<Result<BlogPostItem, string>>
+       savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>> }

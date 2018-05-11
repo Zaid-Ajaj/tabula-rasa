@@ -73,8 +73,7 @@ let homePage dispatch =
           oneThirdPage drafts Drafts dispatch
           oneThirdPage settings Settings dispatch
           oneThirdPage writeArticle NewArticle dispatch 
-          oneThirdPage subscribers Subscribers dispatch
-          logout dispatch] ]
+          logout dispatch ] ]
 
 let render currentPage (state: State) dispatch = 
     match currentPage with

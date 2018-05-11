@@ -19,7 +19,30 @@ let update authToken msg state =
         | SetContent content -> { state with ArticleToEdit = Body ({ article with Content = content }) }, Cmd.none 
         | AddTags tags -> { state with ArticleToEdit = Body ({ article with Tags = List.ofArray tags }) }, Cmd.none 
         | TogglePreview -> { state with Preview = not state.Preview }, Cmd.none
+        | SaveChanges -> 
+            let nextState = { state with SavingChanges = true }
+            let request = { Token = authToken; Body = article }
+            let successHandler = function
+                | Ok true -> SavedChanges
+                | Error errorMsg -> SaveChangesError errorMsg 
+                | otherwise -> DoNothing
+            nextState, Cmd.ofAsync Server.api.savePostChanges request successHandler (fun ex -> SaveChangesError "Network error while saving changes to blog post")
+        
+        | SaveChangesError errorMsg -> 
+            let nextState = { state with SavingChanges = false }
+            nextState, Toastr.error (Toastr.message errorMsg)
+        
+        | SavedChanges ->
+            let nextState = 
+                { state with 
+                    SavingChanges = false 
+                    ArticleId = None 
+                    ArticleToEdit = Empty } 
+
+            nextState, Urls.navigate [ Urls.admin ]
+        
         | _ -> state, Cmd.none
+    
     | _ -> 
         match msg with 
         | TogglePreview ->  { state with Preview = not state.Preview }, Cmd.none

@@ -17,5 +17,7 @@ type Msg =
     | SetContent of string
     | TogglePreview
     | SaveChanges
+    | SavedChanges
+    | SaveChangesError of string
     | AddTags of string []
     | DoNothing

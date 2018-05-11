@@ -2,7 +2,6 @@ module Admin.Backoffice.NewArticle.State
 
 open Elmish
 open Admin.Backoffice.NewArticle.Types
-open Elmish.Browser.Navigation
 open Shared
 
 let init() = 
@@ -68,6 +67,7 @@ let update authToken msg (state: NewArticleState) =
                                     | AddedPostId id -> Published
                                     | other -> PublishError "Could not publish post") 
                                  (fun ex -> PublishError "Could not publish post")
+    
     | SaveAsDraft -> 
         if state.IsPublishing 
         then state, warning "Publishing in progress..."
@@ -97,17 +97,20 @@ let update authToken msg (state: NewArticleState) =
           nextState, Cmd.ofAsync Server.api.savePostAsDraft request
                                  successHandler                             
                                  (fun ex -> SaveAsDraftError "Could not publish post")
+    
     | Published ->
         // reset state and navigate to newly created post
         let slug = state.Slug
         let nextState, _ = init()
         nextState, Cmd.batch [ Toastr.success (Toastr.message "Post published successfully")
-                               Navigation.newUrl ("#posts/" + slug) ]
+                               Urls.navigate [ Urls.posts; slug ] ]
+    
     | DraftSaved ->
         // reset state and navigate to newly created post
         let nextState, _ = init()
         nextState, Cmd.batch [ Toastr.success (Toastr.message "Post saved as draft!")
-                               Navigation.newUrl "#admin" ] 
+                               Urls.navigate [ Urls.admin ] ] 
+    
     | SaveAsDraftError errorMsg -> 
         let errorToast =
           Toastr.message errorMsg

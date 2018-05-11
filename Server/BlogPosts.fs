@@ -142,12 +142,16 @@ let getPublishedArticles (database: LiteDatabase) : list<BlogPostItem> =
     |> Seq.map toBlogPostItem
     |> List.ofSeq
 
-let getAllDrafts (database: LiteDatabase) : list<BlogPostItem> = 
-    let posts = database.GetCollection<BlogPost> "posts"
-    let postsThatAreDrafts = Query.EQ("IsDraft", BsonValue(true))
-    posts.Find(postsThatAreDrafts)
-    |> Seq.map toBlogPostItem
-    |> List.ofSeq
+let getAllDrafts (database: LiteDatabase) (AuthToken(token)) = 
+    match Security.validateJwt token with 
+    | None -> Error "User unauthorized"
+    | Some user -> 
+        let posts = database.GetCollection<BlogPost> "posts"
+        let postsThatAreDrafts = Query.EQ("IsDraft", BsonValue(true))
+        posts.Find(postsThatAreDrafts)
+        |> Seq.map toBlogPostItem
+        |> List.ofSeq
+        |> Ok
      
 let getPostBySlug (database: LiteDatabase) (slug: string) =
    let posts = database.GetCollection<BlogPost> "posts"

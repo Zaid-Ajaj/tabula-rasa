@@ -11,33 +11,35 @@ type PostsPage = Posts.Types.Page
 
 let toHash page =
   match page with
-  | About -> "#about"
-  | Posts PostsPage.AllPosts -> "#posts"
-  | Posts (PostsPage.Post slug) -> "#posts/" + slug
-  | Admin Admin.Types.Page.Login -> "#login"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Home) -> "#admin"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle) -> "#admin/new-post"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts) -> "#admin/drafts"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Articles) -> "#admin/published-articles"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers) -> "#admin/subscribers"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Settings) -> "#admin/settings"
+  | About -> Urls.about
+  | Posts PostsPage.AllPosts -> Urls.posts
+  | Posts (PostsPage.Post slug) -> Urls.combine [ Urls.posts; slug ]
+  | Admin Admin.Types.Page.Login -> Urls.login 
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Home) -> Urls.admin
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle) -> Urls.combine [ Urls.admin; Urls.newPost ]
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts) -> Urls.combine [ Urls.drafts; Urls.drafts ]
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Articles) -> Urls.combine [ Urls.admin; Urls.publishedArticles ]
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers) -> Urls.combine [ Urls.admin; Urls.subscribers ]
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Settings) -> Urls.combine [ Urls.admin; Urls.settings ]
+  | Admin (Admin.Types.Page.Backoffice (BackofficePage.EditArticle editArticleId)) -> Urls.combine [ Urls.admin; Urls.editArticle; string editArticleId ]
+  |> Urls.hashPrefix
 
 let pageParser: Parser<Page -> Page, Page> =
-  oneOf [ map About (s "about")
-          map (Admin Admin.Types.Page.Login) (s "login")
-          map (PostsPage.Post >> Posts) (s "posts" </> str)
-          map (Posts PostsPage.AllPosts) (s "posts")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s "admin")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "new-post")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s "admin" </> s "drafts")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Articles)) (s "admin" </> s "published-articles")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s "admin" </> s "subscribers")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s "admin" </> s "settings") ]
+  oneOf [ map About (s Urls.about)
+          map (Admin Admin.Types.Page.Login) (s Urls.login)
+          map (PostsPage.Post >> Posts) (s Urls.posts </> str)
+          map (Posts PostsPage.AllPosts) (s Urls.posts )
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s Urls.admin)
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s Urls.admin </> s Urls.newPost)
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s Urls.admin </> s Urls.drafts)
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Articles)) (s Urls.admin </> s Urls.publishedArticles)
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s Urls.admin </> s Urls.subscribers)
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s Urls.admin </> s Urls.settings) ]
 
 let urlUpdate (parsedPage: Option<Page>) currentState =
   match parsedPage with
   | None ->
-      currentState, Navigation.newUrl "#posts"
+      currentState, Urls.navigate [ Urls.posts ]
   | Some page ->
       currentState, Cmd.ofMsg (UrlUpdated page)
 
@@ -100,7 +102,7 @@ let update msg state =
            let nextAppState = { state with CurrentPage = Some (Posts page) }
            let nextCmd =
               match page with
-              | Posts.Types.Page.AllPosts ->  Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
+              | Posts.Types.Page.AllPosts  -> Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
               | Posts.Types.Page.Post slug -> Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadSinglePost slug))
               
            nextAppState, nextCmd
@@ -115,12 +117,12 @@ let update msg state =
           | Admin.Types.Page.Login ->
               match state.Admin.SecurityToken with
               | None -> Cmd.none
-              | Some _ -> Cmd.batch [ Navigation.newUrl "#admin";
+              | Some _ -> Cmd.batch [ Navigation.newUrl (Urls.hashPrefix Urls.admin);
                                       showInfo "Already logged in" ]
      
           | Admin.Types.Page.Backoffice _ ->
               match state.Admin.SecurityToken with
-              | None -> Cmd.batch [ Navigation.newUrl "#login"
+              | None -> Cmd.batch [ Navigation.newUrl (Urls.hashPrefix Urls.login)
                                     showInfo "You must be logged in first" ]
               | Some _ -> Cmd.none
 

@@ -12,10 +12,15 @@
     <Compile Include="Components/SweetAlert2.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
+    <Compile Include="App/Urls.fs" />
     <!-- Admin Backoffice NewArticle -->
     <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/View.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/State.fs" />
+    <!-- Admin Backoffice EditArticle -->
+    <Compile Include="App/Admin/Backoffice/EditArticle/Types.fs" />
+    <Compile Include="App/Admin/Backoffice/EditArticle/View.fs" />
+    <Compile Include="App/Admin/Backoffice/EditArticle/State.fs" />
     <!-- Admin Backoffice Drafts -->
     <Compile Include="App/Admin/Backoffice/Drafts/Types.fs" />
     <Compile Include="App/Admin/Backoffice/Drafts/View.fs" />

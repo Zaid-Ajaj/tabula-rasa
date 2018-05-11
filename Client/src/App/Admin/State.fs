@@ -1,8 +1,6 @@
 module Admin.State
 
 open Elmish
-open Elmish.Browser
-open Elmish.Browser.Navigation
 open Admin.Types
 
 let init() = 
@@ -30,7 +28,7 @@ let update msg (state: State) =
             let nextState = 
                 { state with Login = state.Login
                              SecurityToken = Some token }
-            nextState, Navigation.newUrl "#admin"
+            nextState, Urls.navigate [ Urls.admin ] 
         // propagate other messages to child component
         | _ -> 
             let nextLoginState, nextLoginCmd = Admin.Login.State.update loginMsg state.Login
@@ -41,7 +39,7 @@ let update msg (state: State) =
         | Backoffice.Types.Msg.Logout -> 
             // intercept logout message of the backoffice child
             let nextState, _ = init()
-            nextState, Navigation.newUrl "/#posts"
+            nextState, Urls.navigate [ Urls.posts ]
         | _ -> 
             match state.SecurityToken with 
             | Some token -> 

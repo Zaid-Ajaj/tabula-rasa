@@ -16,10 +16,14 @@
     <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/View.fs" />
     <Compile Include="App/Admin/Backoffice/NewArticle/State.fs" />
-        <!-- Admin Backoffice Drafts -->
+    <!-- Admin Backoffice Drafts -->
     <Compile Include="App/Admin/Backoffice/Drafts/Types.fs" />
     <Compile Include="App/Admin/Backoffice/Drafts/View.fs" />
     <Compile Include="App/Admin/Backoffice/Drafts/State.fs" />
+    <!-- Admin Backoffice Articles -->
+    <Compile Include="App/Admin/Backoffice/Articles/Types.fs" />
+    <Compile Include="App/Admin/Backoffice/Articles/View.fs" />
+    <Compile Include="App/Admin/Backoffice/Articles/State.fs" />
     <!-- Admin Backoffice -->
     <Compile Include="App/Admin/Backoffice/Types.fs" />
     <Compile Include="App/Admin/Backoffice/View.fs" />

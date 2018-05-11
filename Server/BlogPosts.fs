@@ -81,6 +81,20 @@ let deleteDraft (db: LiteDatabase) (draftReq: SecureRequest<int>) =
             if posts.Delete(postById) > 0 then DraftDeleted
             else DeleteDraftResult.DatabaseErrorWhileDeletingDraft
 
+let deletePublishedArticle (db: LiteDatabase) (draftReq: SecureRequest<int>) = 
+    match Security.validateJwt draftReq.Token with 
+    | None -> DeleteArticleResult.AuthError UserUnauthorized
+    | Some user -> 
+        let posts = db.GetCollection<BlogPost> "posts"                         
+        let postById = Query.EQ("_id", BsonValue(draftReq.Body))
+        let postIsNotDraft = Query.EQ("IsDraft", BsonValue(false))
+        let draftById = Query.And(postById, postIsNotDraft)
+        match posts.TryFind(draftById) with 
+        | None -> DeleteArticleResult.ArticleDoesNotExist 
+        | Some _ -> 
+            if posts.Delete(postById) > 0 then DeleteArticleResult.ArticleDeleted
+            else DeleteArticleResult.DatabaseErrorWhileDeletingArticle   
+
 let publishDraft (db: LiteDatabase) (draftReq: SecureRequest<int>) = 
     match Security.validateJwt draftReq.Token with 
     | None -> PublishDraftResult.AuthError UserUnauthorized
@@ -105,7 +119,7 @@ let toBlogPostItem (post: BlogPost) =
       DateAdded = post.DateAdded;
       Tags = post.Tags }
         
-let getAll (database: LiteDatabase) : list<BlogPostItem> = 
+let getPublishedArticles (database: LiteDatabase) : list<BlogPostItem> = 
     let posts = database.GetCollection<BlogPost> "posts"
     let notDraft = Query.EQ("IsDraft", BsonValue(false))
     posts.Find(notDraft)

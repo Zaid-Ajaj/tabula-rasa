@@ -36,15 +36,12 @@ let update authToken (msg: Msg) (state: State) =
         state, Toastr.info (Toastr.message "An action is already taking place") 
     | AskPermissionToDeleteDraft draftId -> 
         let renderModal() = 
-            promise {
-                let! result =
-                    [ SweetAlert.Title "Are you sure you want to delete this draft?"
-                      SweetAlert.Text "You will not be able to undo this action"
-                      SweetAlert.Type SweetAlert.ModalType.Question
-                      SweetAlert.CancelButtonEnabled true ] 
-                    |> SweetAlert.render 
-                return result.value  
-            }
+            [ SweetAlert.Title "Are you sure you want to delete this draft?"
+              SweetAlert.Text "You will not be able to undo this action"
+              SweetAlert.Type SweetAlert.ModalType.Question
+              SweetAlert.CancelButtonEnabled true ] 
+            |> SweetAlert.render 
+            |> Promise.map (fun result -> result.value)
 
         let handleModal = function 
             | true -> DeleteDraft draftId

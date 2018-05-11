@@ -5,24 +5,17 @@ open Admin.Backoffice.Drafts.Types
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
-let icon isLoading name = 
-    let className =
-        if isLoading 
-        then "fa fa-circle-o-notch fa-spin fa-fw"
-        else sprintf "fa fa-%s" name
-    i [ ClassName className; Style [ MarginRight 5 ] ] [ ]
-
 let draftActions isDeleting isPublishing (draft: BlogPostItem) dispatch = 
     [ button [ ClassName "btn btn-info"; Style [ Margin 5 ]  ] 
-             [ span [ ] [ icon false "edit"; str "Edit" ] ]
+             [ span [ ] [ Common.icon false "edit"; str "Edit" ] ]
       button [ ClassName "btn btn-success";
                OnClick (fun _ -> dispatch (PublishDraft draft.Id))
                Style [ Margin 5 ]  ] 
-             [ span [ ] [ icon isPublishing "rocket"; str "Publish" ] ]
+             [ span [ ] [ Common.icon isPublishing "rocket"; str "Publish" ] ]
       button [ ClassName "btn btn-danger"; 
                Style [ Margin 5 ]
                OnClick (fun _ -> dispatch (AskPermissionToDeleteDraft draft.Id))  ] 
-             [ span [ ] [ icon isDeleting "times"; str "Delete"; ] ] ]
+             [ span [ ] [ Common.icon isDeleting "times"; str "Delete"; ] ] ]
 
 let render state dispatch = 
     match state.Drafts with  

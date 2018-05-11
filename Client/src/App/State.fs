@@ -18,7 +18,7 @@ let toHash page =
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Home) -> "#admin"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle) -> "#admin/new-post"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts) -> "#admin/drafts"
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Published) -> "#admin/published"
+  | Admin (Admin.Types.Page.Backoffice BackofficePage.Articles) -> "#admin/published-articles"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers) -> "#admin/subscribers"
   | Admin (Admin.Types.Page.Backoffice BackofficePage.Settings) -> "#admin/settings"
 
@@ -30,7 +30,7 @@ let pageParser: Parser<Page -> Page, Page> =
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s "admin")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s "admin" </> s "new-post")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s "admin" </> s "drafts")
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Published)) (s "admin" </> s "published")
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Articles)) (s "admin" </> s "published-articles")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s "admin" </> s "subscribers")
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s "admin" </> s "settings") ]
 

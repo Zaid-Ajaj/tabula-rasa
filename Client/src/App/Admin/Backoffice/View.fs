@@ -69,7 +69,7 @@ let homePage dispatch =
     [ Style [ PaddingLeft 30 ]  ]
     [ div 
         [ ClassName "row" ]
-        [ oneThirdPage stories Published dispatch
+        [ oneThirdPage stories Articles dispatch
           oneThirdPage drafts Drafts dispatch
           oneThirdPage settings Settings dispatch
           oneThirdPage writeArticle NewArticle dispatch 
@@ -84,5 +84,7 @@ let render currentPage (state: State) dispatch =
         NewArticle.View.render state.NewArticleState (NewArticleMsg >> dispatch)
     | Drafts -> 
         Drafts.View.render state.DraftsState (DraftsMsg >> dispatch) 
+    | Articles -> 
+        Articles.View.render state.ArticlesState (ArticlesMsg >> dispatch)
     | _ ->
         div [ ] [ ]

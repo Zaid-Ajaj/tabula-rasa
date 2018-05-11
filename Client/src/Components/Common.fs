@@ -8,6 +8,12 @@ let spinner =
     [ ClassName "cssload-container" ]
     [ div [ ClassName "cssload-whirlpool" ] [ ] ]
 
+let icon isLoading name = 
+    let className =
+        if isLoading 
+        then "fa fa-circle-o-notch fa-spin fa-fw"
+        else sprintf "fa fa-%s" name
+    i [ ClassName className; Style [ MarginRight 5 ] ] [ ]
 
 let msgStyle color = 
     Style [ Color color; 

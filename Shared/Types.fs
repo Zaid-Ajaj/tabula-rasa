@@ -82,6 +82,12 @@ type DeleteDraftResult =
     | AuthError of AuthError
     | DatabaseErrorWhileDeletingDraft
 
+type DeleteArticleResult = 
+    | ArticleDoesNotExist
+    | ArticleDeleted
+    | AuthError of AuthError
+    | DatabaseErrorWhileDeletingArticle
+
 type PublishDraftResult = 
     | DraftDoesNotExist 
     | DraftPublished 
@@ -100,4 +106,5 @@ type Protocol =
        publishNewPost : SecureRequest<NewBlogPostReq> -> Async<AddPostResult> 
        savePostAsDraft : SecureRequest<NewBlogPostReq> -> Async<AddPostResult>
        deleteDraftById : SecureRequest<int> -> Async<DeleteDraftResult>
-       publishDraft : SecureRequest<int> -> Async<PublishDraftResult> }
+       publishDraft : SecureRequest<int> -> Async<PublishDraftResult>
+       deletePublishedArticleById : SecureRequest<int> -> Async<DeleteArticleResult> }

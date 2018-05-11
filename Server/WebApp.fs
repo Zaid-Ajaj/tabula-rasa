@@ -17,7 +17,7 @@ let createUsing store =
     let getBlogInfo() = async {  return Admin.blogInfoFromAdmin adminData }
     let publishNewPost req = async { return BlogPosts.publishNewPost database req  }
     let savePostAsDraft req = async { return BlogPosts.saveAsDraft database req  }  
-    let getPosts() = async { return BlogPosts.getAll database }    
+    let getPosts() = async { return BlogPosts.getPublishedArticles database }    
     let getPostBySlug slug = async { return BlogPosts.getPostBySlug database slug }
     
     let deleteDraft req = 
@@ -25,6 +25,8 @@ let createUsing store =
             do! Async.Sleep 2000 
             return BlogPosts.deleteDraft database req 
         }
+
+    let deletePublishedArticle req = async { return BlogPosts.deletePublishedArticle database req }
 
     let publishDraft req = 
       async {
@@ -52,7 +54,8 @@ let createUsing store =
            savePostAsDraft = savePostAsDraft
            getDrafts = getDrafts
            deleteDraftById = deleteDraft 
-           publishDraft = publishDraft }
+           publishDraft = publishDraft
+           deletePublishedArticleById = deletePublishedArticle }
     
     let clientServerProtocol = 
         remoting serverProtocol {

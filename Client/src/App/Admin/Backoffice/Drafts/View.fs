@@ -6,7 +6,9 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
 let draftActions isDeleting isPublishing (draft: BlogPostItem) dispatch = 
-    [ button [ ClassName "btn btn-info"; Style [ Margin 5 ]  ] 
+    [ button [ ClassName "btn btn-info";
+               OnClick (fun _ -> dispatch (EditDraft draft.Id))  
+               Style [ Margin 5 ]  ] 
              [ span [ ] [ Common.icon false "edit"; str "Edit" ] ]
       button [ ClassName "btn btn-success";
                OnClick (fun _ -> dispatch (PublishDraft draft.Id))

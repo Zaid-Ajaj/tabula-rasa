@@ -152,7 +152,18 @@ let getAllDrafts (database: LiteDatabase) (AuthToken(token)) =
         |> Seq.map toBlogPostItem
         |> List.ofSeq
         |> Ok
-     
+
+let getPostById (database: LiteDatabase)  (req: SecureRequest<int>) = 
+    match Security.validateJwt req.Token with 
+    | None -> Error "User unauthorized"
+    | Some user -> 
+        let posts = database.GetCollection<BlogPost> "posts"
+        posts.TryFindById(BsonValue(req.Body))
+        |> Option.map toBlogPostItem
+        |> function 
+            | None -> Error "Could not find the requested article"
+            | Some article -> Ok article
+
 let getPostBySlug (database: LiteDatabase) (slug: string) =
    let posts = database.GetCollection<BlogPost> "posts"
    let bySlug = Query.EQ("Slug", BsonValue(slug))

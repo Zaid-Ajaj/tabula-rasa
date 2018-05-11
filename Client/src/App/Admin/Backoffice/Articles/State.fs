@@ -94,5 +94,8 @@ let update authToken msg state =
         let nextState = { state with MakingDraft = None }
         nextState, Cmd.batch [ Cmd.ofMsg LoadArticles; Toastr.success (Toastr.message "Article was turned into a draft") ]
     
+    | EditArticle article ->    
+        state, Cmd.none
+    
     | DoNothing ->
         state, Cmd.none

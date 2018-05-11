@@ -20,4 +20,5 @@ type Msg =
     | DraftMade 
     | MakeDraftError of errorMsg:string
     | DeleteArticleError of string
+    | EditArticle of articleId:int 
     | DoNothing

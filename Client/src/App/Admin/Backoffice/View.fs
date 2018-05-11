@@ -86,5 +86,7 @@ let render currentPage (state: State) dispatch =
         Drafts.View.render state.DraftsState (DraftsMsg >> dispatch) 
     | Articles -> 
         Articles.View.render state.ArticlesState (ArticlesMsg >> dispatch)
+    | EditArticle articleId ->
+        EditArticle.View.render state.EditArticleState (EditArticleMsg >> dispatch)
     | _ ->
         div [ ] [ ]

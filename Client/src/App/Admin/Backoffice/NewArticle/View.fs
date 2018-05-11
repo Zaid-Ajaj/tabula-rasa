@@ -35,10 +35,7 @@ let title state dispatch =
           OnClick (fun _ -> dispatch Publish) ] 
         [ publishBtnContent ] ]
         
-let onTextChanged doSomethingWith = 
-  OnChange <| fun (ev: Fable.Import.React.FormEvent) ->
-    let inputTextValue : string = !!ev.target?value
-    doSomethingWith inputTextValue
+
 
 let spacing = Style [ Margin 5 ]
  
@@ -50,7 +47,7 @@ let contentEditor state dispatch =
            [ ClassName "form-control"
              Rows 13.0 
              DefaultValue state.Content
-             onTextChanged (SetContent >> dispatch) ] 
+             Common.onTextChanged (SetContent >> dispatch) ] 
            [ ] ]
 
 let titleAndSlug state dispatch = 
@@ -61,14 +58,14 @@ let titleAndSlug state dispatch =
         [ label [ spacing ] [ str "Title" ] 
           input [ ClassName "form-control"; 
                   DefaultValue state.Title
-                  onTextChanged (SetTitle >> dispatch)
+                  Common.onTextChanged (SetTitle >> dispatch)
                   spacing ] ]
       div 
         [ ClassName "col"; spacing ]
         [ label [ spacing ] [ str "Slug" ] 
           input [ ClassName "form-control";
                   DefaultValue state.Slug
-                  onTextChanged (SetSlug >> dispatch)
+                  Common.onTextChanged (SetSlug >> dispatch)
                   spacing ] ] ] 
 
 let tagsCreatable state dispatch = 

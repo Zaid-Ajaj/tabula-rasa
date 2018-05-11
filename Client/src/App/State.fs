@@ -31,6 +31,7 @@ let pageParser: Parser<Page -> Page, Page> =
           map (Posts PostsPage.AllPosts) (s Urls.posts )
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s Urls.admin)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s Urls.admin </> s Urls.newPost)
+          map (fun id -> Admin (Admin.Types.Page.Backoffice (BackofficePage.EditArticle id))) (s Urls.admin </> s Urls.editArticle </> i32)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s Urls.admin </> s Urls.drafts)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Articles)) (s Urls.admin </> s Urls.publishedArticles)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s Urls.admin </> s Urls.subscribers)

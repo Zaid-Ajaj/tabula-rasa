@@ -1,5 +1,6 @@
 module Common
 
+open Fable.Core.JsInterop
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
 
@@ -23,3 +24,8 @@ let msgStyle color =
             BorderRadius 10 ]
 
 let errorMsg msg = h2 [ msgStyle "crimson" ] [ str msg ]
+
+let onTextChanged doSomethingWith = 
+  OnChange <| fun (ev: Fable.Import.React.FormEvent) ->
+    let inputTextValue : string = !!ev.target?value
+    doSomethingWith inputTextValue

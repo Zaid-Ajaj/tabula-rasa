@@ -21,4 +21,5 @@ type Msg =
     | PublishDraftError of string
     | DraftDeleted 
     | DeleteDraftError of string
+    | EditDraft of draftId:int
     | NoOp

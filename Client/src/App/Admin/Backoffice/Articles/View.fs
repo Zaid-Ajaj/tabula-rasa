@@ -7,7 +7,9 @@ open Fable.Helpers.React
 
 
 let articleActions isDeleting makingDraft (article: BlogPostItem) dispatch = 
-    [ button [ ClassName "btn btn-info"; Style [ Margin 5 ]  ] 
+    [ button [ ClassName "btn btn-info";
+               OnClick (fun _ -> dispatch (EditArticle article.Id)) 
+               Style [ Margin 5 ]  ] 
              [ span [ ] [ Common.icon false "edit"; str "Edit" ] ]
       button [ ClassName "btn btn-success";
                OnClick (fun _ -> dispatch (MakeIntoDraft article.Id))

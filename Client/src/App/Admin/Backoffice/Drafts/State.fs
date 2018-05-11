@@ -105,5 +105,7 @@ let update authToken (msg: Msg) (state: State) =
         nextState, Toastr.error (Toastr.message errorMsg)
     | CancelDraftDeletion -> 
         state, Toastr.info (Toastr.message "Delete operation was cancelled")
+    | EditDraft draftId ->
+        state, Cmd.none
     | NoOp ->
         state, Cmd.none

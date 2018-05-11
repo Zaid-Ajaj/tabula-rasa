@@ -33,6 +33,19 @@ let update authToken msg state =
         let nextBackofficeCmd = Cmd.map NewArticleMsg nextNewArticleCmd
         nextBackofficeState, nextBackofficeCmd
 
+    | DraftsMsg (Drafts.Types.Msg.EditDraft draftId) ->
+        // When "Edit" button is clicked on one of the drafts to trigger "EditDraft" message
+        // then intercept this message at the parent level and supply the draft id to the state 
+        // of the "EditArticle" child, also issue a navigation command to go to the "EditArticle" page. 
+        let editArticleState = { state.EditArticleState with ArticleId = Some draftId }
+        let nextBackofficeState = { state with EditArticleState = editArticleState }
+        let backofficeCmds = 
+            [ Cmd.ofMsg (EditArticleMsg EditArticle.Types.Msg.LoadArticleToEdit);
+              Urls.navigate [ Urls.admin; Urls.editArticle; string draftId ] ]
+            |> Cmd.batch   
+                                          
+        nextBackofficeState, backofficeCmds
+    
     | DraftsMsg draftsMsg ->
         let prevDraftsState = state.DraftsState
         let nextDraftsState, nextDraftsCmd = Drafts.State.update authToken draftsMsg prevDraftsState
@@ -40,6 +53,18 @@ let update authToken msg state =
         let nextBackofficeCmd = Cmd.map DraftsMsg nextDraftsCmd
         nextBackofficeState, nextBackofficeCmd
     
+    | ArticlesMsg (Articles.Types.Msg.EditArticle articleId) ->
+        // When "Edit" button is clicked on one of the drafts to trigger "EditArticle" message
+        // then intercept this message at the parent level and supply the article id to the state 
+        // of the "EditArticle" child, also issue a navigation command to go to the "EditArticle" page. 
+        let editArticleState = { state.EditArticleState with ArticleId = Some articleId }
+        let nextBackofficeState = { state with EditArticleState = editArticleState }
+        let backofficeCmds = 
+            [ Cmd.ofMsg (EditArticleMsg EditArticle.Types.Msg.LoadArticleToEdit);
+              Urls.navigate [ Urls.admin; Urls.editArticle; string articleId ] ]
+            |> Cmd.batch   
+                                          
+        nextBackofficeState, backofficeCmds
     | ArticlesMsg articlesMsg ->
         let prevArticlesState = state.ArticlesState
         let nextArticlesState, nextArticlesCmd = Articles.State.update authToken articlesMsg prevArticlesState
@@ -49,7 +74,7 @@ let update authToken msg state =
     
     | EditArticleMsg editArticleMsg ->
         let prevEditArticleState = state.EditArticleState
-        let nextEditArticleState, nextEditArticleCmd = EditArticle.State.update editArticleMsg prevEditArticleState
+        let nextEditArticleState, nextEditArticleCmd = EditArticle.State.update authToken editArticleMsg prevEditArticleState
         let nextBackofficeState = { state with EditArticleState = nextEditArticleState }
         let nextBackofficeCmd = Cmd.map EditArticleMsg nextEditArticleCmd
         nextBackofficeState, nextBackofficeCmd

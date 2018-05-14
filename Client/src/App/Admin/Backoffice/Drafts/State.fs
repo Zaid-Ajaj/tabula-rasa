@@ -27,13 +27,17 @@ let update authToken (msg: Msg) (state: State) =
     | DraftsLoaded draftsFromServer ->
         let nextState = { state with Drafts = Body draftsFromServer }
         nextState, Cmd.none 
+    
     | DraftsLoadingError error -> 
         let nextState = { state with Drafts = LoadError error.Message }
         nextState, Cmd.none 
+    
     | AuthenticationError error ->
         state, Toastr.error (Toastr.message error)
+    
     | AskPermissionToDeleteDraft _ when not (canTakeAction state) ->
         state, Toastr.info (Toastr.message "An action is already taking place") 
+    
     | AskPermissionToDeleteDraft draftId -> 
         let renderModal() = 
             [ SweetAlert.Title "Are you sure you want to delete this draft?"
@@ -47,7 +51,7 @@ let update authToken (msg: Msg) (state: State) =
             | true -> DeleteDraft draftId
             | false ->  CancelDraftDeletion 
 
-        state, Cmd.ofPromise renderModal () handleModal (fun ex -> NoOp)
+        state, Cmd.ofPromise renderModal () handleModal (fun ex -> DoNothing)
 
     | DeleteDraft draftId ->
         let request = { Token = authToken; Body = draftId }
@@ -68,12 +72,14 @@ let update authToken (msg: Msg) (state: State) =
         
         let nextState = { state with DeletingDraft = Some draftId }
         nextState, deleteCmd
-    | DraftDeleted ->
-       
+    
+    | DraftDeleted ->   
         state, Cmd.batch [ Toastr.success (Toastr.message "Draft deleted")
                            Cmd.ofMsg LoadDrafts ] 
+    
     | PublishDraft _ when not (canTakeAction state) ->
         state, Toastr.info (Toastr.message "An action is already taking place")
+    
     | PublishDraft draftId ->
         let request = { Token = authToken; Body = draftId }
         let successHandler = function 
@@ -93,19 +99,25 @@ let update authToken (msg: Msg) (state: State) =
         
         let nextState = { state with PublishingDraft = Some draftId }
         nextState, publishCmd
+    
     | DeleteDraftError errorMsg -> 
         let nextState = { state with DeletingDraft = None }
         nextState, Toastr.error (Toastr.message errorMsg)
+    
     | DraftPublished ->
         let nextState = { state with PublishingDraft = None }
         nextState, Cmd.batch [ Cmd.ofMsg LoadDrafts // reload
                                Toastr.success (Toastr.message "Draft published") ]
+    
     | PublishDraftError errorMsg ->
         let nextState = { state with PublishingDraft = None }
         nextState, Toastr.error (Toastr.message errorMsg)
+    
     | CancelDraftDeletion -> 
         state, Toastr.info (Toastr.message "Delete operation was cancelled")
+    
     | EditDraft draftId ->
         state, Cmd.none
-    | NoOp ->
+   
+    | DoNothing ->
         state, Cmd.none

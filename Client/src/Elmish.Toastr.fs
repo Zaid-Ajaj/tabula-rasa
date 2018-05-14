@@ -15,10 +15,8 @@ let private errorToastWithTitle (msg: string) (title: string)  : unit = import "
 
 let private infoToast (msg: string) : unit = import "info" "toastr" 
 let private infoToastWithTitle (msg: string) (title: string)  : unit = import "info" "toastr" 
-
 let private warningToast (msg: string) : unit = import "warning" "toastr" 
 let private warningToastWithTitle (msg: string) (title: string)  : unit = import "warning" "toastr" 
-
 let message msg = { Message = msg; Title = ""  }
 let withTitle title msg = { msg with Title = title }
 

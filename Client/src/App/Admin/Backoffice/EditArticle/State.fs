@@ -62,6 +62,6 @@ let update authToken msg state =
         
         | ArticleLoaded article -> 
             let nextState = { state with ArticleToEdit = Body article }
-            nextState, Toastr.success (Toastr.message "Article loaded")
+            nextState, Cmd.none
 
         | _ -> state, Cmd.none

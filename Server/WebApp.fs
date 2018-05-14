@@ -16,7 +16,7 @@ let createUsing store =
     let getBlogInfo() = async { return Admin.blogInfoFromAdmin adminData }
     let getPosts() = async { return BlogPosts.getPublishedArticles database }    
 
-    let serverProtocol : Protocol =
+    let serverProtocol : IBlogApi =
         {   getBlogInfo = getBlogInfo
             getPosts = getPosts 
             login = Admin.login database >> liftAsync

@@ -55,14 +55,13 @@ let update authToken msg (state: NewArticleState) =
         then state, warning "The slug cannot be empty"
         else 
           let nextState = { state with IsPublishing = true }
-          let server = Server.createProxy()
           let request : SecureRequest<NewBlogPostReq> = 
             { Token = authToken
               Body = { Title = state.Title; 
                        Slug = state.Slug; 
                        Content = state.Content; 
                        Tags = state.Tags } }
-          nextState, Cmd.ofAsync server.publishNewPost request
+          nextState, Cmd.ofAsync Server.api.publishNewPost request
                                  (function 
                                     | AddedPostId id -> Published
                                     | other -> PublishError "Could not publish post") 

@@ -15,6 +15,7 @@ type AppMsg =
   | NavigateTo of Option<Page>
   | PostsMsg of Posts.Types.Msg
   | AdminMsg of Admin.Types.Msg
+  | DoNothing 
 
 type AppState = {
     BlogInfo: Remote<BlogInfo>

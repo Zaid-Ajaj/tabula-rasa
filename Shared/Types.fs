@@ -9,6 +9,7 @@ type BlogInfo = {
     ProfileImageUrl: string
     About: string
     Bio : string
+    BlogTitle: string
 }
 
 type LoginInfo = {
@@ -103,7 +104,7 @@ type MakeDraftResult =
 let routes typeName methodName = 
  sprintf "/api/%s/%s" typeName methodName
  
-type Protocol = 
+type IBlogApi = 
     {  getBlogInfo : unit -> Async<BlogInfo>
        login : LoginInfo -> Async<LoginResult>
        getPosts : unit -> Async<list<BlogPostItem>>

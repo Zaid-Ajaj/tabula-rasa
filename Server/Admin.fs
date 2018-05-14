@@ -55,24 +55,22 @@ let login (db: LiteDatabase) (loginInfo: LoginInfo)  =
     let admins = db.GetCollection<AdminInfo> "admins"
     let username = loginInfo.Username
     let password = loginInfo.Password
-    
     let byUsername = Query.EQ("Username", BsonValue(username))
-
     match admins.TryFind(byUsername) with 
     | None -> UsernameDoesNotExist
     | Some user -> 
         let salt = user.PasswordSalt
         let hash = user.PasswordHash
         let passwordDidNotMatch = Security.verifyPassword password salt hash |> not
-        if passwordDidNotMatch then 
-            PasswordIncorrect
+        if passwordDidNotMatch then  PasswordIncorrect
         else
-        let userInfo : UserInfo = { Username = username; Claims = [| "admin" |] }
-        let token = encodeJwt userInfo
-        Success token
+          let userInfo = { Username = username; Claims = [| "admin" |] }
+          let token = encodeJwt userInfo
+          Success token
                 
 let blogInfoFromAdmin (admin: AdminInfo) : BlogInfo = 
     { Name = admin.Name; 
       Bio = admin.Bio;
       About = admin.About
-      ProfileImageUrl = admin.ProfileImageUrl }
+      ProfileImageUrl = admin.ProfileImageUrl
+      BlogTitle = admin.BlogTitle }

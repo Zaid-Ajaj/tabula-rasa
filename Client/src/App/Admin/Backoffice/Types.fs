@@ -17,6 +17,7 @@ type Msg =
     | DraftsMsg of Drafts.Types.Msg 
     | ArticlesMsg of Articles.Types.Msg 
     | EditArticleMsg of EditArticle.Types.Msg 
+    | SettingsMsg of Settings.Types.Msg
     | NavigateTo of Page
 
 type State = { 
@@ -24,4 +25,5 @@ type State = {
     EditArticleState : EditArticle.Types.State 
     DraftsState : Drafts.Types.State
     ArticlesState : Articles.Types.State
+    SettingsState : Settings.Types.State
 }

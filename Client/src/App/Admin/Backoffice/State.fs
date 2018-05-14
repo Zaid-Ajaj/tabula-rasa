@@ -23,6 +23,9 @@ let update authToken msg state =
         | Articles -> 
             state, Cmd.batch [ Urls.navigate [ Urls.admin; Urls.publishedArticles ];
                                Cmd.ofMsg (ArticlesMsg Articles.Types.Msg.LoadArticles) ]
+        | Settings ->
+            state, Cmd.batch [ Urls.navigate [ Urls.admin; Urls.settings ]; 
+                               Cmd.ofMsg (SettingsMsg Settings.Types.Msg.LoadBlogInfo) ]
         | _ -> 
             state, Urls.navigate [ Urls.admin ]
         
@@ -78,7 +81,14 @@ let update authToken msg state =
         let nextBackofficeState = { state with EditArticleState = nextEditArticleState }
         let nextBackofficeCmd = Cmd.map EditArticleMsg nextEditArticleCmd
         nextBackofficeState, nextBackofficeCmd
-        
+
+    | SettingsMsg settingsMsg ->
+        let prevSettingState = state.SettingsState 
+        let nextSettingState, nextSettingsCmd = Settings.State.update settingsMsg prevSettingState 
+        let nextBackofficeState = { state with SettingsState = nextSettingState }
+        let nextBackofficeCmd = Cmd.map SettingsMsg nextSettingsCmd
+        nextBackofficeState, nextBackofficeCmd
+    
     | Logout ->  
         state, Cmd.none
     
@@ -88,15 +98,18 @@ let init() =
     let initialDraftsState, draftsCmd = Drafts.State.init() 
     let initialArticlesState, articlesCmd = Articles.State.init() 
     let initialEditArticleState, editArticleCmd = EditArticle.State.init()
+    let initialSettingState, settingCmd = Settings.State.init()
 
     let initialState = {
         NewArticleState = newArticleState
         DraftsState = initialDraftsState
         ArticlesState = initialArticlesState
         EditArticleState = initialEditArticleState
+        SettingsState = initialSettingState
     }
 
     initialState, Cmd.batch [ Cmd.map DraftsMsg draftsCmd
                               Cmd.map NewArticleMsg newArticleCmd
                               Cmd.map ArticlesMsg articlesCmd
-                              Cmd.map EditArticleMsg editArticleCmd ]
+                              Cmd.map EditArticleMsg editArticleCmd
+                              Cmd.map SettingsMsg settingCmd ]

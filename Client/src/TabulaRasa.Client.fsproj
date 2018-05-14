@@ -29,6 +29,10 @@
     <Compile Include="App/Admin/Backoffice/Articles/Types.fs" />
     <Compile Include="App/Admin/Backoffice/Articles/View.fs" />
     <Compile Include="App/Admin/Backoffice/Articles/State.fs" />
+    <!-- Admin Backoffice Settings -->
+    <Compile Include="App/Admin/Backoffice/Settings/Types.fs" />
+    <Compile Include="App/Admin/Backoffice/Settings/View.fs" />
+    <Compile Include="App/Admin/Backoffice/Settings/State.fs" />
     <!-- Admin Backoffice -->
     <Compile Include="App/Admin/Backoffice/Types.fs" />
     <Compile Include="App/Admin/Backoffice/View.fs" />

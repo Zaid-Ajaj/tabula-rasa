@@ -84,7 +84,10 @@ let update msg state =
       
   | BlogInfoLoaded info ->
       let nextState = { state with BlogInfo = Body info }
-      nextState, Cmd.none
+      let setPageTitle title = 
+        Fable.Import.Browser.document.title <- title 
+
+      nextState, Cmd.attemptFunc setPageTitle info.BlogTitle (fun ex -> DoNothing)
       
   | BlogInfoLoadFailed msg ->
       let nextState = { state with BlogInfo = LoadError msg }
@@ -94,6 +97,9 @@ let update msg state =
       state, Navigation.newUrl (toHash page)
       
   | NavigateTo None ->
+      state, Cmd.none
+
+  | DoNothing ->
       state, Cmd.none
       
   | UrlUpdated page -> 

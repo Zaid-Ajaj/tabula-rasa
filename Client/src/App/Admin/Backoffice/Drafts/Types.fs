@@ -22,4 +22,4 @@ type Msg =
     | DraftDeleted 
     | DeleteDraftError of string
     | EditDraft of draftId:int
-    | NoOp
+    | DoNothing

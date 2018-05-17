@@ -117,4 +117,5 @@ type IBlogApi =
        deletePublishedArticleById : SecureRequest<int> -> Async<DeleteArticleResult>
        turnArticleToDraft: SecureRequest<int> -> Async<MakeDraftResult>
        getPostById : SecureRequest<int> -> Async<Result<BlogPostItem, string>>
-       savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>> }
+       savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>>
+       updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<string, string>> }

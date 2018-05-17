@@ -19,10 +19,12 @@ type UserInfo = {
 
 let createRandomKey() = 
     let generator = System.Security.Cryptography.RandomNumberGenerator.Create()
-    let randomNumber = Array.init 32 byte
-    generator.GetBytes(randomNumber)
-    randomNumber
+    let randomKey = Array.init 32 byte
+    generator.GetBytes(randomKey)
+    randomKey
 
+/// A pass phrase you create only once and save to a file on the server
+/// The next time the server runs, the pass phrase is read and used
 let private passPhrase =
     let securityTokenFile = FileInfo(Environment.securityTokenFile)
     if not securityTokenFile.Exists then
@@ -58,6 +60,7 @@ let utf8Bytes (input: string) = Encoding.UTF8.GetBytes(input)
 let base64 (input: byte[]) = Convert.ToBase64String(input)
 let sha256 = SHA256.Create()
 let sha256Hash (input: byte[]) : byte[] = sha256.ComputeHash(input)
+
 let verifyPassword password saltBase64 hashBase64 = 
     let salt = Convert.FromBase64String(saltBase64)
     Array.concat [ salt; utf8Bytes password ]

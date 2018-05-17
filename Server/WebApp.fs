@@ -29,6 +29,7 @@ let createUsing store =
             deletePublishedArticleById = BlogPosts.deletePublishedArticle database >> liftAsync
             turnArticleToDraft = BlogPosts.turnArticleToDraft database >> liftAsync
             getPostById = BlogPosts.getPostById database >> liftAsync
-            savePostChanges = BlogPosts.savePostChanges database >> liftAsync }
+            savePostChanges = BlogPosts.savePostChanges database >> liftAsync
+            updateBlogInfo = Admin.updateBlogInfo database >> liftAsync }
     
     remoting serverProtocol { use_route_builder routes }

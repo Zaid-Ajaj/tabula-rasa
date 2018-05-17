@@ -20,3 +20,4 @@ type Msg =
     | SaveChangedError of string
     | ShowUserSettings 
     | ShowBlogSettings 
+    | ChangePassword

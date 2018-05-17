@@ -67,7 +67,29 @@ let login (db: LiteDatabase) (loginInfo: LoginInfo)  =
           let userInfo = { Username = username; Claims = [| "admin" |] }
           let token = encodeJwt userInfo
           Success token
-                
+
+let updateBlogInfo (db: LiteDatabase) (req: SecureRequest<BlogInfo>) = 
+    match Security.validateJwt req.Token with 
+    | None -> Error "User is unauthorized"
+    | Some user when not (Array.contains "admin" user.Claims) -> Error "User must be an admin"
+    | Some admin ->
+        let admins = db.GetCollection<AdminInfo> "admins"
+        match admins.TryFind(Query.EQ("Username", BsonValue(admin.Username))) with 
+        | None -> Error "Admin was not found"
+        | Some foundAdmin -> 
+            let blogInfo = req.Body
+            let modifiedAdminInfo = 
+                { foundAdmin with 
+                    Name = blogInfo.Name
+                    Bio = blogInfo.Bio
+                    About = blogInfo.About
+                    ProfileImageUrl = blogInfo.ProfileImageUrl
+                    BlogTitle = blogInfo.BlogTitle  } 
+
+            if admins.Update(modifiedAdminInfo) 
+            then Ok "Updated succesfully"
+            else Error "Database error while updaing admin blog info" 
+
 let blogInfoFromAdmin (admin: AdminInfo) : BlogInfo = 
     { Name = admin.Name; 
       Bio = admin.Bio;

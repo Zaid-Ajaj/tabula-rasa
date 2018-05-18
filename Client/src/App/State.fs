@@ -72,6 +72,9 @@ let update msg state =
       let appCmd = Cmd.map PostsMsg postsCmd
       appState, appCmd
 
+  | AdminMsg (Admin.Types.BackofficeMsg (Admin.Backoffice.Types.SettingsMsg ((Admin.Backoffice.Settings.Types.ChangesSaved msg)))) ->
+        state, Cmd.ofMsg LoadBlogInfo
+  
   | AdminMsg msg ->
       let nextAdminState, adminCmd = Admin.State.update msg state.Admin
       let nextAppState = { state with Admin = nextAdminState }
@@ -82,13 +85,16 @@ let update msg state =
       let nextState = { state with BlogInfo = Loading }
       nextState, Http.loadBlogInfo
       
-  | BlogInfoLoaded info ->
-      let nextState = { state with BlogInfo = Body info }
+  | BlogInfoLoaded (Ok blogInfo) ->
+      let nextState = { state with BlogInfo = Body blogInfo }
       let setPageTitle title = 
         Fable.Import.Browser.document.title <- title 
-
-      nextState, Cmd.attemptFunc setPageTitle info.BlogTitle (fun ex -> DoNothing)
+      nextState, Cmd.attemptFunc setPageTitle blogInfo.BlogTitle (fun ex -> DoNothing)
       
+  | BlogInfoLoaded (Error errorMsg) ->
+     let nextState = { state with BlogInfo = LoadError errorMsg }
+     nextState, Toastr.error (Toastr.message errorMsg)
+
   | BlogInfoLoadFailed msg ->
       let nextState = { state with BlogInfo = LoadError msg }
       nextState, Cmd.none

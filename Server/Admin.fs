@@ -70,12 +70,12 @@ let login (db: LiteDatabase) (loginInfo: LoginInfo)  =
 
 let updateBlogInfo (db: LiteDatabase) (req: SecureRequest<BlogInfo>) = 
     match Security.validateJwt req.Token with 
-    | None -> Error "User is unauthorized"
-    | Some user when not (Array.contains "admin" user.Claims) -> Error "User must be an admin"
+    | None -> Error (ErrorMsg "User is unauthorized")
+    | Some user when not (Array.contains "admin" user.Claims) -> Error (ErrorMsg "User must be an admin")
     | Some admin ->
         let admins = db.GetCollection<AdminInfo> "admins"
         match admins.TryFind(Query.EQ("Username", BsonValue(admin.Username))) with 
-        | None -> Error "Admin was not found"
+        | None -> Error (ErrorMsg "Admin was not found")
         | Some foundAdmin -> 
             let blogInfo = req.Body
             let modifiedAdminInfo = 
@@ -87,8 +87,8 @@ let updateBlogInfo (db: LiteDatabase) (req: SecureRequest<BlogInfo>) =
                     BlogTitle = blogInfo.BlogTitle  } 
 
             if admins.Update(modifiedAdminInfo) 
-            then Ok "Updated succesfully"
-            else Error "Database error while updaing admin blog info" 
+            then Ok (SuccessMsg "Updated succesfully")
+            else Error (ErrorMsg "Database error while updaing admin blog info") 
 
 let blogInfoFromAdmin (admin: AdminInfo) : BlogInfo = 
     { Name = admin.Name; 
@@ -96,3 +96,12 @@ let blogInfoFromAdmin (admin: AdminInfo) : BlogInfo =
       About = admin.About
       ProfileImageUrl = admin.ProfileImageUrl
       BlogTitle = admin.BlogTitle }
+
+let blogInfo (db: LiteDatabase) : Result<BlogInfo, string> = 
+    db.GetCollection<AdminInfo> "admins"
+    |> fun admins -> admins.FindAll()
+    |> Seq.tryHead
+    |> Option.map blogInfoFromAdmin
+    |> function 
+        | Some blogInfo -> Ok blogInfo 
+        | None -> Error ""

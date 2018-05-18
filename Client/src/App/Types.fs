@@ -9,7 +9,7 @@ type Page =
 
 type AppMsg =
   | LoadBlogInfo
-  | BlogInfoLoaded of BlogInfo
+  | BlogInfoLoaded of Result<BlogInfo, string> 
   | BlogInfoLoadFailed of error:string
   | UrlUpdated of Page
   | NavigateTo of Option<Page>

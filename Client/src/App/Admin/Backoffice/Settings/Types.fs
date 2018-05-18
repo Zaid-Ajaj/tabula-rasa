@@ -4,11 +4,12 @@ open Shared
 
 type State = 
     { BlogInfo : Remote<BlogInfo>
+      IsChangingChanges : bool
       ShowingUserSettings : bool }
 
 type Msg = 
     | LoadBlogInfo 
-    | BlogInfoLoaded of BlogInfo 
+    | BlogInfoLoaded of Result<BlogInfo, string> 
     | LoadBlogInfoError of string  
     | SetTitle of string 
     | SetName of string 
@@ -16,8 +17,8 @@ type Msg =
     | SetAbout of string
     | SetProfileImgUrl of string
     | SaveChanges 
-    | ChangesSaved 
-    | SaveChangedError of string
+    | ChangesSaved of successMsg:string
+    | SaveChangesError of string
     | ShowUserSettings 
     | ShowBlogSettings 
     | ChangePassword

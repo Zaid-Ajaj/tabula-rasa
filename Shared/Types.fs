@@ -101,11 +101,14 @@ type MakeDraftResult =
     | AuthError of AuthError
     | DatabaseErrorWhileMakingDraft    
 
+type SuccessMsg = SuccessMsg of string 
+type ErrorMsg = ErrorMsg of string
+
 let routes typeName methodName = 
  sprintf "/api/%s/%s" typeName methodName
  
 type IBlogApi = 
-    {  getBlogInfo : unit -> Async<BlogInfo>
+    {  getBlogInfo : unit -> Async<Result<BlogInfo, string>>
        login : LoginInfo -> Async<LoginResult>
        getPosts : unit -> Async<list<BlogPostItem>>
        getPostBySlug : string -> Async<Option<BlogPostItem>>
@@ -118,4 +121,4 @@ type IBlogApi =
        turnArticleToDraft: SecureRequest<int> -> Async<MakeDraftResult>
        getPostById : SecureRequest<int> -> Async<Result<BlogPostItem, string>>
        savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>>
-       updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<string, string>> }
+       updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<SuccessMsg, ErrorMsg>> }

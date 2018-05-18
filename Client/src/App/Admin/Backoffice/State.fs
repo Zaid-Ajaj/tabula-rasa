@@ -84,7 +84,7 @@ let update authToken msg state =
 
     | SettingsMsg settingsMsg ->
         let prevSettingState = state.SettingsState 
-        let nextSettingState, nextSettingsCmd = Settings.State.update settingsMsg prevSettingState 
+        let nextSettingState, nextSettingsCmd = Settings.State.update authToken settingsMsg prevSettingState 
         let nextBackofficeState = { state with SettingsState = nextSettingState }
         let nextBackofficeCmd = Cmd.map SettingsMsg nextSettingsCmd
         nextBackofficeState, nextBackofficeCmd

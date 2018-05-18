@@ -2,7 +2,6 @@ module WebApp
 
 open Shared
 open Fable.Remoting.Suave
-open BlogPosts
 
 let liftAsync x = async { return x }
 
@@ -11,9 +10,8 @@ let createUsing store =
     let database = Storage.createDatabaseUsing store
     // create initial admin guest admin if one does not exists
     Admin.writeAdminIfDoesNotExists database Admin.guestAdmin 
-    let adminData = Admin.readAdminData database
    
-    let getBlogInfo() = async { return Admin.blogInfoFromAdmin adminData }
+    let getBlogInfo() = async { return Admin.blogInfo database }
     let getPosts() = async { return BlogPosts.getPublishedArticles database }    
 
     let serverProtocol : IBlogApi =
@@ -32,4 +30,7 @@ let createUsing store =
             savePostChanges = BlogPosts.savePostChanges database >> liftAsync
             updateBlogInfo = Admin.updateBlogInfo database >> liftAsync }
     
-    remoting serverProtocol { use_route_builder routes }
+    remoting serverProtocol { 
+        use_logger (printfn "%s")
+        use_route_builder routes 
+    }

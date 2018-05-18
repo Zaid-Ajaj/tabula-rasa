@@ -4,17 +4,23 @@ open Shared
 open Elmish
 open Admin.Backoffice.Settings.Types 
 
-let init() = { BlogInfo = Empty; ShowingUserSettings = false }, Cmd.none
+let init() = { BlogInfo = Empty;
+               IsChangingChanges = false;  
+               ShowingUserSettings = false }, Cmd.none
 
-let update msg state = 
+let update authToken msg state = 
     match msg with 
     | LoadBlogInfo ->
         let nextState = { state with BlogInfo = Loading }
         nextState, Cmd.ofAsync Server.api.getBlogInfo () BlogInfoLoaded (fun ex -> LoadBlogInfoError "Network error while loading blog information")
     
-    | BlogInfoLoaded blogInfo ->
+    | BlogInfoLoaded (Ok blogInfo) ->
         let nextState = { state with BlogInfo = Body blogInfo } 
         nextState, Cmd.none 
+
+    | BlogInfoLoaded (Error errorMsg) ->
+        let nextState = { state with BlogInfo = LoadError errorMsg }
+        nextState, Toastr.error (Toastr.message errorMsg)
 
     | LoadBlogInfoError errorMsg ->
         let nextState = { state with BlogInfo = LoadError errorMsg }
@@ -57,6 +63,24 @@ let update msg state =
                 let nextState = { state with BlogInfo = Body nextBlogInfo }
                 nextState, Cmd.none
 
-            | _ -> state, Cmd.none 
+            | SaveChanges ->
+                let nextState = { state with IsChangingChanges = true  }
+                let request = { Token = authToken; Body = blogInfo }
+                let updateBlogInfoCmd = 
+                    Cmd.ofAsync Server.api.updateBlogInfo 
+                                request
+                                (function 
+                                    | Ok (SuccessMsg msg) -> ChangesSaved msg
+                                    | Error (ErrorMsg msg) -> SaveChangesError msg)  
+                                (fun ex -> SaveChangesError "Network error occurred while update the blog info")
+                nextState, updateBlogInfoCmd 
+            
+            | SaveChangesError errorMsg ->
+                state, Toastr.error (Toastr.message errorMsg)
+
+            | ChangesSaved msg ->
+                state, Toastr.success (Toastr.message msg)
+            
+            | _ -> state, Cmd.none
         
         | _ -> state, Cmd.none 

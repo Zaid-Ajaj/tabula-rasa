@@ -28,7 +28,7 @@ let normalize (month: int) =
     else (string month)
     
 let formatDate (date : DateTime) = 
-    sprintf "%d/%s/%d %d:%d" date.Year (normalize date.Month) date.Day date.Hour date.Minute
+    sprintf "%d/%s/%s %d:%d" date.Year (normalize date.Month) (normalize date.Day) date.Hour date.Minute
     
 let postItem (post: BlogPostItem) dispatch = 
     let datePublished = formatDate post.DateAdded

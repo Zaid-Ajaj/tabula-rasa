@@ -8,7 +8,7 @@ open Shared
 let update (state: State) (msg: Msg) = 
     match msg with
     | NavigateToPost slug ->
-        state, Navigation.newUrl ("#posts/" + slug)
+        state, Urls.navigate [ Urls.posts; slug ]
     | LoadLatestPosts ->
         let nextState = { state with LatestPosts = Loading }
         nextState, Http.loadPosts

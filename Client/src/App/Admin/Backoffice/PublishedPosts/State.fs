@@ -1,31 +1,31 @@
-module Admin.Backoffice.Articles.State
+module Admin.Backoffice.PublishedPosts.State
 
 open Shared
 open Elmish
-open Admin.Backoffice.Articles.Types
+open Admin.Backoffice.PublishedPosts.Types
 open Fable.PowerPack
 
 let init() = 
     let initState = 
-       {  Articles = Remote.Empty
-          DeletingArticle = None
+       {  PublishedPosts = Remote.Empty
+          DeletingPost = None
           MakingDraft = None }
     initState, Cmd.none 
 
 let update authToken msg state = 
     match msg with 
-    | LoadArticles -> 
-        let nextState = { state with Articles = Loading }
-        nextState, Cmd.ofAsync Server.api.getPosts () ArticlesLoaded (fun ex -> LoadArticlesError "Network error while retrieving blog posts")
+    | LoadPublishedPosts -> 
+        let nextState = { state with PublishedPosts = Loading }
+        nextState, Cmd.ofAsync Server.api.getPosts () PublishedPostsLoaded (fun ex -> LoadPublishedPostsError "Network error while retrieving blog posts")
     
-    | ArticlesLoaded articles -> 
-        let nextState = { state with Articles = Body articles }
+    | PublishedPostsLoaded articles -> 
+        let nextState = { state with PublishedPosts = Body articles }
         nextState, Cmd.none
     
-    | LoadArticlesError errorMsg ->
+    | LoadPublishedPostsError errorMsg ->
         state, Toastr.error (Toastr.message errorMsg)
     
-    | AskPermissionToDeleteArticle articleId ->
+    | AskPermissionToDeletePost postId ->
         let renderModal() = 
             [ SweetAlert.Title "Are you sure you want to delete this article?"
               SweetAlert.Text "You will not be able to undo this action"
@@ -35,40 +35,40 @@ let update authToken msg state =
             |> Promise.map (fun result -> result.value)
 
         let handleModal = function 
-            | true -> DeleteArticle articleId
-            | false ->  CancelArticleDeletion 
+            | true -> DeletePost postId
+            | false ->  CancelPostDeletion 
 
         state, Cmd.ofPromise renderModal () handleModal (fun _ -> DoNothing)        
     
-    | CancelArticleDeletion -> 
+    | CancelPostDeletion -> 
         state, Toastr.info (Toastr.message "Delete operation was cancelled")
     
-    | DeleteArticle articleId -> 
-        let nextState = { state with DeletingArticle = Some articleId }
-        let request = { Token = authToken; Body = articleId }
+    | DeletePost postId -> 
+        let nextState = { state with DeletingPost = Some postId }
+        let request = { Token = authToken; Body = postId }
         let successHandler = function 
             | DeleteArticleResult.ArticleDeleted ->     
-                ArticleDeleted 
+                PostDeleted 
             | DeleteArticleResult.AuthError (UserUnauthorized) -> 
-                DeleteArticleError "User was unauthorized to delete the article"
+                DeletePostError "User was unauthorized to delete the article"
             | DeleteArticleResult.ArticleDoesNotExist ->
-                DeleteArticleError "It seems that the article does not exist any more"
+                DeletePostError "It seems that the article does not exist any more"
             | DeleteArticleResult.DatabaseErrorWhileDeletingArticle ->
-                DeleteArticleError "Internal error of the server's database while deleting the article"
+                DeletePostError "Internal error of the server's database while deleting the article"
         
         let deleteCmd = 
             Cmd.ofAsync 
                 Server.api.deletePublishedArticleById request
                 successHandler
-                (fun _ -> DeleteArticleError "Network error while occured while deleting the article") 
+                (fun _ -> DeletePostError "Network error while occured while deleting the article") 
         nextState,  deleteCmd   
     
-    | ArticleDeleted -> 
-        let nextState = { state with DeletingArticle = None }
-        nextState, Cmd.batch [ Cmd.ofMsg LoadArticles; Toastr.success (Toastr.message "Article was deleted") ] 
+    | PostDeleted -> 
+        let nextState = { state with DeletingPost = None }
+        nextState, Cmd.batch [ Cmd.ofMsg LoadPublishedPosts; Toastr.success (Toastr.message "Article was deleted") ] 
      
-    | DeleteArticleError errorMsg ->
-        let nextState = { state with DeletingArticle = None }
+    | DeletePostError errorMsg ->
+        let nextState = { state with DeletingPost = None }
         nextState, Toastr.error (Toastr.message errorMsg)
     
     | MakeIntoDraft articleId -> 
@@ -87,14 +87,14 @@ let update authToken msg state =
         nextState, cmd
     
     | MakeDraftError errorMsg -> 
-        let nextState = { state with DeletingArticle = None }
+        let nextState = { state with DeletingPost = None }
         nextState, Toastr.error (Toastr.message errorMsg)
     
     | DraftMade -> 
         let nextState = { state with MakingDraft = None }
-        nextState, Cmd.batch [ Cmd.ofMsg LoadArticles; Toastr.success (Toastr.message "Article was turned into a draft") ]
+        nextState, Cmd.batch [ Cmd.ofMsg LoadPublishedPosts; Toastr.success (Toastr.message "Article was turned into a draft") ]
     
-    | EditArticle articleId ->    
+    | EditPost postId ->    
         state, Cmd.none
     
     | DoNothing ->

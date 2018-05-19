@@ -30,11 +30,12 @@ let render state dispatch =
          [ h1 [ ] [ str "Drafts" ]    
            table [ ClassName "table table-bordered" ]
                  [ thead [ ] 
-                         [ th [ ] [ str "ID" ]
-                           th [ ] [ str "Title" ]
-                           th [ ] [ str "Tags" ]
-                           th [ ] [ str "Slug" ]
-                           th [ ] [ str "Actions" ] ]
+                         [ tr [ ] 
+                              [ th [ ] [ str "ID" ]
+                                th [ ] [ str "Title" ]
+                                th [ ] [ str "Tags" ]
+                                th [ ] [ str "Slug" ]
+                                th [ ] [ str "Actions" ] ] ]
                    tbody [ ]  
                          [ for draft in loadedDrafts -> 
                              let isPublishing = (state.PublishingDraft = Some draft.Id) 

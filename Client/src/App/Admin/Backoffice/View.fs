@@ -69,25 +69,23 @@ let homePage dispatch =
     [ Style [ PaddingLeft 30 ]  ]
     [ div 
         [ ClassName "row" ]
-        [ oneThirdPage stories Articles dispatch
+        [ oneThirdPage stories PublishedPosts dispatch
           oneThirdPage drafts Drafts dispatch
           oneThirdPage settings Settings dispatch
-          oneThirdPage writeArticle NewArticle dispatch 
+          oneThirdPage writeArticle NewPost dispatch 
           logout dispatch ] ]
 
 let render currentPage (state: State) dispatch = 
     match currentPage with
     | Home -> 
         homePage dispatch
-    | NewArticle ->
+    | NewPost ->
         NewArticle.View.render state.NewArticleState (NewArticleMsg >> dispatch)
     | Drafts -> 
         Drafts.View.render state.DraftsState (DraftsMsg >> dispatch) 
-    | Articles -> 
-        Articles.View.render state.ArticlesState (ArticlesMsg >> dispatch)
+    | PublishedPosts -> 
+        PublishedPosts.View.render state.PublishedPostsState (PublishedPostsMsg >> dispatch)
     | EditArticle articleId ->
         EditArticle.View.render state.EditArticleState (EditArticleMsg >> dispatch)
     | Settings ->
         Settings.View.render state.SettingsState (SettingsMsg >> dispatch)
-    | _ ->
-        div [ ] [ ]

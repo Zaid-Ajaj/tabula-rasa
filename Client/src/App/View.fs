@@ -6,15 +6,21 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open React.Responsive
 
-let menuItem label (page: Option<Page>) currentPage dispatcher =
+let menuItem label page currentPage dispatcher =
     div
       [ classList  
          [ "menu-item", true
-           "menu-item-selected", page = currentPage ] 
+           "menu-item-selected", Some page = currentPage ] 
         OnClick (fun _ -> dispatcher (NavigateTo page)) ]
       [ str label ]
 
-let sidebar (blogInfo: BlogInfo) state dispatcher =
+//let adminMenuItems state dispatch = 
+//  [ menuItem "Stories" (Some (Page.Admin (Admin.Types.Page.Backoffice (Admin.Backoffice.Types.Page.Articles)))) state.CurrentPage dispatch 
+//    menuItem "Drafts" (Some (Page.Admin (Admin.Types.Page.Backoffice (Admin.Backoffice.Types.Page.Drafts)))) state.CurrentPage dispatch 
+//    menuItem "New Article" (Some (Page.Admin (Admin.Types.Page.Backoffice (Admin.Backoffice.Types.Page.NewArticle)))) state.CurrentPage dispatch 
+//    menuItem "Settings" (Some (Page.Admin (Admin.Types.Page.Backoffice (Admin.Backoffice.Types.Page.Settings)))) state.CurrentPage dispatch ]
+
+let sidebar (blogInfo: BlogInfo) state dispatch =
   aside
     [ ClassName "fit-parent child-space"; Style [ TextAlign "center" ] ]
     [ div
@@ -26,8 +32,9 @@ let sidebar (blogInfo: BlogInfo) state dispatcher =
         [ ClassName "quote" ]
         [ str blogInfo.Bio ]
       
-      menuItem "Posts" (Some (Posts Posts.Types.Page.AllPosts)) state.CurrentPage dispatcher
-      menuItem "About" (Some Page.About) state.CurrentPage dispatcher ]
+      menuItem "Posts" (Posts Posts.Types.Page.AllPosts) state.CurrentPage dispatch
+      menuItem "About" (Page.About) state.CurrentPage dispatch ]
+      //ofList [ if state.Admin.SecurityToken.IsSome then yield! adminMenuItems state dispatch ]  ]
 
 let mobileHeader (blogInfo: BlogInfo) = 
   div 

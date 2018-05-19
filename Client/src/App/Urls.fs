@@ -1,15 +1,34 @@
 module Urls
 
+open Fable.Import.Browser 
+
 let hashPrefix = sprintf "#%s"
-let about = "about"
-let admin = "admin"
-let posts = "posts"
-let newPost = "new-post" 
-let drafts = "drafts"
-let publishedArticles = "published-articles"
-let login = "login"
-let settings = "settings"
-let subscribers = "subscribers"
-let editArticle = "edit-article"
+let [<Literal>] about = "about"
+let  [<Literal>] admin = "admin"
+let [<Literal>] posts = "posts"
+let [<Literal>] newPost = "new-post" 
+let [<Literal>] drafts = "drafts"
+let [<Literal>] publishedPosts = "published-posts"
+let [<Literal>] login = "login"
+let [<Literal>] settings = "settings"
+let [<Literal>] subscribers = "subscribers"
+let [<Literal>] editArticle = "edit-article"
 let combine xs = List.fold (sprintf "%s/%s") "" xs
-let navigate xs = Elmish.Browser.Navigation.Navigation.newUrl (hashPrefix (combine xs))
+
+let  [<Literal>]  navigationEvent = "NavigationEvent"
+
+let newUrl (newUrl:string ): Elmish.Cmd<_> =
+    [fun _ -> history.pushState((), "", newUrl)
+              let ev = document.createEvent_CustomEvent()
+              ev.initCustomEvent (navigationEvent, true, true, obj())
+              window.dispatchEvent ev
+              |> ignore ]
+
+         
+let navigate xs = newUrl (hashPrefix (combine xs))
+
+
+let (|Int|_|) input = 
+    match System.Int32.TryParse input with 
+    | true, n -> Some n 
+    | _ -> None 

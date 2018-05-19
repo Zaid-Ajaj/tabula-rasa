@@ -1,28 +1,34 @@
 module App.State
 
+open System
 open Elmish
 open Elmish.Browser.UrlParser
 open Elmish.Browser.Navigation
 open App.Types
 open Shared
+open Fable.Import.Browser
+open Fable
 
 type BackofficePage = Admin.Backoffice.Types.Page
 type PostsPage = Posts.Types.Page
 
-let toHash page =
-  match page with
-  | About -> Urls.about
-  | Posts PostsPage.AllPosts -> Urls.posts
-  | Posts (PostsPage.Post slug) -> Urls.combine [ Urls.posts; slug ]
-  | Admin Admin.Types.Page.Login -> Urls.login 
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Home) -> Urls.admin
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle) -> Urls.combine [ Urls.admin; Urls.newPost ]
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts) -> Urls.combine [ Urls.drafts; Urls.drafts ]
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Articles) -> Urls.combine [ Urls.admin; Urls.publishedArticles ]
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers) -> Urls.combine [ Urls.admin; Urls.subscribers ]
-  | Admin (Admin.Types.Page.Backoffice BackofficePage.Settings) -> Urls.combine [ Urls.admin; Urls.settings ]
-  | Admin (Admin.Types.Page.Backoffice (BackofficePage.EditArticle editArticleId)) -> Urls.combine [ Urls.admin; Urls.editArticle; string editArticleId ]
-  |> Urls.hashPrefix
+let pageHash = function 
+    | Page.About -> Urls.about 
+    | Page.Posts page -> 
+        match page with 
+        | Posts.Types.Page.AllPosts -> Urls.posts
+        | Posts.Types.Page.Post postSlug -> Urls.combine [ Urls.posts; postSlug ]   
+    | Page.Admin adminPage ->
+        match adminPage with 
+        | Admin.Types.Page.Login -> Urls.login
+        | Admin.Types.Page.Backoffice backofficePage ->
+            match backofficePage with 
+            | BackofficePage.Home -> Urls.admin
+            | BackofficePage.NewPost -> Urls.combine [ Urls.admin; Urls.newPost ]   
+            | BackofficePage.Drafts -> Urls.combine [ Urls.drafts; Urls.drafts ]  
+            | BackofficePage.PublishedPosts -> Urls.combine [ Urls.admin; Urls.publishedPosts ]
+            | BackofficePage.Settings -> Urls.combine [ Urls.admin; Urls.settings ]
+            | BackofficePage.EditArticle postId -> Urls.combine [ Urls.admin; Urls.editArticle; string postId ]
 
 let pageParser: Parser<Page -> Page, Page> =
   oneOf [ map About (s Urls.about)
@@ -30,39 +36,118 @@ let pageParser: Parser<Page -> Page, Page> =
           map (PostsPage.Post >> Posts) (s Urls.posts </> str)
           map (Posts PostsPage.AllPosts) (s Urls.posts )
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s Urls.admin)
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewArticle)) (s Urls.admin </> s Urls.newPost)
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewPost)) (s Urls.admin </> s Urls.newPost)
           map (fun id -> Admin (Admin.Types.Page.Backoffice (BackofficePage.EditArticle id))) (s Urls.admin </> s Urls.editArticle </> i32)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s Urls.admin </> s Urls.drafts)
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Articles)) (s Urls.admin </> s Urls.publishedArticles)
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Subscribers)) (s Urls.admin </> s Urls.subscribers)
+          map (Admin (Admin.Types.Page.Backoffice BackofficePage.PublishedPosts)) (s Urls.admin </> s Urls.publishedPosts)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s Urls.admin </> s Urls.settings) ]
 
-let urlUpdate (parsedPage: Option<Page>) currentState =
-  match parsedPage with
-  | None ->
-      currentState, Urls.navigate [ Urls.posts ]
-  | Some page ->
-      currentState, Cmd.ofMsg (UrlUpdated page)
 
-let init result =
+/// Tries to parse a url into a page 
+let parseUrl (urlHash: string) = 
+    let segments = 
+        urlHash.Substring(1, urlHash.Length - 1) // remove the hash sign
+        |> fun hash -> hash.Split '/'
+        |> List.ofArray
+        |> List.filter (String.IsNullOrWhiteSpace >> not)  
+
+    match segments with
+    | [ Urls.about ] -> 
+        // the about page
+        App.Types.Page.About
+        |> Some 
+
+    | [ Urls.posts ] -> 
+        // all posts page
+        Posts.Types.Page.AllPosts
+        |> App.Types.Page.Posts
+        |> Some
+
+    | [ Urls.posts; postSlug ] -> 
+        // matches against a specific post by it's slug
+        Posts.Types.Page.Post postSlug
+        |> App.Types.Page.Posts
+        |> Some  
+    
+    | [ Urls.admin ] -> 
+        // the home page of the backoffice
+        Admin.Backoffice.Types.Page.Home
+        |> Admin.Types.Page.Backoffice
+        |> App.Types.Page.Admin
+        |> Some
+
+    | [ Urls.admin; Urls.login ] -> 
+        // the login page 
+        Admin.Types.Page.Login
+        |> App.Types.Page.Admin
+        |> Some 
+
+    | [ Urls.admin; Urls.drafts ] ->
+        // the drafts page 
+        Admin.Backoffice.Types.Page.Drafts
+        |> Admin.Types.Page.Backoffice
+        |> App.Types.Page.Admin
+        |> Some 
+
+    | [ Urls.admin; Urls.publishedPosts ] ->
+        // the page of published stories
+        Admin.Backoffice.Types.Page.PublishedPosts
+        |> Admin.Types.Page.Backoffice
+        |> App.Types.Page.Admin
+        |> Some 
+
+    | [ Urls.admin; Urls.newPost ] ->
+        // the new post page
+        Admin.Backoffice.Types.Page.NewPost
+        |> Admin.Types.Page.Backoffice
+        |> App.Types.Page.Admin
+        |> Some 
+    
+    | [ Urls.admin; Urls.settings ] ->
+        // the settings page
+        Admin.Backoffice.Types.Page.Settings
+        |> Admin.Types.Page.Backoffice
+        |> App.Types.Page.Admin
+        |> Some 
+
+    | [ Urls.admin; Urls.editArticle; Urls.Int postId ] ->
+        // editing a post by the post id 
+        Admin.Backoffice.Types.Page.EditArticle postId 
+        |> Admin.Types.Page.Backoffice
+        |> App.Types.Page.Admin
+        |> Some
+
+    | _ -> None 
+
+
+let init() =
   let posts, postsCmd = Posts.State.init()
   let admin, adminCmd = Admin.State.init()
-  let model, cmd =
-    urlUpdate result
+  let model =
       { BlogInfo = Empty
         CurrentPage = None
         Admin = admin
         Posts = posts }
 
-  model, Cmd.batch [ cmd
+  let initialPageCmd = 
+    match parseUrl window.location.hash with  
+    | Some page -> Cmd.ofMsg (UrlUpdated page)
+    | None -> 
+        Posts.Types.Page.AllPosts
+        |> App.Types.Page.Posts
+        |> UrlUpdated
+        |> Cmd.ofMsg 
+
+
+  model, Cmd.batch [ initialPageCmd
                      Cmd.map PostsMsg postsCmd
                      Cmd.map AdminMsg adminCmd
                      Cmd.ofMsg LoadBlogInfo ]
 
 let showInfo msg = 
-     Toastr.message msg
-     |> Toastr.withTitle "Tabula Rasa"
-     |> Toastr.info  
+    Toastr.message msg
+    |> Toastr.withTitle "Tabula Rasa"
+    |> Toastr.info  
 
 let update msg state =
   match msg with
@@ -99,18 +184,16 @@ let update msg state =
       let nextState = { state with BlogInfo = LoadError msg }
       nextState, Cmd.none
       
-  | NavigateTo (Some page) ->
-      state, Navigation.newUrl (toHash page)
-      
-  | NavigateTo None ->
-      state, Cmd.none
+  | NavigateTo page ->
+      let nextUrl = Urls.hashPrefix (pageHash page)
+      state, Urls.newUrl nextUrl
 
   | DoNothing ->
       state, Cmd.none
       
   | UrlUpdated page -> 
       match page with 
-      | Posts page -> 
+      | Page.Posts page -> 
            // make sure to load posts anytime the posts page is requested
            let nextAppState = { state with CurrentPage = Some (Posts page) }
            let nextCmd =
@@ -124,18 +207,18 @@ let update msg state =
            let nextState = { state with CurrentPage = Some Page.About }
            nextState, Cmd.none
 
-      | Admin adminPage ->
+      | Page.Admin adminPage ->
         let nextAdminCmd = 
           match adminPage with
           | Admin.Types.Page.Login ->
               match state.Admin.SecurityToken with
               | None -> Cmd.none
-              | Some _ -> Cmd.batch [ Navigation.newUrl (Urls.hashPrefix Urls.admin);
+              | Some _ -> Cmd.batch [ Urls.navigate [ Urls.admin ];
                                       showInfo "Already logged in" ]
      
           | Admin.Types.Page.Backoffice _ ->
               match state.Admin.SecurityToken with
-              | None -> Cmd.batch [ Navigation.newUrl (Urls.hashPrefix Urls.login)
+              | None -> Cmd.batch [ Urls.navigate [ Urls.login ]
                                     showInfo "You must be logged in first" ]
               | Some _ -> Cmd.none
 

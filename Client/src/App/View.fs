@@ -6,8 +6,6 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open React.Responsive
 
-type Screen = Desktop | Mobile 
-
 let menuItem label page currentPage dispatcher =
     div
       [ classList  
@@ -62,41 +60,69 @@ let mobileHeader (blogInfo: BlogInfo) state dispatch =
                   [ navButton "Posts" (Page.Posts Posts.Types.Page.AllPosts) 
                     navButton "About" (Page.About)  ] ] ] 
 
-let main state dispatch screen = 
-    match screen with 
-    | Desktop -> 
-      match state.CurrentPage with
-      | Some Page.About -> 
-          About.View.render state.BlogInfo
-      | Some (Posts postsPage) -> 
-          let isAdminLoggedIn = state.Admin.SecurityToken.IsSome
-          Posts.View.render postsPage isAdminLoggedIn state.Posts (PostsMsg >> dispatch)
-      | Some (Admin adminPage) -> 
-          Admin.View.render adminPage state.Admin (AdminMsg >> dispatch)
-      | None -> 
-          div [ ] [ ]
-    
-    | Mobile -> 
-      match state.CurrentPage with
-      | Some Page.About -> 
-          About.View.render state.BlogInfo
-      | Some (Posts postsPage) -> 
-          let isAdminLoggedIn = state.Admin.SecurityToken.IsSome
-          Posts.View.render postsPage isAdminLoggedIn state.Posts (PostsMsg >> dispatch)
-      | _ -> div [ ] [ ] 
+let main state dispatch  = 
+  match state.CurrentPage with
+  | Some Page.About -> 
+      About.View.render state.BlogInfo
+  | Some (Posts postsPage) -> 
+      let isAdminLoggedIn = state.Admin.SecurityToken.IsSome
+      Posts.View.render postsPage isAdminLoggedIn state.Posts (PostsMsg >> dispatch)
+  | Some (Admin adminPage) -> 
+      Admin.View.render adminPage state.Admin (AdminMsg >> dispatch)
+  | None -> 
+      div [ ] [ ]
 
 let desktopApp blogInfo state dispatch = 
   div [ ]
       [ div [ ClassName "sidebar" ]
             [ sidebar blogInfo state dispatch ]
         div [ ClassName "main-content" ]
-            [ main state dispatch Desktop ] ] 
-         
+            [ main state dispatch ] ] 
+
+/// The mobile app view will be a simpler implementation
+/// with no backoffice, just the posts and about page         
 let mobileApp blogInfo state dispatch = 
-  div [ ]
-      [ mobileHeader blogInfo state dispatch
-        div [ Style [ Padding 20 ] ] 
-            [ main state dispatch Mobile ] ]
+  match state.CurrentPage with 
+  | None -> div [ ] [ ] 
+  | Some page -> 
+      match page with 
+      | Page.About -> 
+          div [ ]
+              [ mobileHeader blogInfo state dispatch
+                div [ Style [ Padding 20 ] ] 
+                    [ About.View.render (Body blogInfo) ] ]
+      
+      | Page.Posts (Posts.Types.Page.AllPosts) -> 
+          // when viewing all posts, the same main view is re-used for mobile
+          div [ ]
+              [ mobileHeader blogInfo state dispatch
+                div [ Style [ Padding 20 ] ] 
+                    [ main state dispatch ] ]
+      
+      | Page.Posts (Posts.Types.Page.Post postSlug) ->
+          match state.Posts.Post with 
+          | Remote.Empty -> div [ ] [ ] 
+          | Loading -> Common.spinner
+          | LoadError error -> Common.errorMsg error 
+          | Body post -> 
+              let goBackButton = 
+                button 
+                  [ ClassName "btn btn-success"
+                    OnClick (fun _ -> dispatch (NavigateTo (Posts Posts.Types.Page.AllPosts))) ] 
+                  [ span [ ] [ i [ ClassName "fa fa-arrow-left"; Style [ Margin 5 ] ] [ ]; str "Go Back" ] ]
+              
+              div [ Style [ Padding 20 ] ] 
+                  [ div [ ClassName "row" ] [ h4 [ Style[Margin 20] ] [ str blogInfo.Name ];  goBackButton ]
+                    hr [ ] 
+                    Marked.marked [ Marked.Content post.Content; 
+                                    Marked.Options [ Marked.Sanitize false ] ]  ]
+
+        | otherPage ->
+          // map other pages to just an empty view 
+          // because we don't to support backoffice from mobile
+          // at least for now... 
+          div [ ] [ ]
+
   
 let app blogInfo state dispatch =
   div 

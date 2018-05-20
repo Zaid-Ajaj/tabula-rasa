@@ -31,8 +31,10 @@ let pageHash = function
 /// Tries to parse a url into a page 
 let parseUrl (urlHash: string) = 
     let segments = 
-        urlHash.Substring(1, urlHash.Length - 1) // remove the hash sign
-        |> fun hash -> hash.Split '/' // split the segments
+        if urlHash.StartsWith "#" 
+        then urlHash.Substring(1, urlHash.Length - 1) // remove the hash sign
+        else urlHash
+        |> fun hash -> hash.Split '/' // split the url segments
         |> List.ofArray
         |> List.filter (String.IsNullOrWhiteSpace >> not)  
 
@@ -115,9 +117,13 @@ let init() =
         Posts = posts }
 
   let initialPageCmd = 
+    // parse the current location and navigate to that location 
+    // directly when application starts up
     match parseUrl window.location.hash with  
     | Some page -> Cmd.ofMsg (UrlUpdated page)
     | None -> 
+        // if unable to parse the location (-> unknown url)
+        // then navigate to allPosts, here 
         Posts.Types.Page.AllPosts
         |> App.Types.Page.Posts
         |> UrlUpdated
@@ -186,7 +192,7 @@ let handleUpdatedUrl nextPage state =
             | Some userSecurityToken ->
                 // then user is already logged in 
                 // for each specific page, dispatch the appropriate message 
-                // for initial loading
+                // for initial loading of that data of that page
                 match backofficePage with 
                 | Admin.Backoffice.Types.Page.Drafts -> 
                     Admin.Backoffice.Drafts.Types.LoadDrafts

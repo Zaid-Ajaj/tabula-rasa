@@ -31,19 +31,6 @@ let pageHash = function
             | BackofficePage.Settings -> Urls.combine [ Urls.admin; Urls.settings ]
             | BackofficePage.EditArticle postId -> Urls.combine [ Urls.admin; Urls.editPost; string postId ]
 
-let pageParser: Parser<Page -> Page, Page> =
-  oneOf [ map About (s Urls.about)
-          map (Admin Admin.Types.Page.Login) (s Urls.login)
-          map (PostsPage.Post >> Posts) (s Urls.posts </> str)
-          map (Posts PostsPage.AllPosts) (s Urls.posts )
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s Urls.admin)
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewPost)) (s Urls.admin </> s Urls.newPost)
-          map (fun id -> Admin (Admin.Types.Page.Backoffice (BackofficePage.EditArticle id))) (s Urls.admin </> s Urls.editPost </> i32)
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s Urls.admin </> s Urls.drafts)
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.PublishedPosts)) (s Urls.admin </> s Urls.publishedPosts)
-          map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s Urls.admin </> s Urls.settings) ]
-
-
 /// Tries to parse a url into a page 
 let parseUrl (urlHash: string) = 
     let segments = 
@@ -151,9 +138,9 @@ let showInfo msg =
 
 /// What happens when the URL is updated, either from the application's components 
 /// or manually by the user isn't just simply changing the current view of the specific child
-/// but instead, when a specific child is requested, then dispatch an appropriate message for 
-/// loading initial data, also here is where you define the logic of checking whether 
-/// a request to admin page should be redirected to the login page if there is no user logged in
+/// but rather, when a specific child is requested, then dispatch an appropriate message for 
+/// loading initial data of that, also here is where you define the logic of checking whether 
+/// a request to an admin page should be redirected to the login page if there is no user logged in
 let handleUpdatedUrl nextPage state = 
     match nextPage with 
     | Page.About ->

@@ -69,7 +69,8 @@ let main state dispatch screen =
       | Some Page.About -> 
           About.View.render state.BlogInfo
       | Some (Posts postsPage) -> 
-          Posts.View.render postsPage state.Posts (PostsMsg >> dispatch)
+          let isAdminLoggedIn = state.Admin.SecurityToken.IsSome
+          Posts.View.render postsPage isAdminLoggedIn state.Posts (PostsMsg >> dispatch)
       | Some (Admin adminPage) -> 
           Admin.View.render adminPage state.Admin (AdminMsg >> dispatch)
       | None -> 
@@ -80,7 +81,8 @@ let main state dispatch screen =
       | Some Page.About -> 
           About.View.render state.BlogInfo
       | Some (Posts postsPage) -> 
-          Posts.View.render postsPage state.Posts (PostsMsg >> dispatch)
+          let isAdminLoggedIn = state.Admin.SecurityToken.IsSome
+          Posts.View.render postsPage isAdminLoggedIn state.Posts (PostsMsg >> dispatch)
       | _ -> div [ ] [ ] 
 
 let desktopApp blogInfo state dispatch = 

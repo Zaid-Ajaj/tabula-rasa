@@ -32,12 +32,8 @@ let update authToken msg state =
             nextState, Toastr.error (Toastr.message errorMsg)
         
         | SavedChanges ->
-            let nextState = 
-                { state with 
-                    SavingChanges = false 
-                    ArticleToEdit = Empty } 
-
-            nextState, Urls.navigate [ Urls.admin ]
+            let nextState = { state with SavingChanges = false }
+            nextState, Toastr.success (Toastr.message "Changes have been successfully updated")
         
         | _ -> state, Cmd.none
     

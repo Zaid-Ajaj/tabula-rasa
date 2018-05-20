@@ -21,7 +21,7 @@ let stories =
     div 
      [ ]
      [ h3 [ ] [ leftIcon "book"; str "Stories" ]
-       p [ ] [ str "Stories that you have published." ]  ]
+       p [ ] [ str "Stories that you have published for the world to see." ]  ]
     |> cardContainer 
        
 let drafts = 
@@ -35,7 +35,7 @@ let settings =
     div 
      [ ]
      [ h3 [ ] [ leftIcon "cogs"; str "Settings" ]
-       p [ ] [ str "Public articles you have written." ]  ]
+       p [ ] [ str "View and edit the settings of the blog and your profile." ]  ]
     |> cardContainer 
 
 let writeArticle = 

@@ -114,7 +114,7 @@ let update authToken (msg: Msg) (state: State) =
         nextState, Toastr.error (Toastr.message errorMsg)
     
     | CancelDraftDeletion -> 
-        state, Toastr.info (Toastr.message "Delete operation was cancelled")
+        state, Toastr.info (Toastr.message "Phew, so you changed your mind after all.")
     
     | EditDraft draftId ->
         state, Urls.navigate [ Urls.admin; Urls.editPost; string draftId ]

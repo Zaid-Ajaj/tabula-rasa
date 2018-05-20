@@ -81,7 +81,22 @@ let msgStyle color =
 
 let infoMsg msg = h2 [ msgStyle "green" ] [ str msg ]
 
-let render currentPage (state: State) dispatch = 
+let adminActions blogPost state dispatch = 
+    div [ ] 
+        [ span 
+            [ ] 
+            [ button 
+                [ ClassName "btn btn-info"; 
+                  Style [ Margin 5 ]
+                  OnClick (fun _ -> dispatch (EditPost blogPost.Id)) ] 
+                [ span [ ] [ i [ Style [ Margin 5 ]; ClassName "fa fa-edit" ] [ ]; str "Edit" ] ]; 
+              button 
+                [ ClassName "btn btn-danger"; 
+                  Style [ Margin 5 ]
+                  OnClick (fun _ -> dispatch (AskPermissionToDeletePost blogPost.Id)) ] 
+                [ span [ ] [ i [ Style [ Margin 5 ]; ClassName "fa fa-times" ] [ ]; str "Delete" ]  ] ] ]
+
+let render currentPage isAdminLoggedIn (state: State) dispatch = 
     match currentPage with
     | AllPosts -> 
         match state.LatestPosts with
@@ -92,7 +107,15 @@ let render currentPage (state: State) dispatch =
         | LoadError msg -> Common.errorMsg msg
     | Post _ -> 
         match state.Post with
-        | Body post -> Marked.marked [ Marked.Content post.Content; Marked.Options [ Marked.Sanitize false ] ]
+        | Body post ->
+            if not isAdminLoggedIn 
+            then Marked.marked [ Marked.Content post.Content; Marked.Options [ Marked.Sanitize false ] ]
+            else 
+              div [ ] 
+                  [ ofList [ if isAdminLoggedIn then yield adminActions post state dispatch ] 
+                    hr [ ]     
+                    Marked.marked [ Marked.Content post.Content; Marked.Options [ Marked.Sanitize false ] ] ] 
+
         | Loading -> Common.spinner
         | Empty -> div [ ] [ ]
         | LoadError msg -> Common.errorMsg msg

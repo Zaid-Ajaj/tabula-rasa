@@ -2,13 +2,10 @@ module App.State
 
 open System
 open Elmish
-open Elmish.Browser.UrlParser
-open Elmish.Browser.Navigation
 open App.Types
 open Shared
 open Fable.Import.Browser
-open Fable
-open Fable
+
 
 type BackofficePage = Admin.Backoffice.Types.Page
 type PostsPage = Posts.Types.Page
@@ -35,7 +32,7 @@ let pageHash = function
 let parseUrl (urlHash: string) = 
     let segments = 
         urlHash.Substring(1, urlHash.Length - 1) // remove the hash sign
-        |> fun hash -> hash.Split '/'
+        |> fun hash -> hash.Split '/' // split the segments
         |> List.ofArray
         |> List.filter (String.IsNullOrWhiteSpace >> not)  
 
@@ -144,23 +141,23 @@ let showInfo msg =
 let handleUpdatedUrl nextPage state = 
     match nextPage with 
     | Page.About ->
-         let nextState = { state with CurrentPage = Some Page.About }
-         nextState, Cmd.none
+        let nextState = { state with CurrentPage = Some Page.About }
+        nextState, Cmd.none
     
     | Page.Posts postsPage -> 
-         match postsPage with 
-         | Posts.Types.Page.AllPosts -> 
-            // asking for all posts? the dispatch the LoadLatestPosts message to reload them
-            let nextState = { state with CurrentPage = Some (Posts postsPage) }
-            let nextCmd = Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
-            nextState, nextCmd 
-         
-         | Posts.Types.Page.Post postSlug -> 
-            // asking for a specific post by it's slug in the url?
-            // then dispatch a message to load that post via the "LoadSinglePost" message
-            let nextState = { state with CurrentPage = Some (Posts postsPage) }
-            let nextCmd = Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadSinglePost postSlug))
-            nextState, nextCmd 
+        match postsPage with 
+        | Posts.Types.Page.AllPosts -> 
+           // asking for all posts? the dispatch the LoadLatestPosts message to reload them
+           let nextState = { state with CurrentPage = Some (Posts postsPage) }
+           let nextCmd = Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
+           nextState, nextCmd 
+        
+        | Posts.Types.Page.Post postSlug -> 
+           // asking for a specific post by it's slug in the url?
+           // then dispatch a message to load that post via the "LoadSinglePost" message
+           let nextState = { state with CurrentPage = Some (Posts postsPage) }
+           let nextCmd = Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadSinglePost postSlug))
+           nextState, nextCmd 
 
     | Page.Admin adminPage ->
       let nextAdminCmd = 
@@ -228,7 +225,7 @@ let handleUpdatedUrl nextPage state =
 let update msg state =
   match msg with
   | PostsMsg msg ->
-      let postsState, postsCmd = Posts.State.update state.Posts msg 
+      let postsState, postsCmd = Posts.State.update state.Admin.SecurityToken state.Posts msg 
       let appState = { state with Posts = postsState }
       let appCmd = Cmd.map PostsMsg postsCmd
       appState, appCmd

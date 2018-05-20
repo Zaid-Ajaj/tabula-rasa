@@ -14,8 +14,16 @@ type Msg =
     | LoadSinglePostFinished of BlogPostItem
     | LoadSinglePostError of error:string
     | NavigateToPost of slug:string
-     
+    | EditPost of postId:int
+    | AskPermissionToDeletePost of postId:int
+    | DeletePost of postId:int 
+    | CancelPostDeletion
+    | PostDeleted 
+    | DeletePostError of error:string
+    | DoNothing
+
 type State = {
     Post : Remote<BlogPostItem>
     LatestPosts: Remote<list<BlogPostItem>>
+    DeletingPost: Option<int>
 }

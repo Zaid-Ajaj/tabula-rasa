@@ -28,7 +28,12 @@ let normalize (month: int) =
     else (string month)
     
 let formatDate (date : DateTime) = 
-    sprintf "%d/%s/%s %d:%d" date.Year (normalize date.Month) (normalize date.Day) date.Hour date.Minute
+    sprintf "%d/%s/%s %s:%s" 
+        date.Year 
+        (normalize date.Month) 
+        (normalize date.Day) 
+        (normalize date.Hour) 
+        (normalize date.Minute)
     
 let postItem (post: BlogPostItem) dispatch = 
     let datePublished = formatDate post.DateAdded
@@ -57,7 +62,7 @@ let timelineEvents name (blogPosts : list<BlogPostItem>) dispatch =
     let timelineEvents = List.map (fun post -> postItem post dispatch) postedNewestToOldest
     div 
       [ Style [ MarginTop 5 ] ] 
-      [ title; timeline [ yield! timelineEvents ] ]    
+      [ title; timeline timelineEvents ]    
 
 let latestPosts (blogPosts : list<BlogPostItem>) dispatch = 
     blogPosts
@@ -74,10 +79,7 @@ let msgStyle color =
             Border (sprintf "2px solid %s" color); 
             BorderRadius 10 ]
 
-let errorMsg msg = h2 [ msgStyle "crimson" ] [ str msg ]
-       
 let infoMsg msg = h2 [ msgStyle "green" ] [ str msg ]
-    
 
 let render currentPage (state: State) dispatch = 
     match currentPage with
@@ -87,10 +89,10 @@ let render currentPage (state: State) dispatch =
         | Body posts -> latestPosts posts dispatch
         | Loading -> Common.spinner
         | Empty -> div [ ] [ ]
-        | LoadError msg -> errorMsg msg
+        | LoadError msg -> Common.errorMsg msg
     | Post _ -> 
         match state.Post with
         | Body post -> Marked.marked [ Marked.Content post.Content; Marked.Options [ Marked.Sanitize false ] ]
         | Loading -> Common.spinner
         | Empty -> div [ ] [ ]
-        | LoadError msg -> errorMsg msg
+        | LoadError msg -> Common.errorMsg msg

@@ -26,7 +26,7 @@ let pageHash = function
             match backofficePage with 
             | BackofficePage.Home -> Urls.admin
             | BackofficePage.NewPost -> Urls.combine [ Urls.admin; Urls.newPost ]   
-            | BackofficePage.Drafts -> Urls.combine [ Urls.drafts; Urls.drafts ]  
+            | BackofficePage.Drafts -> Urls.combine [ Urls.admin; Urls.drafts ]  
             | BackofficePage.PublishedPosts -> Urls.combine [ Urls.admin; Urls.publishedPosts ]
             | BackofficePage.Settings -> Urls.combine [ Urls.admin; Urls.settings ]
             | BackofficePage.EditArticle postId -> Urls.combine [ Urls.admin; Urls.editPost; string postId ]
@@ -151,7 +151,9 @@ let showInfo msg =
 
 /// What happens when the URL is updated, either from the application's components 
 /// or manually by the user isn't just simply changing the current view of the specific child
-/// but instead, when a specific child is requested, then 
+/// but instead, when a specific child is requested, then dispatch an appropriate message for 
+/// loading initial data, also here is where you define the logic of checking whether 
+/// a request to admin page should be redirected to the login page if there is no user logged in
 let handleUpdatedUrl nextPage state = 
     match nextPage with 
     | Page.About ->

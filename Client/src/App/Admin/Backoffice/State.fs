@@ -9,43 +9,19 @@ let update authToken msg state =
     match msg with
     | NavigateTo page ->
         match page with 
-        | Home -> 
-            state, Urls.navigate [  Urls.admin ]
-        
-        | NewPost -> 
-            state, Urls.navigate [ Urls.admin; Urls.newPost ]
-
-        | Drafts -> 
-            state, Cmd.batch [ Urls.navigate [ Urls.admin; Urls.drafts ];
-                               Cmd.ofMsg (DraftsMsg Drafts.Types.Msg.LoadDrafts) ]
-        | PublishedPosts -> 
-            state, Cmd.batch [ Urls.navigate [ Urls.admin; Urls.publishedPosts ];
-                               Cmd.ofMsg (PublishedPostsMsg PublishedPosts.Types.Msg.LoadPublishedPosts) ]
-        | Settings ->
-            state, Cmd.batch [ Urls.navigate [ Urls.admin; Urls.settings ]; 
-                               Cmd.ofMsg (SettingsMsg Settings.Types.Msg.LoadBlogInfo) ]
-        | _ -> 
-            state, Urls.navigate [ Urls.admin ]
-        
+        | Home ->  state, Urls.navigate [  Urls.admin ]
+        | NewPost ->  state, Urls.navigate [ Urls.admin; Urls.newPost ]
+        | Drafts -> state, Urls.navigate [ Urls.admin; Urls.drafts ]
+        | PublishedPosts -> state, Urls.navigate [ Urls.admin; Urls.publishedPosts ];
+        | Settings -> state, Urls.navigate [ Urls.admin; Urls.settings ];
+        | _ -> state, Urls.navigate [ Urls.admin ]
+          
     | NewArticleMsg newArticleMsg ->
         let prevArticleState = state.NewArticleState
         let nextArticleState, nextNewArticleCmd = NewArticle.State.update authToken newArticleMsg prevArticleState
         let nextBackofficeState = { state with NewArticleState = nextArticleState }
         let nextBackofficeCmd = Cmd.map NewArticleMsg nextNewArticleCmd
         nextBackofficeState, nextBackofficeCmd
-
-    | DraftsMsg (Drafts.Types.Msg.EditDraft draftId) ->
-        // When "Edit" button is clicked on one of the drafts to trigger "EditDraft" message
-        // then intercept this message at the parent level and supply the draft id to the state 
-        // of the "EditArticle" child, also issue a navigation command to go to the "EditArticle" page. 
-        let editArticleState = { state.EditArticleState with ArticleId = Some draftId }
-        let nextBackofficeState = { state with EditArticleState = editArticleState }
-        let backofficeCmds = 
-            [ Cmd.ofMsg (EditArticleMsg EditArticle.Types.Msg.LoadArticleToEdit);
-              Urls.navigate [ Urls.admin; Urls.editArticle; string draftId ] ]
-            |> Cmd.batch   
-                                          
-        nextBackofficeState, backofficeCmds
     
     | DraftsMsg draftsMsg ->
         let prevDraftsState = state.DraftsState
@@ -53,19 +29,6 @@ let update authToken msg state =
         let nextBackofficeState = { state with DraftsState = nextDraftsState }   
         let nextBackofficeCmd = Cmd.map DraftsMsg nextDraftsCmd
         nextBackofficeState, nextBackofficeCmd
-    
-    | PublishedPostsMsg (PublishedPosts.Types.Msg.EditPost articleId) ->
-        // When "Edit" button is clicked on one of the drafts to trigger "EditArticle" message
-        // then intercept this message at the parent level and supply the article id to the state 
-        // of the "EditArticle" child, also issue a navigation command to go to the "EditArticle" page. 
-        let editArticleState = { state.EditArticleState with ArticleId = Some articleId }
-        let nextBackofficeState = { state with EditArticleState = editArticleState }
-        let backofficeCmds = 
-            [ Cmd.ofMsg (EditArticleMsg EditArticle.Types.Msg.LoadArticleToEdit);
-              Urls.navigate [ Urls.admin; Urls.editArticle; string articleId ] ]
-            |> Cmd.batch   
-                                          
-        nextBackofficeState, backofficeCmds
     
     | PublishedPostsMsg articlesMsg ->
         let prevArticlesState = state.PublishedPostsState

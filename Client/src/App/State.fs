@@ -8,6 +8,7 @@ open App.Types
 open Shared
 open Fable.Import.Browser
 open Fable
+open Fable
 
 type BackofficePage = Admin.Backoffice.Types.Page
 type PostsPage = Posts.Types.Page
@@ -28,7 +29,7 @@ let pageHash = function
             | BackofficePage.Drafts -> Urls.combine [ Urls.drafts; Urls.drafts ]  
             | BackofficePage.PublishedPosts -> Urls.combine [ Urls.admin; Urls.publishedPosts ]
             | BackofficePage.Settings -> Urls.combine [ Urls.admin; Urls.settings ]
-            | BackofficePage.EditArticle postId -> Urls.combine [ Urls.admin; Urls.editArticle; string postId ]
+            | BackofficePage.EditArticle postId -> Urls.combine [ Urls.admin; Urls.editPost; string postId ]
 
 let pageParser: Parser<Page -> Page, Page> =
   oneOf [ map About (s Urls.about)
@@ -37,7 +38,7 @@ let pageParser: Parser<Page -> Page, Page> =
           map (Posts PostsPage.AllPosts) (s Urls.posts )
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Home)) (s Urls.admin)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.NewPost)) (s Urls.admin </> s Urls.newPost)
-          map (fun id -> Admin (Admin.Types.Page.Backoffice (BackofficePage.EditArticle id))) (s Urls.admin </> s Urls.editArticle </> i32)
+          map (fun id -> Admin (Admin.Types.Page.Backoffice (BackofficePage.EditArticle id))) (s Urls.admin </> s Urls.editPost </> i32)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Drafts)) (s Urls.admin </> s Urls.drafts)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.PublishedPosts)) (s Urls.admin </> s Urls.publishedPosts)
           map (Admin (Admin.Types.Page.Backoffice BackofficePage.Settings)) (s Urls.admin </> s Urls.settings) ]
@@ -76,7 +77,7 @@ let parseUrl (urlHash: string) =
         |> App.Types.Page.Admin
         |> Some
 
-    | [ Urls.admin; Urls.login ] -> 
+    | [ Urls.login ] -> 
         // the login page 
         Admin.Types.Page.Login
         |> App.Types.Page.Admin
@@ -110,7 +111,7 @@ let parseUrl (urlHash: string) =
         |> App.Types.Page.Admin
         |> Some 
 
-    | [ Urls.admin; Urls.editArticle; Urls.Int postId ] ->
+    | [ Urls.admin; Urls.editPost; Urls.Int postId ] ->
         // editing a post by the post id 
         Admin.Backoffice.Types.Page.EditArticle postId 
         |> Admin.Types.Page.Backoffice
@@ -138,7 +139,6 @@ let init() =
         |> UrlUpdated
         |> Cmd.ofMsg 
 
-
   model, Cmd.batch [ initialPageCmd
                      Cmd.map PostsMsg postsCmd
                      Cmd.map AdminMsg adminCmd
@@ -149,6 +149,93 @@ let showInfo msg =
     |> Toastr.withTitle "Tabula Rasa"
     |> Toastr.info  
 
+/// What happens when the URL is updated, either from the application's components 
+/// or manually by the user isn't just simply changing the current view of the specific child
+/// but instead, when a specific child is requested, then 
+let handleUpdatedUrl nextPage state = 
+    match nextPage with 
+    | Page.About ->
+         let nextState = { state with CurrentPage = Some Page.About }
+         nextState, Cmd.none
+    
+    | Page.Posts postsPage -> 
+         match postsPage with 
+         | Posts.Types.Page.AllPosts -> 
+            // asking for all posts? the dispatch the LoadLatestPosts message to reload them
+            let nextState = { state with CurrentPage = Some (Posts postsPage) }
+            let nextCmd = Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
+            nextState, nextCmd 
+         
+         | Posts.Types.Page.Post postSlug -> 
+            // asking for a specific post by it's slug in the url?
+            // then dispatch a message to load that post via the "LoadSinglePost" message
+            let nextState = { state with CurrentPage = Some (Posts postsPage) }
+            let nextCmd = Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadSinglePost postSlug))
+            nextState, nextCmd 
+
+    | Page.Admin adminPage ->
+      let nextAdminCmd = 
+        match adminPage with
+        | Admin.Types.Page.Login ->
+            match state.Admin.SecurityToken with
+            | None ->
+                // going to login page and there is no security token?
+                // then just login 
+                Cmd.none
+            | Some _ ->
+                // going to login page and there is already a security token
+                // then just navigate to admin home page because
+                // we are already logged in 
+                Cmd.batch [ Urls.navigate [ Urls.admin ];
+                            showInfo "Already logged in" ]
+    
+        | Admin.Types.Page.Backoffice backofficePage ->
+            match state.Admin.SecurityToken with
+            | None -> 
+                // navigating to one of the admins backoffice pages 
+                // without a security token? then you need to login first
+                Cmd.batch [ Urls.navigate [ Urls.login ]
+                            showInfo "You must be logged in first" ] 
+
+            | Some userSecurityToken ->
+                // then user is already logged in 
+                // for each specific page, dispatch the appropriate message 
+                // for initial loading
+                match backofficePage with 
+                | Admin.Backoffice.Types.Page.Drafts -> 
+                    Admin.Backoffice.Drafts.Types.LoadDrafts
+                    |> Admin.Backoffice.Types.Msg.DraftsMsg
+                    |> Admin.Types.Msg.BackofficeMsg 
+                    |> AdminMsg 
+                    |> Cmd.ofMsg
+                
+                | Admin.Backoffice.Types.Page.PublishedPosts -> 
+                    Admin.Backoffice.PublishedPosts.Types.Msg.LoadPublishedPosts
+                    |> Admin.Backoffice.Types.Msg.PublishedPostsMsg
+                    |> Admin.Types.Msg.BackofficeMsg
+                    |> AdminMsg
+                    |> Cmd.ofMsg 
+
+                | Admin.Backoffice.Types.Page.Settings ->
+                    Admin.Backoffice.Settings.Types.Msg.LoadBlogInfo
+                    |> Admin.Backoffice.Types.Msg.SettingsMsg
+                    |> Admin.Types.Msg.BackofficeMsg
+                    |> AdminMsg
+                    |> Cmd.ofMsg 
+                 
+                | Admin.Backoffice.Types.Page.EditArticle postId ->
+                    Admin.Backoffice.EditArticle.Types.Msg.LoadArticleToEdit postId 
+                    |> Admin.Backoffice.Types.Msg.EditArticleMsg 
+                    |> Admin.Types.Msg.BackofficeMsg
+                    |> AdminMsg 
+                    |> Cmd.ofMsg 
+
+                | otherPage -> 
+                    Cmd.none
+
+      let nextState = { state with CurrentPage = Some (Admin adminPage) }
+      nextState, nextAdminCmd
+
 let update msg state =
   match msg with
   | PostsMsg msg ->
@@ -157,6 +244,8 @@ let update msg state =
       let appCmd = Cmd.map PostsMsg postsCmd
       appState, appCmd
 
+  // here, we are intercepting a "ChangesSaved" message triggered from settings
+  // at this point, we have new blog info -> reload the blog info
   | AdminMsg (Admin.Types.BackofficeMsg (Admin.Backoffice.Types.SettingsMsg ((Admin.Backoffice.Settings.Types.ChangesSaved msg)))) ->
         state, Cmd.ofMsg LoadBlogInfo
   
@@ -191,36 +280,5 @@ let update msg state =
   | DoNothing ->
       state, Cmd.none
       
-  | UrlUpdated page -> 
-      match page with 
-      | Page.Posts page -> 
-           // make sure to load posts anytime the posts page is requested
-           let nextAppState = { state with CurrentPage = Some (Posts page) }
-           let nextCmd =
-              match page with
-              | Posts.Types.Page.AllPosts  -> Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
-              | Posts.Types.Page.Post slug -> Cmd.ofMsg (PostsMsg (Posts.Types.Msg.LoadSinglePost slug))
-              
-           nextAppState, nextCmd
-
-      | Page.About ->
-           let nextState = { state with CurrentPage = Some Page.About }
-           nextState, Cmd.none
-
-      | Page.Admin adminPage ->
-        let nextAdminCmd = 
-          match adminPage with
-          | Admin.Types.Page.Login ->
-              match state.Admin.SecurityToken with
-              | None -> Cmd.none
-              | Some _ -> Cmd.batch [ Urls.navigate [ Urls.admin ];
-                                      showInfo "Already logged in" ]
-     
-          | Admin.Types.Page.Backoffice _ ->
-              match state.Admin.SecurityToken with
-              | None -> Cmd.batch [ Urls.navigate [ Urls.login ]
-                                    showInfo "You must be logged in first" ]
-              | Some _ -> Cmd.none
-
-        let nextState = { state with CurrentPage = Some (Admin adminPage) }
-        nextState, nextAdminCmd
+  | UrlUpdated nextPage -> 
+      handleUpdatedUrl nextPage state

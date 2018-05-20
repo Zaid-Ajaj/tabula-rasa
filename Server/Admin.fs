@@ -1,5 +1,6 @@
 module Admin
 
+open System
 open Shared
 open StorageTypes
 open Security
@@ -68,6 +69,13 @@ let login (db: LiteDatabase) (loginInfo: LoginInfo)  =
           let token = encodeJwt userInfo
           Success token
 
+let validateBlogInfo (blogInfo: BlogInfo) = 
+    if String.IsNullOrWhiteSpace blogInfo.BlogTitle 
+    then Some "Blog Title cannot be empty"
+    elif String.IsNullOrWhiteSpace blogInfo.Name 
+    then Some "The name of the blog cannot be empty"
+    else None 
+    
 let updateBlogInfo (db: LiteDatabase) (req: SecureRequest<BlogInfo>) = 
     match Security.validateJwt req.Token with 
     | None -> Error (ErrorMsg "User is unauthorized")
@@ -78,17 +86,20 @@ let updateBlogInfo (db: LiteDatabase) (req: SecureRequest<BlogInfo>) =
         | None -> Error (ErrorMsg "Admin was not found")
         | Some foundAdmin -> 
             let blogInfo = req.Body
-            let modifiedAdminInfo = 
-                { foundAdmin with 
-                    Name = blogInfo.Name
-                    Bio = blogInfo.Bio
-                    About = blogInfo.About
-                    ProfileImageUrl = blogInfo.ProfileImageUrl
-                    BlogTitle = blogInfo.BlogTitle  } 
-
-            if admins.Update(modifiedAdminInfo) 
-            then Ok (SuccessMsg "Updated succesfully")
-            else Error (ErrorMsg "Database error while updaing admin blog info") 
+            match validateBlogInfo blogInfo with 
+            | Some errorMsg -> Error (ErrorMsg errorMsg)
+            | None ->
+                let modifiedAdminInfo = 
+                    { foundAdmin with 
+                        Name = blogInfo.Name
+                        Bio = blogInfo.Bio
+                        About = blogInfo.About
+                        ProfileImageUrl = blogInfo.ProfileImageUrl
+                        BlogTitle = blogInfo.BlogTitle  } 
+    
+                if admins.Update(modifiedAdminInfo) 
+                then Ok (SuccessMsg "Updated succesfully")
+                else Error (ErrorMsg "Database error while updaing admin blog info") 
 
 let blogInfoFromAdmin (admin: AdminInfo) : BlogInfo = 
     { Name = admin.Name; 
@@ -104,4 +115,4 @@ let blogInfo (db: LiteDatabase) : Result<BlogInfo, string> =
     |> Option.map blogInfoFromAdmin
     |> function 
         | Some blogInfo -> Ok blogInfo 
-        | None -> Error ""
+        | None -> Error "Fatal error: could not find blog info from an admin. Database must be corrupt"

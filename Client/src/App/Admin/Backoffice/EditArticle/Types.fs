@@ -3,13 +3,12 @@ module Admin.Backoffice.EditArticle.Types
 open Shared 
 
 type State = 
-    { ArticleId : Option<int>
-      ArticleToEdit : Remote<BlogPostItem>
+    { ArticleToEdit : Remote<BlogPostItem>
       Preview : bool
       SavingChanges : bool } 
 
 type Msg = 
-    | LoadArticleToEdit
+    | LoadArticleToEdit of postId:int
     | ArticleLoaded of BlogPostItem 
     | LoadArticleError of string
     | SetSlug of string 

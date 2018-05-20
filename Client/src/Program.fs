@@ -16,22 +16,17 @@ importAll "../sass/app.sass"
 importAll "../sass/spinner.css"
 
 
-let locationChanged appState dispatch = 
-    let onChange _ = 
-        console.log(sprintf "Url changed to %s, parsing page..." window.location.hash)
-        match parseUrl window.location.hash with 
-        | Some page -> 
-            console.log(sprintf "ParsedPage %A" page)
-            dispatch (App.Types.AppMsg.UrlUpdated page)
-        | None -> 
-            console.log "could not parse page"
-            ()
-
-    window.addEventListener_hashchange(unbox onChange)
-    window.addEventListener(Urls.navigationEvent, unbox onChange)
-
 let urlSubscription appState : Cmd<_> = 
-    [ fun dispatch -> locationChanged appState dispatch ]  
+    [ fun dispatch -> 
+        let onChange _ = 
+            match parseUrl window.location.hash with 
+            | Some parsedPage -> dispatch (App.Types.AppMsg.UrlUpdated parsedPage)
+            | None -> ()
+        
+        // listen to manual hash changes or page refresh
+        window.addEventListener_hashchange(unbox onChange)
+        // listen to custom navigation events published by `Urls.navigate [ . . .  ]`
+        window.addEventListener(Urls.navigationEvent, unbox onChange) ]  
 
 // App
 Program.mkProgram init update render

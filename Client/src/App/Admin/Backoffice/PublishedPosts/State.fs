@@ -23,7 +23,8 @@ let update authToken msg state =
         nextState, Cmd.none
     
     | LoadPublishedPostsError errorMsg ->
-        state, Toastr.error (Toastr.message errorMsg)
+        let nextState = { state with PublishedPosts = LoadError errorMsg }
+        nextState, Toastr.error (Toastr.message errorMsg)
     
     | AskPermissionToDeletePost postId ->
         let renderModal() = 
@@ -95,7 +96,7 @@ let update authToken msg state =
         nextState, Cmd.batch [ Cmd.ofMsg LoadPublishedPosts; Toastr.success (Toastr.message "Article was turned into a draft") ]
     
     | EditPost postId ->    
-        state, Cmd.none
+        state, Urls.navigate [ Urls.admin; Urls.editPost; string postId ]
     
     | DoNothing ->
         state, Cmd.none

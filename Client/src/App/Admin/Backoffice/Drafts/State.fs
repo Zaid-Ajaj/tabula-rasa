@@ -117,7 +117,7 @@ let update authToken (msg: Msg) (state: State) =
         state, Toastr.info (Toastr.message "Delete operation was cancelled")
     
     | EditDraft draftId ->
-        state, Cmd.none
+        state, Urls.navigate [ Urls.admin; Urls.editPost; string draftId ]
    
     | DoNothing ->
         state, Cmd.none

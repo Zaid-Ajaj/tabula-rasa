@@ -12,7 +12,7 @@ let [<Literal>] publishedPosts = "published-posts"
 let [<Literal>] login = "login"
 let [<Literal>] settings = "settings"
 let [<Literal>] subscribers = "subscribers"
-let [<Literal>] editArticle = "edit-article"
+let [<Literal>] editPost = "edit-article"
 let combine xs = List.fold (sprintf "%s/%s") "" xs
 
 let  [<Literal>]  navigationEvent = "NavigationEvent"

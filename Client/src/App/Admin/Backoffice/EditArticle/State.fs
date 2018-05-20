@@ -5,8 +5,7 @@ open Elmish
 open Admin.Backoffice.EditArticle.Types
 
 let init() = 
-    { ArticleId = None
-      ArticleToEdit = Empty
+    { ArticleToEdit = Empty
       Preview = false
       SavingChanges = false }, Cmd.none
     
@@ -36,7 +35,6 @@ let update authToken msg state =
             let nextState = 
                 { state with 
                     SavingChanges = false 
-                    ArticleId = None 
                     ArticleToEdit = Empty } 
 
             nextState, Urls.navigate [ Urls.admin ]
@@ -45,17 +43,17 @@ let update authToken msg state =
     
     | _ -> 
         match msg with 
-        | TogglePreview ->  { state with Preview = not state.Preview }, Cmd.none
-        | LoadArticleToEdit -> 
-            match state.ArticleId with 
-            | None -> state, Toastr.error (Toastr.message "No article was selected")
-            | Some articleId -> 
-                let nextState = { state with ArticleToEdit = Loading }
-                let request = { Token = authToken; Body = articleId }
-                let successHandler = function 
-                    | Ok article -> ArticleLoaded article 
-                    | Error errorMsg -> LoadArticleError errorMsg
-                nextState, Cmd.ofAsync Server.api.getPostById request successHandler (fun ex -> DoNothing) 
+        | TogglePreview -> 
+            let nextState = { state with Preview = not state.Preview }
+            nextState, Cmd.none
+        
+        | LoadArticleToEdit postId -> 
+            let nextState = { state with ArticleToEdit = Loading }
+            let request = { Token = authToken; Body = postId }
+            let successHandler = function 
+                | Ok article -> ArticleLoaded article 
+                | Error errorMsg -> LoadArticleError errorMsg
+            nextState, Cmd.ofAsync Server.api.getPostById request successHandler (fun ex -> DoNothing) 
                              
         | LoadArticleError errorMsg ->  
             state, Toastr.error (Toastr.message errorMsg)

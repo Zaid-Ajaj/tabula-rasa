@@ -202,7 +202,7 @@ let handleUpdatedUrl nextPage state =
                     |> Cmd.ofMsg
                 
                 | Admin.Backoffice.Types.Page.PublishedPosts -> 
-                    Admin.Backoffice.PublishedPosts.Types.Msg.LoadPublishedPosts
+                    Admin.Backoffice.PublishedPosts.Types.LoadPublishedPosts
                     |> Admin.Backoffice.Types.Msg.PublishedPostsMsg
                     |> Admin.Types.Msg.BackofficeMsg
                     |> AdminMsg

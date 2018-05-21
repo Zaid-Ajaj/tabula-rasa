@@ -4,25 +4,33 @@ open Shared
 open Elmish
 open Admin.Backoffice.PublishedPosts.Types
 open Fable.PowerPack
+open Fable
+open Urls
 
 let init() = 
     let initState = 
        {  PublishedPosts = Remote.Empty
           DeletingPost = None
-          MakingDraft = None }
+          MakingDraft = None
+          IsTogglingFeatured = None }
     initState, Cmd.none 
 
 let update authToken msg state = 
     match msg with 
     | LoadPublishedPosts -> 
         let nextState = { state with PublishedPosts = Loading }
-        nextState, Cmd.ofAsync Server.api.getPosts () PublishedPostsLoaded (fun ex -> LoadPublishedPostsError "Network error while retrieving blog posts")
+        let nextCmd = 
+            Cmd.ofAsync
+              Server.api.getPosts ()
+              (Ok >> LoadedPublishedPosts)
+              (fun ex -> LoadedPublishedPosts (Error "Network error while retrieving blog posts"))
+        nextState,  nextCmd
     
-    | PublishedPostsLoaded articles -> 
-        let nextState = { state with PublishedPosts = Body articles }
+    | LoadedPublishedPosts (Ok loadedPosts) -> 
+        let nextState = { state with PublishedPosts = Body loadedPosts }
         nextState, Cmd.none
     
-    | LoadPublishedPostsError errorMsg ->
+    | LoadedPublishedPosts (Error errorMsg) ->
         let nextState = { state with PublishedPosts = LoadError errorMsg }
         nextState, Toastr.error (Toastr.message errorMsg)
     
@@ -66,7 +74,8 @@ let update authToken msg state =
     
     | PostDeleted -> 
         let nextState = { state with DeletingPost = None }
-        nextState, Cmd.batch [ Cmd.ofMsg LoadPublishedPosts; Toastr.success (Toastr.message "Article was deleted") ] 
+        nextState, Cmd.batch [ Cmd.ofMsg LoadPublishedPosts ; 
+                               Toastr.success (Toastr.message "Article was deleted") ] 
      
     | DeletePostError errorMsg ->
         let nextState = { state with DeletingPost = None }
@@ -98,5 +107,40 @@ let update authToken msg state =
     | EditPost postId ->    
         state, Urls.navigate [ Urls.admin; Urls.editPost; string postId ]
     
+    | ToggleFeatured postId ->
+        let nextState = { state with IsTogglingFeatured = Some postId }
+        let request = { Token = authToken; Body = postId }
+        let nextCmd = 
+            Cmd.ofAsync 
+                Server.api.togglePostFeauted request 
+                (function 
+                    | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)
+                    | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg))
+                (fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured"))
+        nextState, nextCmd
+    
+    | ToggleFeaturedFinished (Ok msg) -> 
+        match state.IsTogglingFeatured, state.PublishedPosts with 
+        | Some postId, Body loadedPosts -> 
+            let nextCmd = Toastr.success (Toastr.message msg)
+            // update the posts 
+            let updatedPosts = 
+                loadedPosts
+                |> List.map (fun post ->    
+                    if post.Id <> postId then post
+                    else { post with Featured = not post.Featured }) 
+            let nextState = 
+                { state with 
+                    IsTogglingFeatured = None 
+                    PublishedPosts = Body updatedPosts  }
+                  
+            nextState, nextCmd
+
+        | _, _ -> state, Cmd.none 
+    
+    | ToggleFeaturedFinished (Error msg) ->
+        let nextState = { state with IsTogglingFeatured = None }
+        nextState, Toastr.error (Toastr.message msg) 
+
     | DoNothing ->
         state, Cmd.none

@@ -6,12 +6,12 @@ type State = {
     PublishedPosts : Remote<list<BlogPostItem>>
     DeletingPost : Option<int> 
     MakingDraft : Option<int>
+    IsTogglingFeatured : Option<int>
 }
 
 type Msg = 
     | LoadPublishedPosts
-    | PublishedPostsLoaded of list<BlogPostItem>
-    | LoadPublishedPostsError of string 
+    | LoadedPublishedPosts of Result<list<BlogPostItem>, string>
     | AskPermissionToDeletePost of articleId:int
     | DeletePost of articleId:int
     | CancelPostDeletion 
@@ -20,5 +20,7 @@ type Msg =
     | DraftMade 
     | MakeDraftError of errorMsg:string
     | DeletePostError of string
-    | EditPost of articleId:int 
+    | EditPost of postId:int 
+    | ToggleFeatured of postId:int
+    | ToggleFeaturedFinished of Result<string, string>
     | DoNothing

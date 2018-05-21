@@ -8,7 +8,8 @@ open Fable.PowerPack
 let init () = 
     { Drafts = Empty
       PublishingDraft = None
-      DeletingDraft = None }, Cmd.none
+      DeletingDraft = None
+      IsTogglingFeatured = None }, Cmd.none
 
 let canTakeAction state = 
     match state.PublishingDraft, state.DeletingDraft with 
@@ -118,6 +119,41 @@ let update authToken (msg: Msg) (state: State) =
     
     | EditDraft draftId ->
         state, Urls.navigate [ Urls.admin; Urls.editPost; string draftId ]
-   
+
+    | ToggleFeatured postId ->
+        let nextState = { state with IsTogglingFeatured = Some postId }
+        let request = { Token = authToken; Body = postId }
+        let nextCmd = 
+            Cmd.ofAsync 
+                Server.api.togglePostFeauted request 
+                (function 
+                    | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)
+                    | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg))
+                (fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured"))
+        nextState, nextCmd
+    
+    | ToggleFeaturedFinished (Ok msg) -> 
+        match state.IsTogglingFeatured, state.Drafts with 
+        | Some postId, Body loadedPosts -> 
+            let nextCmd = Toastr.success (Toastr.message msg)
+            // update the posts 
+            let updatedPosts = 
+                loadedPosts
+                |> List.map (fun post ->    
+                    if post.Id <> postId then post
+                    else { post with Featured = not post.Featured }) 
+            let nextState = 
+                { state with 
+                    IsTogglingFeatured = None 
+                    Drafts = Body updatedPosts  }
+                  
+            nextState, nextCmd
+
+        | _, _ -> state, Cmd.none 
+    
+    | ToggleFeaturedFinished (Error msg) ->
+        let nextState = { state with IsTogglingFeatured = None }
+        nextState, Toastr.error (Toastr.message msg)     
+            
     | DoNothing ->
         state, Cmd.none

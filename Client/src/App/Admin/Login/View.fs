@@ -65,7 +65,8 @@ let render (state: State) dispatch =
          [ ClassName "card" ]
          [ div
              [ ClassName "card-block"; cardBlockStyle ]
-             [ div 
+             [ h1 [ Style [ TextAlign "center" ] ] [ str "Tabula Rasa" ]
+               div 
                 [ Style [ TextAlign "center" ] ] 
                 [ appIcon ]
                br [ ]

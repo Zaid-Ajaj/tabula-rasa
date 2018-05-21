@@ -41,7 +41,7 @@ Target "Watch" <| fun () ->
   |> Async.RunSynchronously
   |> ignore
 
-Target "WatchLocal" <| fun () ->
+Target "WatchLocalDb" <| fun () ->
   [ async { run dotnet "watch run --store localdb" "Server" }; 
     async { run dotnet "fable npm-run start" ("Client" </> "src") } ]
   |> Async.Parallel
@@ -71,7 +71,7 @@ Target "Release" <| fun _ ->
 "Clean" 
   ==> "NpmInstall"
   ==> "DotnetRestore"
-  ==> "WatchLocal"
+  ==> "WatchLocalDb"
 
 "Clean" 
   ==> "NpmInstall"

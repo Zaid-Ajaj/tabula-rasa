@@ -35,16 +35,27 @@ let render state dispatch =
                               [ th [ ] [ str "ID" ]
                                 th [ ] [ str "Title" ]
                                 th [ ] [ str "Tags" ]
+                                th [ ] [ str "Featured?" ]
                                 th [ ] [ str "Slug" ]
                                 th [ ] [ str "Actions" ] ] ]
                    tbody [ ]  
                          [ for post in loadedPosts -> 
-                             let isMakingDraft = (state.MakingDraft = Some post.Id) 
-                             let isDeleting = (state.DeletingPost = Some post.Id)
-                             let actionSection = postActions isDeleting isMakingDraft post dispatch
-                             tr [ ] 
-                                [ td [ ] [ str (string post.Id) ]
-                                  td [ ] [ str post.Title ]
-                                  td [ ] [ str (String.concat ", " post.Tags) ]
-                                  td [ ] [ str post.Slug  ]
-                                  td [ Style [ Width "360px" ] ] actionSection ] ] ] ] 
+                              let isMakingDraft = (state.MakingDraft = Some post.Id) 
+                              let isDeleting = (state.DeletingPost = Some post.Id)
+                              let actionSection = postActions isDeleting isMakingDraft post dispatch
+                              let featuredButton = 
+                                let className = 
+                                  if post.Featured 
+                                  then "btn btn-success" 
+                                  else "btn btn-secondary"
+                                button [ ClassName className; 
+                                         Style [ Margin 10 ]
+                                         OnClick (fun ev -> dispatch (ToggleFeatured post.Id)) ] 
+                                       [ str "Featured" ]
+                              tr [ ] 
+                                 [ td [ ] [ str (string post.Id) ]
+                                   td [ ] [ str post.Title ]
+                                   td [ ] [ str (String.concat ", " post.Tags) ]
+                                   td [ ] [ featuredButton  ]
+                                   td [ ] [ str post.Slug  ]
+                                   td [ Style [ Width "360px" ] ] actionSection ] ] ] ] 

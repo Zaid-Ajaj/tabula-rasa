@@ -6,6 +6,7 @@ type State = {
     Drafts : Remote<list<BlogPostItem>> 
     PublishingDraft : Option<int>
     DeletingDraft : Option<int>
+    IsTogglingFeatured : Option<int>
 }
 
 type Msg = 
@@ -22,4 +23,6 @@ type Msg =
     | DraftDeleted 
     | DeleteDraftError of string
     | EditDraft of draftId:int
+    | ToggleFeatured of postId:int
+    | ToggleFeaturedFinished of Result<string, string>
     | DoNothing

@@ -34,6 +34,7 @@ let render state dispatch =
                               [ th [ ] [ str "ID" ]
                                 th [ ] [ str "Title" ]
                                 th [ ] [ str "Tags" ]
+                                th [ ] [ str "Feauted?" ]
                                 th [ ] [ str "Slug" ]
                                 th [ ] [ str "Actions" ] ] ]
                    tbody [ ]  
@@ -41,10 +42,20 @@ let render state dispatch =
                              let isPublishing = (state.PublishingDraft = Some draft.Id) 
                              let isDeleting = (state.DeletingDraft = Some draft.Id)
                              let actionSection = draftActions isDeleting isPublishing draft dispatch
+                             let featuredButton = 
+                                let className = 
+                                  if draft.Featured 
+                                  then "btn btn-success" 
+                                  else "btn btn-secondary"
+                                button [ ClassName className; 
+                                         Style [ Margin 10 ]
+                                         OnClick (fun ev -> dispatch (ToggleFeatured draft.Id)) ] 
+                                       [ str "Featured" ]
                              tr [ ] 
                                 [ td [ ] [ str (string draft.Id) ]
                                   td [ ] [ str draft.Title ]
                                   td [ ] [ str (String.concat ", " draft.Tags) ]
+                                  td [ ] [ featuredButton ]
                                   td [ ] [ str draft.Slug  ]
                                   td [ Style [ Width "340px" ] ] actionSection ] ] ] ] 
            

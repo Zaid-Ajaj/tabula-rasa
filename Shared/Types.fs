@@ -23,6 +23,11 @@ type Remote<'a> =
     | LoadError of string
     | Body of 'a
 
+type RequestMsg<'input, 'output, 'error> = 
+    | Initiate of 'input
+    | Fetched of 'output 
+    | FetchError of 'error 
+
 type LoginResult = 
     | Success of token: string
     | UsernameDoesNotExist
@@ -121,4 +126,5 @@ type IBlogApi =
        turnArticleToDraft: SecureRequest<int> -> Async<MakeDraftResult>
        getPostById : SecureRequest<int> -> Async<Result<BlogPostItem, string>>
        savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>>
-       updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<SuccessMsg, ErrorMsg>> }
+       updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<SuccessMsg, ErrorMsg>>
+       togglePostFeauted : SecureRequest<int> -> Async<Result<string, string>> }

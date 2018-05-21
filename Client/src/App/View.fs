@@ -40,9 +40,6 @@ let sidebar (blogInfo: BlogInfo) state dispatch =
 
 let mobileHeader (blogInfo: BlogInfo) state dispatch = 
   let navButton label selectedPage  = 
-    let foreground = 
-      if Some selectedPage = state.CurrentPage 
-      then "lightgreen" else "white"
     div 
       [ classList [ "btn btn-default", true 
                     "btn-success", Some selectedPage = state.CurrentPage  ]

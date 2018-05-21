@@ -125,6 +125,22 @@ let turnArticleToDraft (db: LiteDatabase) (req: SecureRequest<int>) =
             if posts.Update(post) then ArticleTurnedToDraft 
             else MakeDraftResult.DatabaseErrorWhileMakingDraft 
 
+let togglePostFeatured (db: LiteDatabase) (req: SecureRequest<int>) = 
+    match Security.validateJwt req.Token with
+    | None ->  
+        Error "User unauthorized"
+    | Some user when not (Array.contains "admin" user.Claims) -> 
+        Error "User must be an admin"
+    | Some admin -> 
+        let posts = db.GetCollection<BlogPost> "posts"
+        match posts.TryFindById(BsonValue(req.Body)) with 
+        | None -> Error "Blog post could not be found"
+        | Some post -> 
+            let modifiedPost = { post with IsFeatured = not post.IsFeatured }
+            if posts.Update modifiedPost 
+            then Ok "Post was successfully updated" 
+            else Error "Error occured while updating the blog post"
+
 let savePostChanges (db: LiteDatabase) (req: SecureRequest<BlogPostItem>) = 
     match Security.validateJwt req.Token with 
     | None -> Error "User unauthorized"

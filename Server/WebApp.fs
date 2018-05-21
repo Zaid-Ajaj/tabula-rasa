@@ -28,7 +28,8 @@ let createUsing store =
             turnArticleToDraft = BlogPosts.turnArticleToDraft database >> liftAsync
             getPostById = BlogPosts.getPostById database >> liftAsync
             savePostChanges = BlogPosts.savePostChanges database >> liftAsync
-            updateBlogInfo = Admin.updateBlogInfo database >> liftAsync }
+            updateBlogInfo = Admin.updateBlogInfo database >> liftAsync
+            togglePostFeauted = BlogPosts.togglePostFeatured database >> liftAsync }
     
     remoting serverProtocol { 
         use_logger (printfn "%s")

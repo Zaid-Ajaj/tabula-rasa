@@ -18,7 +18,7 @@ type Msg =
     | AskPermissionToDeletePost of postId:int
     | DeletePost of postId:int 
     | CancelPostDeletion
-    | PostDeleted 
+    | PostDeletedSuccessfully 
     | DeletePostError of error:string
     | DoNothing
 

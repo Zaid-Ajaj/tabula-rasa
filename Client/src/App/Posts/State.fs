@@ -4,6 +4,7 @@ open Elmish
 open Fable.PowerPack
 open Posts.Types
 open Shared
+open Common
 
 let update securityToken (state: State) (msg: Msg) = 
     match msg with
@@ -60,25 +61,26 @@ let update securityToken (state: State) (msg: Msg) =
     
     | DeletePost postId ->
         match securityToken with 
-        | None -> state, Toastr.error (Toastr.message "You shouldn't be seeing this!")
+        | None -> state, Toastr.error (Toastr.message "Oeps! You shouldn't be seeing this :p")
         | Some token -> 
             let nextState = { state with DeletingPost = Some postId }
             let request = { Token = token; Body = postId }
             let successHandler = function 
-                | DeleteArticleResult.ArticleDeleted ->     
-                    PostDeleted 
-                | DeleteArticleResult.AuthError (UserUnauthorized) -> 
+                | DeletePostResult.PostDeleted ->     
+                    PostDeletedSuccessfully 
+                | DeletePostResult.AuthError (UserUnauthorized) -> 
                     DeletePostError "User was unauthorized to delete the article"
-                | DeleteArticleResult.ArticleDoesNotExist ->
+                | DeletePostResult.PostDoesNotExist ->
                     DeletePostError "It seems that the article does not exist any more"
-                | DeleteArticleResult.DatabaseErrorWhileDeletingArticle ->
+                | DeletePostResult.DatabaseErrorWhileDeletingPost ->
                     DeletePostError "Internal error of the server's database while deleting the article"
             
             let deleteCmd = 
-                Cmd.ofAsync 
-                    Server.api.deletePublishedArticleById request
-                    successHandler
-                    (fun _ -> DeletePostError "Network error while occured while deleting the article") 
+                Cmd.fromAsync 
+                   {  Value = Server.api.deletePublishedArticleById request
+                      Error = fun _ ->  DeletePostError "Network error while occured while deleting the article"
+                      Success = fun deletePostResult -> successHandler deletePostResult } 
+
             
             nextState,  deleteCmd   
 
@@ -86,7 +88,7 @@ let update securityToken (state: State) (msg: Msg) =
         let nextState = { state with DeletingPost = None }
         nextState, Toastr.error (Toastr.message errorMsg)
     
-    | PostDeleted ->
+    | PostDeletedSuccessfully ->
         let nextState = { state with DeletingPost = None; Post = Empty }
         nextState, Cmd.batch [ Urls.navigate [ Urls.posts ]; Toastr.info (Toastr.message "Post was successfully deleted") ]
     

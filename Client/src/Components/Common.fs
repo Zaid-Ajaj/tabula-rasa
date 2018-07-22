@@ -29,3 +29,15 @@ let onTextChanged doSomethingWith =
   OnChange <| fun (ev: Fable.Import.React.FormEvent) ->
     let inputTextValue : string = !!ev.target?value
     doSomethingWith inputTextValue
+
+module Cmd = 
+    type AsyncValParams<'a, 'b> = 
+        { Value: Async<'a>
+          Success : 'a -> 'b 
+          Error : exn -> 'b }
+
+    let fromAsync (asyncParams: AsyncValParams<'a, 'b>) : Elmish.Cmd<'b> = 
+        Elmish.Cmd.ofAsync
+            (fun () -> asyncParams.Value) ()  
+            asyncParams.Success
+            asyncParams.Error

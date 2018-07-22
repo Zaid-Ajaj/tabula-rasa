@@ -4,6 +4,7 @@ open Shared
 open Admin.Backoffice.Drafts.Types 
 open Elmish 
 open Fable.PowerPack
+open Common
 
 let init () = 
     { Drafts = Empty
@@ -12,19 +13,24 @@ let init () =
       IsTogglingFeatured = None }, Cmd.none
 
 let canTakeAction state = 
-    match state.PublishingDraft, state.DeletingDraft with 
-    | None, None -> true 
-    | _ -> true
+    match state.PublishingDraft, state.DeletingDraft, state.IsTogglingFeatured with 
+    | None, None, None -> true 
+    | _ -> false
 
 let update authToken (msg: Msg) (state: State) = 
     match msg with 
     | LoadDrafts -> 
         let nextState = { state with Drafts = Loading }
-        nextState, Cmd.ofAsync Server.api.getDrafts (AuthToken(authToken)) 
-                               (function 
-                                | Ok drafts -> DraftsLoaded drafts
-                                | Error msg ->  AuthenticationError msg) 
-                               DraftsLoadingError
+        let loadDraftsCmd = 
+            Cmd.fromAsync 
+              { Value = Server.api.getDrafts (SecurityToken(authToken)) 
+                Error = fun ex -> DraftsLoadingError ex 
+                Success = function
+                   | Ok drafts -> DraftsLoaded drafts
+                   | Error msg -> AuthenticationError msg }
+
+        nextState, loadDraftsCmd
+
     | DraftsLoaded draftsFromServer ->
         let nextState = { state with Drafts = Body draftsFromServer }
         nextState, Cmd.none 
@@ -56,20 +62,19 @@ let update authToken (msg: Msg) (state: State) =
 
     | DeleteDraft draftId ->
         let request = { Token = authToken; Body = draftId }
-        let successHandler = function 
-            | DeleteDraftResult.DraftDeleted -> 
-                DraftDeleted 
-            | DeleteDraftResult.AuthError (UserUnauthorized) ->
-                DeleteDraftError "User was unauthorized"
-            | DeleteDraftResult.DraftDoesNotExist ->
-                DeleteDraftError "Draft does not seem to be in the database anymore"
-            | DeleteDraftResult.DatabaseErrorWhileDeletingDraft ->
-                DeleteDraftError "Internal error of the server's database while publishing draft"
-        
         let deleteCmd = 
-            Cmd.ofAsync Server.api.deleteDraftById request 
-                successHandler 
-                (fun ex -> DeleteDraftError "Network error occured while publishing the draft")
+            Cmd.fromAsync 
+                { Value = Server.api.deleteDraftById request
+                  Error = fun ex -> DeleteDraftError "Network error occured while publishing the draft"
+                  Success = function
+                    | DeleteDraftResult.DraftDeleted -> 
+                          DraftDeleted 
+                    | DeleteDraftResult.AuthError (UserUnauthorized) ->
+                        DeleteDraftError "User was unauthorized"
+                    | DeleteDraftResult.DraftDoesNotExist ->
+                        DeleteDraftError "Draft does not seem to be in the database anymore"
+                    | DeleteDraftResult.DatabaseErrorWhileDeletingDraft ->
+                        DeleteDraftError "Internal error of the server's database while publishing draft" }
         
         let nextState = { state with DeletingDraft = Some draftId }
         nextState, deleteCmd
@@ -83,20 +88,19 @@ let update authToken (msg: Msg) (state: State) =
     
     | PublishDraft draftId ->
         let request = { Token = authToken; Body = draftId }
-        let successHandler = function 
-            | PublishDraftResult.DraftPublished -> 
-                DraftPublished
-            | PublishDraftResult.AuthError (UserUnauthorized) -> 
-                PublishDraftError "User is not authorized" 
-            | PublishDraftResult.DatabaseErrorWhilePublishingDraft ->
-                PublishDraftError "Internal error of the server's database while publishing draft"
-            | PublishDraftResult.DraftDoesNotExist ->
-                PublishDraftError "The draft does not exist anymore" 
-
         let publishCmd = 
-            Cmd.ofAsync Server.api.publishDraft request
-                successHandler 
-                (fun ex -> PublishDraftError "Network error occured while publishing the draft")
+            Cmd.fromAsync 
+                { Value = Server.api.publishDraft request
+                  Error = fun ex -> PublishDraftError "Network error occured while publishing the draft"
+                  Success = function 
+                    | PublishDraftResult.DraftPublished -> 
+                        DraftPublished
+                    | PublishDraftResult.AuthError (UserUnauthorized) -> 
+                        PublishDraftError "User is not authorized" 
+                    | PublishDraftResult.DatabaseErrorWhilePublishingDraft ->
+                        PublishDraftError "Internal error of the server's database while publishing draft"
+                    | PublishDraftResult.DraftDoesNotExist ->
+                        PublishDraftError "The draft does not exist anymore" }
         
         let nextState = { state with PublishingDraft = Some draftId }
         nextState, publishCmd
@@ -124,12 +128,13 @@ let update authToken (msg: Msg) (state: State) =
         let nextState = { state with IsTogglingFeatured = Some postId }
         let request = { Token = authToken; Body = postId }
         let nextCmd = 
-            Cmd.ofAsync 
-                Server.api.togglePostFeauted request 
-                (function 
+            Cmd.fromAsync
+                { Value = Server.api.togglePostFeauted request
+                  Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
+                  Success = function 
                     | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)
-                    | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg))
-                (fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured"))
+                    | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg) } 
+        
         nextState, nextCmd
     
     | ToggleFeaturedFinished (Ok msg) -> 

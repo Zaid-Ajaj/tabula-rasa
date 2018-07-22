@@ -8,8 +8,8 @@ open Environment
 open Fable.Remoting.Suave
 open StorageTypes
 open Suave.RequestErrors
-
-FableSuaveAdapter.logger <- Some (printfn "%s")
+open Serilog
+open Suave.SerilogExtensions
 
 [<EntryPoint>]
 let main argv =
@@ -18,7 +18,7 @@ let main argv =
         match argv with
         | [| "--store"; "localdb" |] -> Store.LocalDatabase
         | [| "--store"; "in-memory" |] -> Store.InMemory
-        | otherwise -> Store.InMemory // by default
+        | otherwise -> Store.LocalDatabase // by default
 
     let webApp = WebApp.createUsing storageType
 
@@ -36,6 +36,17 @@ let main argv =
             webApp
             NOT_FOUND "The resource you requested was not found"
         ]
+
+    Log.Logger <- 
+      LoggerConfiguration() 
+        // Suave.SerilogExtensions has native destructuring mechanism
+        // this helps Serilog deserialize the fsharp types like unions/records
+        .Destructure.FSharpTypes()
+        // use package Serilog.Sinks.Console  
+        // https://github.com/serilog/serilog-sinks-console
+        .WriteTo.Console() 
+        // add more sinks etc.
+        .CreateLogger()
 
     startWebServer webAppConfig webApp
     0

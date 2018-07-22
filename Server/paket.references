@@ -7,3 +7,4 @@ jose-jwt
 Fable.Remoting.Suave
 Microsoft.DotNet.Watcher.Tools
 Suave.SerilogExtensions
+Serilog.Sinks.Console

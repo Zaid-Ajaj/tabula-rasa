@@ -5,7 +5,7 @@ open LiteDB
 open LiteDB.FSharp
 open LiteDB.FSharp.Extensions
 open Shared
-
+open Serilog
 open StorageTypes
 
 let toBlogPost (req : NewBlogPostReq) = 
@@ -20,21 +20,16 @@ let toBlogPost (req : NewBlogPostReq) =
 
 let validatePost (req: NewBlogPostReq) (db : LiteDatabase) = 
     let posts = db.GetCollection<BlogPost> "posts"
-    let noDraft = Query.EQ("IsDraft", BsonValue(false))
-    let byTitle = Query.EQ("Title", BsonValue(req.Title)) 
-    posts.Find(Query.And(noDraft, byTitle)) 
-    |> Seq.tryHead
-    |> function 
-        | Some _ -> Some PostWithSameTitleAlreadyExists 
-        | None -> 
-            let bySlug = Query.EQ("Slug", BsonValue(req.Slug)) 
-            posts.Find(Query.And(noDraft, bySlug)) 
-            |> Seq.tryHead 
-            |> function 
-                | Some _ -> Some PostWithSameSlugAlreadyExists
-                | None -> None 
+    let foundPostByTitle = posts.tryFindOne <@ fun post -> post.Title = req.Title && not post.IsDraft @> 
+    match foundPostByTitle with 
+    | Some _ -> Some PostWithSameTitleAlreadyExists 
+    | None -> 
+        let foundPostBySlug = posts.tryFindOne <@ fun post -> post.Slug = req.Slug && not post.IsDraft @>
+        match foundPostBySlug with  
+        | Some _ -> Some PostWithSameSlugAlreadyExists
+        | None -> None 
                  
-let publishPost (db : LiteDatabase) (req: NewBlogPostReq)  = 
+let publishPost (logger: ILogger) (db : LiteDatabase) (req: NewBlogPostReq)  = 
   let posts = db.GetCollection<BlogPost> "posts"
   try 
     match validatePost req db with
@@ -44,14 +39,16 @@ let publishPost (db : LiteDatabase) (req: NewBlogPostReq)  =
         let result = posts.Insert(newPost)
         AddedPostId (Bson.deserializeField<int> result)
   with 
-  | _ -> DatabaseErrorWhileAddingPost
+  | ex ->
+    logger.Error(ex, "Error while publishing post {Data}", req) 
+    DatabaseErrorWhileAddingPost
       
-let publishNewPost (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>)  = 
+let publishNewPost  (logger: ILogger) (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>)  = 
    match Security.validateJwt req.Token with
    | None -> AddPostResult.AuthError UserUnauthorized
-   | Some user -> publishPost database req.Body    
+   | Some user -> publishPost logger database req.Body    
           
-let saveAsDraft (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>) = 
+let saveAsDraft (logger: ILogger) (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>) = 
    match Security.validateJwt req.Token with
    | None -> AddPostResult.AuthError UserUnauthorized
    | Some user ->
@@ -65,9 +62,11 @@ let saveAsDraft (database: LiteDatabase) (req: SecureRequest<NewBlogPostReq>) =
         let postId = Bson.deserializeField<int> result
         AddedPostId postId
        with 
-       | ex -> DatabaseErrorWhileAddingPost
+       | ex ->
+          logger.Error(ex, "Error while saving draft {Data}", req) 
+          DatabaseErrorWhileAddingPost
 
-let deleteDraft (db: LiteDatabase) (draftReq: SecureRequest<int>) = 
+let deleteDraft (logger: ILogger) (db: LiteDatabase) (draftReq: SecureRequest<int>) = 
     match Security.validateJwt draftReq.Token with 
     | None -> DeleteDraftResult.AuthError UserUnauthorized
     | Some user -> 
@@ -78,51 +77,51 @@ let deleteDraft (db: LiteDatabase) (draftReq: SecureRequest<int>) =
         match posts.TryFind(draftById) with 
         | None -> DeleteDraftResult.DraftDoesNotExist 
         | Some _ -> 
-            if posts.Delete(postById) > 0 then DraftDeleted
-            else DeleteDraftResult.DatabaseErrorWhileDeletingDraft
+            try
+              if posts.Delete(postById) > 0 then DraftDeleted
+              else DeleteDraftResult.DatabaseErrorWhileDeletingDraft
+            with 
+            | ex -> 
+                logger.Error(ex, "Error while deleting draft {Data}", draftReq) 
+                DeleteDraftResult.DatabaseErrorWhileDeletingDraft
 
-let deletePublishedArticle (db: LiteDatabase) (draftReq: SecureRequest<int>) = 
-    match Security.validateJwt draftReq.Token with 
-    | None -> DeleteArticleResult.AuthError UserUnauthorized
+let deletePublishedArticle (db: LiteDatabase) (req: SecureRequest<int>) = 
+    match Security.validateJwt req.Token with 
+    | None -> DeletePostResult.AuthError UserUnauthorized
     | Some user -> 
-        let posts = db.GetCollection<BlogPost> "posts"                         
-        let postById = Query.EQ("_id", BsonValue(draftReq.Body))
-        let postIsNotDraft = Query.EQ("IsDraft", BsonValue(false))
-        let draftById = Query.And(postById, postIsNotDraft)
-        match posts.TryFind(draftById) with 
-        | None -> DeleteArticleResult.ArticleDoesNotExist 
-        | Some _ -> 
-            if posts.Delete(postById) > 0 then DeleteArticleResult.ArticleDeleted
-            else DeleteArticleResult.DatabaseErrorWhileDeletingArticle   
+        let posts = db.GetCollection<BlogPost> "posts"   
+        let foundPost = posts.tryFindOne <@ fun post -> post.Id = req.Body && not post.IsDraft @>        
+        match foundPost with 
+        | None -> DeletePostResult.PostDoesNotExist 
+        | Some existingPost -> 
+            let postById = Query.createQueryFromExpr<BlogPost> <@ fun post -> post.Id = existingPost.Id @>
+            if posts.Delete(postById) > 0 then DeletePostResult.PostDeleted
+            else DeletePostResult.DatabaseErrorWhileDeletingPost   
 
 let publishDraft (db: LiteDatabase) (draftReq: SecureRequest<int>) = 
     match Security.validateJwt draftReq.Token with 
     | None -> PublishDraftResult.AuthError UserUnauthorized
     | Some user -> 
-        let posts = db.GetCollection<BlogPost> "posts"                         
-        let postById = Query.EQ("_id", BsonValue(draftReq.Body))
-        let postIsDraft = Query.EQ("IsDraft", BsonValue(true))
-        let draftById = Query.And(postById, postIsDraft)
-        match posts.TryFind(draftById) with 
+        let posts = db.GetCollection<BlogPost> "posts"   
+        let post = posts.tryFindOne <@ fun post -> post.Id = draftReq.Body && post.IsDraft @>          
+        match post with 
         | None -> PublishDraftResult.DraftDoesNotExist 
         | Some draft ->
-            let post = { draft with IsDraft = false } 
-            if posts.Update(post) then DraftPublished 
+            let modifiedDraft = { draft with IsDraft = false } 
+            if posts.Update(modifiedDraft) then DraftPublished 
             else PublishDraftResult.DatabaseErrorWhilePublishingDraft
 
 let turnArticleToDraft (db: LiteDatabase) (req: SecureRequest<int>) = 
     match Security.validateJwt req.Token with 
     | None -> MakeDraftResult.AuthError UserUnauthorized
     | Some user -> 
-        let posts = db.GetCollection<BlogPost> "posts"                         
-        let postById = Query.EQ("_id", BsonValue(req.Body))
-        let postIsPublished = Query.EQ("IsDraft", BsonValue(false))
-        let draftById = Query.And(postById, postIsPublished)
-        match posts.TryFind(draftById) with 
+        let posts = db.GetCollection<BlogPost> "posts"
+        let foundPost = posts.tryFindOne <@ fun post -> post.Id = req.Body && not post.IsDraft @>                         
+        match foundPost with 
         | None -> MakeDraftResult.ArticleDoesNotExist 
-        | Some draft ->
-            let post = { draft with IsDraft = true } 
-            if posts.Update(post) then ArticleTurnedToDraft 
+        | Some post ->
+            let postAsDraft = { post with IsDraft = true } 
+            if posts.Update(postAsDraft) then ArticleTurnedToDraft 
             else MakeDraftResult.DatabaseErrorWhileMakingDraft 
 
 let togglePostFeatured (db: LiteDatabase) (req: SecureRequest<int>) = 
@@ -133,7 +132,7 @@ let togglePostFeatured (db: LiteDatabase) (req: SecureRequest<int>) =
         Error "User must be an admin"
     | Some admin -> 
         let posts = db.GetCollection<BlogPost> "posts"
-        match posts.TryFindById(BsonValue(req.Body)) with 
+        match posts.tryFindOne <@ fun post -> post.Id = req.Body @> with 
         | None -> Error "Blog post could not be found"
         | Some post -> 
             let modifiedPost = { post with IsFeatured = not post.IsFeatured }
@@ -146,7 +145,7 @@ let savePostChanges (db: LiteDatabase) (req: SecureRequest<BlogPostItem>) =
     | None -> Error "User unauthorized"
     | Some user -> 
         let posts = db.GetCollection<BlogPost> "posts"
-        match posts.TryFindById(BsonValue(req.Body.Id)) with 
+        match posts.tryFindOne <@ fun post -> post.Id = req.Body.Id @> with 
         | None -> Error "Could not find the post"
         | Some blogPost -> 
             let updatedBlogPost = 
@@ -169,18 +168,18 @@ let toBlogPostItem (post: BlogPost) =
         
 let getPublishedArticles (database: LiteDatabase) : list<BlogPostItem> = 
     let posts = database.GetCollection<BlogPost> "posts"
-    let notDraft = Query.EQ("IsDraft", BsonValue(false))
-    posts.Find(notDraft)
+    posts.findMany <@ fun post -> not post.IsDraft @>
     |> Seq.map toBlogPostItem
     |> List.ofSeq
 
-let getAllDrafts (database: LiteDatabase) (AuthToken(token)) = 
+let getAllDrafts (database: LiteDatabase) (SecurityToken(token)) = 
     match Security.validateJwt token with 
     | None -> Error "User unauthorized"
+    | Some user when not (Array.contains "admin" user.Claims) -> 
+        Error "User must be an admin"
     | Some user -> 
         let posts = database.GetCollection<BlogPost> "posts"
-        let postsThatAreDrafts = Query.EQ("IsDraft", BsonValue(true))
-        posts.Find(postsThatAreDrafts)
+        posts.findMany <@ fun post -> post.IsDraft @>
         |> Seq.map toBlogPostItem
         |> List.ofSeq
         |> Ok
@@ -190,7 +189,7 @@ let getPostById (database: LiteDatabase)  (req: SecureRequest<int>) =
     | None -> Error "User unauthorized"
     | Some user -> 
         let posts = database.GetCollection<BlogPost> "posts"
-        posts.TryFindById(BsonValue(req.Body))
+        posts.tryFindOne <@ fun post -> post.Id = req.Body @>
         |> Option.map toBlogPostItem
         |> function 
             | None -> Error "Could not find the requested article"
@@ -198,7 +197,5 @@ let getPostById (database: LiteDatabase)  (req: SecureRequest<int>) =
 
 let getPostBySlug (database: LiteDatabase) (slug: string) =
    let posts = database.GetCollection<BlogPost> "posts"
-   let bySlug = Query.EQ("Slug", BsonValue(slug))
-   let notDraft = Query.EQ("IsDraft", BsonValue(false))
-   posts.TryFind(Query.And(notDraft, bySlug))
+   posts.tryFindOne <@ fun post -> post.Slug = slug && not post.IsDraft @>
    |> Option.map toBlogPostItem

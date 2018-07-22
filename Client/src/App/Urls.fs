@@ -25,8 +25,13 @@ let newUrl (newUrl:string ): Elmish.Cmd<_> =
               |> ignore ]
 
          
-let navigate xs = newUrl (hashPrefix (combine xs))
-
+let navigate xs : Elmish.Cmd<_> = 
+    let nextUrl = hashPrefix (combine xs)
+    [fun _ -> history.pushState((), "", nextUrl)
+              let ev = document.createEvent_CustomEvent()
+              ev.initCustomEvent (navigationEvent, true, true, obj())
+              window.dispatchEvent ev
+              |> ignore ]
 
 let (|Int|_|) input = 
     match System.Int32.TryParse input with 

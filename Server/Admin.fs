@@ -4,7 +4,7 @@ open System
 open Shared
 open StorageTypes
 open Security
-
+open Serilog
 open LiteDB
 open LiteDB.FSharp.Extensions
 
@@ -52,12 +52,12 @@ let readAdminData (db: LiteDatabase)  =
         | Some admin -> admin
         | None -> failwith "Expected at least one admin to be present in the database"
 
-let login (db: LiteDatabase) (loginInfo: LoginInfo)  = 
+let login (logger: ILogger) (db: LiteDatabase) (loginInfo: LoginInfo)  = 
     let admins = db.GetCollection<AdminInfo> "admins"
     let username = loginInfo.Username
     let password = loginInfo.Password
-    let byUsername = Query.EQ("Username", BsonValue(username))
-    match admins.TryFind(byUsername) with 
+    logger.Information("Logging in user {Username}", username)
+    match admins.tryFindOne <@ fun admin -> admin.Username = username @> with 
     | None -> UsernameDoesNotExist
     | Some user -> 
         let salt = user.PasswordSalt
@@ -80,9 +80,9 @@ let updateBlogInfo (db: LiteDatabase) (req: SecureRequest<BlogInfo>) =
     match Security.validateJwt req.Token with 
     | None -> Error (ErrorMsg "User is unauthorized")
     | Some user when not (Array.contains "admin" user.Claims) -> Error (ErrorMsg "User must be an admin")
-    | Some admin ->
+    | Some user ->
         let admins = db.GetCollection<AdminInfo> "admins"
-        match admins.TryFind(Query.EQ("Username", BsonValue(admin.Username))) with 
+        match admins.tryFindOne <@ fun admin -> admin.Username = user.Username  @> with 
         | None -> Error (ErrorMsg "Admin was not found")
         | Some foundAdmin -> 
             let blogInfo = req.Body

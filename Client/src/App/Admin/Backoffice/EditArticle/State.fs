@@ -3,6 +3,7 @@ module Admin.Backoffice.EditArticle.State
 open Shared
 open Elmish
 open Admin.Backoffice.EditArticle.Types
+open Common
 
 let init() = 
     { ArticleToEdit = Empty
@@ -25,7 +26,17 @@ let update authToken msg state =
                 | Ok true -> SavedChanges
                 | Error errorMsg -> SaveChangesError errorMsg 
                 | otherwise -> DoNothing
-            nextState, Cmd.ofAsync Server.api.savePostChanges request successHandler (fun ex -> SaveChangesError "Network error while saving changes to blog post")
+            
+            let nextCmd = 
+                Cmd.fromAsync 
+                    { Value = Server.api.savePostChanges request
+                      Error = fun ex -> SaveChangesError "Network error while saving changes to blog post"
+                      Success = function
+                        | Ok true -> SavedChanges
+                        | Error errorMsg -> SaveChangesError errorMsg 
+                        | otherwise -> DoNothing }
+            
+            nextState, nextCmd
         
         | SaveChangesError errorMsg -> 
             let nextState = { state with SavingChanges = false }

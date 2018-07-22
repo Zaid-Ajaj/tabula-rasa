@@ -13,6 +13,7 @@ nuget Fable.Elmish.React
 nuget Fable.Elmish.Browser
 nuget Fable.Elmish.HMR
 nuget Fable.Elmish.Debugger
+nuget Serilog.Sinks.Console
 nuget Suave.SerilogExtensions
 
 nuget jose-jwt

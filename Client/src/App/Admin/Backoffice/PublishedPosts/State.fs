@@ -56,13 +56,13 @@ let update authToken msg state =
         let nextState = { state with DeletingPost = Some postId }
         let request = { Token = authToken; Body = postId }
         let successHandler = function 
-            | DeleteArticleResult.ArticleDeleted ->     
+            | DeletePostResult.PostDeleted ->     
                 PostDeleted 
-            | DeleteArticleResult.AuthError (UserUnauthorized) -> 
+            | DeletePostResult.AuthError (UserUnauthorized) -> 
                 DeletePostError "User was unauthorized to delete the article"
-            | DeleteArticleResult.ArticleDoesNotExist ->
+            | DeletePostResult.PostDoesNotExist ->
                 DeletePostError "It seems that the article does not exist any more"
-            | DeleteArticleResult.DatabaseErrorWhileDeletingArticle ->
+            | DeletePostResult.DatabaseErrorWhileDeletingPost ->
                 DeletePostError "Internal error of the server's database while deleting the article"
         
         let deleteCmd = 

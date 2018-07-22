@@ -2,7 +2,7 @@ module Shared
 
 open System
 
-type AuthToken = AuthToken of string
+type AuthToken = SecurityToken of string
 
 type BlogInfo = {
     Name: string
@@ -88,11 +88,11 @@ type DeleteDraftResult =
     | AuthError of AuthError
     | DatabaseErrorWhileDeletingDraft
 
-type DeleteArticleResult = 
-    | ArticleDoesNotExist
-    | ArticleDeleted
+type DeletePostResult = 
+    | PostDoesNotExist
+    | PostDeleted
     | AuthError of AuthError
-    | DatabaseErrorWhileDeletingArticle
+    | DatabaseErrorWhileDeletingPost
 
 type PublishDraftResult = 
     | DraftDoesNotExist 
@@ -122,7 +122,7 @@ type IBlogApi =
        savePostAsDraft : SecureRequest<NewBlogPostReq> -> Async<AddPostResult>
        deleteDraftById : SecureRequest<int> -> Async<DeleteDraftResult>
        publishDraft : SecureRequest<int> -> Async<PublishDraftResult>
-       deletePublishedArticleById : SecureRequest<int> -> Async<DeleteArticleResult>
+       deletePublishedArticleById : SecureRequest<int> -> Async<DeletePostResult>
        turnArticleToDraft: SecureRequest<int> -> Async<MakeDraftResult>
        getPostById : SecureRequest<int> -> Async<Result<BlogPostItem, string>>
        savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>>

@@ -1,12 +1,17 @@
 module Admin.Backoffice.Settings.State 
 
+open System
 open Shared
 open Elmish
 open Admin.Backoffice.Settings.Types 
 
 let init() = { BlogInfo = Empty;
                IsChangingChanges = false;  
-               ShowingUserSettings = false }, Cmd.none
+               ShowingUserSettings = false;
+               CurrentPassword = "";
+               NewPassword = "";
+               ConfirmNewPassword = "" }, Cmd.none
+
 
 let update authToken msg state = 
     match msg with 
@@ -80,7 +85,28 @@ let update authToken msg state =
 
             | ChangesSaved msg ->
                 state, Toastr.success (Toastr.message msg)
+
+            | SetCurrentPassword pwd ->
+                { state with CurrentPassword = pwd }, Cmd.none
+
+            | SetNewPassword pwd ->
+                { state with NewPassword = pwd }, Cmd.none
+             
+            | SetConfirmNewPassword pwd ->
+                { state with ConfirmNewPassword = pwd }, Cmd.none
             
+            | SubmitNewPassword when String.IsNullOrWhiteSpace state.CurrentPassword ->
+                state, Toastr.error (Toastr.message "Current password cannot be empty") 
+
+            | SubmitNewPassword when String.IsNullOrWhiteSpace state.NewPassword ->
+                state, Toastr.error (Toastr.message "New password cannot be empty")
+             
+            | SubmitNewPassword when String.IsNullOrWhiteSpace state.ConfirmNewPassword || state.ConfirmNewPassword <> state.NewPassword ->
+                state, Toastr.error (Toastr.message "New password confirmation is not correct")
+
+            | SubmitNewPassword ->
+                state, Toastr.success (Toastr.message "Password updated!")
+
             | _ -> state, Cmd.none
         
         | _ -> state, Cmd.none 

@@ -5,7 +5,10 @@ open Shared
 type State = 
     { BlogInfo : Remote<BlogInfo>
       IsChangingChanges : bool
-      ShowingUserSettings : bool }
+      ShowingUserSettings : bool
+      CurrentPassword : string 
+      NewPassword : string 
+      ConfirmNewPassword : string }
 
 type Msg = 
     | LoadBlogInfo 
@@ -21,4 +24,7 @@ type Msg =
     | SaveChangesError of string
     | ShowUserSettings 
     | ShowBlogSettings 
-    | ChangePassword
+    | SubmitNewPassword
+    | SetCurrentPassword of string 
+    | SetNewPassword of string 
+    | SetConfirmNewPassword of string

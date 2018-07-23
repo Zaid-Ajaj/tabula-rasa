@@ -106,6 +106,12 @@ type MakeDraftResult =
     | AuthError of AuthError
     | DatabaseErrorWhileMakingDraft    
 
+type UpdatePasswordInfo = {
+    Username: string
+    CurrentPassword : string 
+    NewPassword : string 
+}
+
 type SuccessMsg = SuccessMsg of string 
 type ErrorMsg = ErrorMsg of string
 

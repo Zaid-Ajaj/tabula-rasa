@@ -74,8 +74,9 @@ let userSettings state dispatch =
                     input [ ClassName "form-control form-control-lg"
                             Key "txtCurrentPassword"
                             Id "txtCurrentPassword"
-                            DefaultValue ""
-                            Type "text" ] 
+                            DefaultValue state.CurrentPassword 
+                            Common.onTextChanged (SetCurrentPassword >> dispatch)
+                            Type "password" ] 
                 ]
             div [ ClassName "form-group" ]  
                 [ 
@@ -83,8 +84,9 @@ let userSettings state dispatch =
                     input [ ClassName "form-control form-control-lg"
                             Id "txtNewPassword"
                             Key "txtNewPassword"
-                            DefaultValue ""
-                            Type "text" ] 
+                            DefaultValue state.NewPassword 
+                            Common.onTextChanged (SetNewPassword >> dispatch)
+                            Type "password" ] 
                 ]
             div [ ClassName "form-group" ]  
                 [ 
@@ -92,8 +94,9 @@ let userSettings state dispatch =
                     input [ ClassName "form-control form-control-lg"
                             Id "txtNewPasswordConfirm"
                             Key "txtNewPasswordConfirm"
-                            DefaultValue ""
-                            Type "text" ] 
+                            DefaultValue state.ConfirmNewPassword 
+                            Common.onTextChanged (SetConfirmNewPassword >> dispatch)
+                            Type "password" ] 
                 ] ]
                  
 let tabs state dispatch = 
@@ -120,7 +123,7 @@ let settings state blogInfo dispatch =
     else div [ Style [ Padding 10 ] ] 
              [ userSettings state dispatch
                button [ ClassName "btn btn-success"
-                        OnClick (fun _ -> dispatch ChangePassword) ] 
+                        OnClick (fun _ -> dispatch SubmitNewPassword) ] 
                       [ str "Change Password" ] ] 
 
 let render state dispatch = 

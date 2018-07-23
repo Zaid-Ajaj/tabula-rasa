@@ -1,5 +1,6 @@
 module Admin.Backoffice.Settings.State 
 
+open Common
 open System
 open Shared
 open Elmish
@@ -10,6 +11,7 @@ let init() = { BlogInfo = Empty;
                ShowingUserSettings = false;
                CurrentPassword = "";
                NewPassword = "";
+               IsUpdatingPassword = false
                ConfirmNewPassword = "" }, Cmd.none
 
 
@@ -17,7 +19,13 @@ let update authToken msg state =
     match msg with 
     | LoadBlogInfo ->
         let nextState = { state with BlogInfo = Loading }
-        nextState, Cmd.ofAsync Server.api.getBlogInfo () BlogInfoLoaded (fun ex -> LoadBlogInfoError "Network error while loading blog information")
+        let loadBlogInfoCmd = 
+            Cmd.fromAsync {
+                Value = Server.api.getBlogInfo()
+                Error = fun ex -> LoadBlogInfoError "Network error while loading blog information"
+                Success = BlogInfoLoaded
+            } 
+        nextState, loadBlogInfoCmd
     
     | BlogInfoLoaded (Ok blogInfo) ->
         let nextState = { state with BlogInfo = Body blogInfo } 
@@ -72,12 +80,14 @@ let update authToken msg state =
                 let nextState = { state with IsChangingChanges = true  }
                 let request = { Token = authToken; Body = blogInfo }
                 let updateBlogInfoCmd = 
-                    Cmd.ofAsync Server.api.updateBlogInfo 
-                                request
-                                (function 
-                                    | Ok (SuccessMsg msg) -> ChangesSaved msg
-                                    | Error (ErrorMsg msg) -> SaveChangesError msg)  
-                                (fun ex -> SaveChangesError "Network error occurred while update the blog info")
+                    Cmd.fromAsync {
+                        Value = Server.api.updateBlogInfo request
+                        Error = fun ex -> SaveChangesError "Network error occurred while update the blog info"
+                        Success = function 
+                            | Ok (SuccessMsg msg) -> ChangesSaved msg
+                            | Error (ErrorMsg msg) -> SaveChangesError msg
+                    }
+
                 nextState, updateBlogInfoCmd 
             
             | SaveChangesError errorMsg ->
@@ -103,10 +113,39 @@ let update authToken msg state =
              
             | SubmitNewPassword when String.IsNullOrWhiteSpace state.ConfirmNewPassword || state.ConfirmNewPassword <> state.NewPassword ->
                 state, Toastr.error (Toastr.message "New password confirmation is not correct")
+            
+            | SubmitNewPassword when state.IsUpdatingPassword -> 
+                state, Toastr.error (Toastr.message "Updating the password is still on-going...") 
 
             | SubmitNewPassword ->
-                state, Toastr.success (Toastr.message "Password updated!")
+                let updatePwdInfo : SecureRequest<UpdatePasswordInfo> = {
+                    Token = authToken
+                    Body = { CurrentPassword = state.CurrentPassword; NewPassword = state.NewPassword }
+                 } 
+                let updatePwdCmd = 
+                    Cmd.fromAsync {
+                        Value = Server.api.updatePassword updatePwdInfo
+                        Error = fun ex -> UpdatePasswordError "Network error occured while updating your password"
+                        Success = function 
+                            | Ok successMsg -> UpdatePasswordSuccess 
+                            | Error errorMsg -> UpdatePasswordError errorMsg 
+                    }
 
+                let nextState = { state with IsUpdatingPassword = true }
+                nextState, updatePwdCmd
+            | UpdatePasswordError errorMsg -> 
+                { state with IsUpdatingPassword = false }, Toastr.error (Toastr.message errorMsg) 
+
+            | UpdatePasswordSuccess ->
+                // reset input fields
+                let nextState = 
+                    { state with
+                       IsUpdatingPassword = false
+                       NewPassword = "" 
+                       CurrentPassword = "" 
+                       ConfirmNewPassword = "" }
+
+                nextState, Toastr.success (Toastr.message "Password updated")
             | _ -> state, Cmd.none
         
         | _ -> state, Cmd.none 

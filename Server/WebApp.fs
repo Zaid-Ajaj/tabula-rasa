@@ -31,6 +31,7 @@ let createBlogApi (logger: ILogger) (database: LiteDatabase) : IBlogApi =
         savePostChanges = BlogPosts.savePostChanges database >> liftAsync
         updateBlogInfo = Admin.updateBlogInfo database >> liftAsync
         togglePostFeauted = BlogPosts.togglePostFeatured database >> liftAsync 
+        updatePassword = Admin.updatePassword logger database >> liftAsync
     }
 
     blogApi
@@ -50,7 +51,7 @@ let errorHandler (ex: Exception)
     Ignore 
 
 
-/// Creates a WebPart from the BlogApi protocol
+/// Creates a WebPart from the BlogApi protocol, then enable serilog on top of the web part
 let createUsing storeType = 
     let database = Storage.createDatabaseUsing storeType
     Remoting.createApi()

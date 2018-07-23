@@ -30,6 +30,7 @@ let onTextChanged doSomethingWith =
     let inputTextValue : string = !!ev.target?value
     doSomethingWith inputTextValue
 
+[<AutoOpen>]
 module Cmd = 
     type AsyncValParams<'a, 'b> = 
         { Value: Async<'a>

@@ -79,10 +79,10 @@ let updatePassword (logger: ILogger) (db: LiteDatabase) (updateInfo: SecureReque
         Error "User unauthorized: must be an admin"
     | Some userInfo -> 
         let admins = db.GetCollection<AdminInfo> "admins"
-        match admins.tryFindOne <@ fun admin -> admin.Username = updateInfo.Body.Username @> with
+        match admins.tryFindOne <@ fun admin -> admin.Username = userInfo.Username @> with
         | None -> 
             logger.Information("Could not find admin {Username} in the database", userInfo.Username)
-            Error (sprintf "User '%s' was not found" updateInfo.Body.Username)
+            Error (sprintf "User '%s' was not found" userInfo.Username)
         | Some admin -> 
             let salt = admin.PasswordSalt
             let hash = admin.PasswordHash

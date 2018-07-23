@@ -8,7 +8,8 @@ type State =
       ShowingUserSettings : bool
       CurrentPassword : string 
       NewPassword : string 
-      ConfirmNewPassword : string }
+      ConfirmNewPassword : string 
+      IsUpdatingPassword : bool }
 
 type Msg = 
     | LoadBlogInfo 
@@ -25,6 +26,8 @@ type Msg =
     | ShowUserSettings 
     | ShowBlogSettings 
     | SubmitNewPassword
+    | UpdatePasswordError of string 
+    | UpdatePasswordSuccess
     | SetCurrentPassword of string 
     | SetNewPassword of string 
     | SetConfirmNewPassword of string

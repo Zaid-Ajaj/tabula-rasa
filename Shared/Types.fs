@@ -107,7 +107,6 @@ type MakeDraftResult =
     | DatabaseErrorWhileMakingDraft    
 
 type UpdatePasswordInfo = {
-    Username: string
     CurrentPassword : string 
     NewPassword : string 
 }
@@ -133,4 +132,5 @@ type IBlogApi =
        getPostById : SecureRequest<int> -> Async<Result<BlogPostItem, string>>
        savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>>
        updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<SuccessMsg, ErrorMsg>>
-       togglePostFeauted : SecureRequest<int> -> Async<Result<string, string>> }
+       togglePostFeauted : SecureRequest<int> -> Async<Result<string, string>>
+       updatePassword : SecureRequest<UpdatePasswordInfo> -> Async<Result<string, string>> }

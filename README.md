@@ -123,7 +123,85 @@ Following these principles to help us write components in isolation:
 
 For example, in order for `ChildA` to send a message to `ChildB`, the message has to be dispatched from `ChildA` -> *intercepted* by the parent of `ChildA` -> propagated as another message to `ChildB` from parent. 
 
-As a concrete example in this application: when you update the settings, the root component intercepts the "Changed settings" message and reloads it's blog information with the new settings accordingly
+The best example of this concept is the interaction between the components:
+```
+      Admin
+        |
+  ---------------
+  |             |
+Backoffice    Login     
+
+```
+`Login` doesn't know anything going on in the application as a whole, it just has a form for the user to input his credentials and try to login to the server to obtain an authorization token. When the token is obtained, a `LoginSuccess token` message is dispatched. However, this very message is *intercepted* by `Admin` (the parent of `Login`), updating the state of `Admin`:
+```fs
+// Admin/State.fs
+
+let update msg (state: State) =
+    match msg with
+    | LoginMsg loginMsg ->
+        match loginMsg with 
+        // intercept the LoginSuccess message dispatched by the child component
+        | Login.Types.Msg.LoginSuccess token ->
+            let nextState = 
+                { state with Login = state.Login
+                             SecurityToken = Some token }
+            nextState, Urls.navigate [ Urls.admin ] 
+        // propagate other messages to child component
+        | _ -> 
+            let nextLoginState, nextLoginCmd = Admin.Login.State.update loginMsg state.Login
+            let nextAdminState = { state with Login = nextLoginState }
+            nextAdminState, Cmd.map LoginMsg nextLoginCmd
+```
+After updating the state of `Admin` to include the security token obtained from `Login`, the application navigates to the admin pages using `Urls.navigate [ Urls.admin ]`. Now the navigation will succeed, because navigating to the admin is allowed only if the admin has a security token defined:
+```fs
+// App/State.fs -> inside handleUpdatedUrl
+
+
+| Admin.Types.Page.Backoffice backofficePage ->
+    match state.Admin.SecurityToken with
+    | None -> 
+        // navigating to one of the admins backoffice pages 
+        // without a security token? then you need to login first
+        Cmd.batch [ Urls.navigate [ Urls.login ]
+                    showInfo "You must be logged in first" ] 
+    | Some userSecurityToken ->
+        // then user is already logged in 
+        // for each specific page, dispatch the appropriate message 
+        // for initial loading of that data of that page
+        match backofficePage with 
+        | Admin.Backoffice.Types.Page.Drafts -> 
+            Admin.Backoffice.Drafts.Types.LoadDrafts
+            |> Admin.Backoffice.Types.Msg.DraftsMsg
+            |> Admin.Types.Msg.BackofficeMsg 
+            |> AdminMsg 
+            |> Cmd.ofMsg
+        
+        | Admin.Backoffice.Types.Page.PublishedPosts -> 
+            Admin.Backoffice.PublishedPosts.Types.LoadPublishedPosts
+            |> Admin.Backoffice.Types.Msg.PublishedPostsMsg
+            |> Admin.Types.Msg.BackofficeMsg
+            |> AdminMsg
+            |> Cmd.ofMsg 
+
+        | Admin.Backoffice.Types.Page.Settings ->
+            Admin.Backoffice.Settings.Types.Msg.LoadBlogInfo
+            |> Admin.Backoffice.Types.Msg.SettingsMsg
+            |> Admin.Types.Msg.BackofficeMsg
+            |> AdminMsg
+            |> Cmd.ofMsg 
+         
+        | Admin.Backoffice.Types.Page.EditArticle postId ->
+            Admin.Backoffice.EditArticle.Types.Msg.LoadArticleToEdit postId 
+            |> Admin.Backoffice.Types.Msg.EditArticleMsg 
+            |> Admin.Types.Msg.BackofficeMsg
+            |> AdminMsg 
+            |> Cmd.ofMsg 
+        
+        | otherPage -> 
+            Cmd.none
+```
+
+Another concrete example in this application: when you update the settings, the root component intercepts the "Changed settings" message and reloads it's blog information with the new settings accordingly
 
 # Responsive using different UI's
 As opposed to using CSS to show or hide elements based on screen size, I used react-responsive to make a completely different app for small-sized screens, implemented as 
@@ -176,4 +254,4 @@ let togglePostFeatured (db: LiteDatabase) (req: SecureRequest<int>) =
 ```
 See [Modeling Authentication and Authorization](https://zaid-ajaj.github.io/Fable.Remoting/src/modeling-authentication.html) in Fable.Remoting to learn more
 # More
-There is a lot to talk about with this application, but the best to learn from it is by actually trying it out and going through the code yourself.
+There is a lot to talk about with this application, but the best to learn from it is by actually trying it out and going through the code yourself. If you need clarification or explanation on why a code snippet is written the way it is, just open an issue with your question :) 

@@ -30,9 +30,9 @@ let urlSubscription appState : Cmd<_> =
 
 // App
 Program.mkProgram init update render
+|> Program.withSubscription urlSubscription
 #if DEBUG
 |> Program.withConsoleTrace
-|> Program.withSubscription urlSubscription
 |> Program.withDebugger
 |> Program.withHMR
 #endif

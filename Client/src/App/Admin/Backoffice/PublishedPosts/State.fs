@@ -6,6 +6,7 @@ open Admin.Backoffice.PublishedPosts.Types
 open Fable.PowerPack
 open Fable
 open Urls
+open Common 
 
 let init() = 
     let initState = 
@@ -110,14 +111,16 @@ let update authToken msg state =
     | ToggleFeatured postId ->
         let nextState = { state with IsTogglingFeatured = Some postId }
         let request = { Token = authToken; Body = postId }
-        let nextCmd = 
-            Cmd.ofAsync 
-                Server.api.togglePostFeauted request 
-                (function 
+        let toggleFeatureCmd = 
+            Cmd.fromAsync {
+                Value = Server.api.togglePostFeauted request
+                Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
+                Success = function 
                     | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)
-                    | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg))
-                (fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured"))
-        nextState, nextCmd
+                    | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg)
+            } 
+
+        nextState, toggleFeatureCmd
     
     | ToggleFeaturedFinished (Ok msg) -> 
         match state.IsTogglingFeatured, state.PublishedPosts with 

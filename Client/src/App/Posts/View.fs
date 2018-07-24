@@ -22,10 +22,10 @@ let monthName = function
     | 12 -> "December"
     | _ -> ""
     
-let normalize (month: int) = 
-    if month < 10 
-    then (sprintf "0%d" month)
-    else (string month)
+let normalize (n: int) = 
+    if n < 10 
+    then (sprintf "0%d" n)
+    else (string n)
     
 let formatDate (date : DateTime) = 
     sprintf "%d/%s/%s %s:%s" 
@@ -64,8 +64,10 @@ let timelineEvents name (blogPosts : list<BlogPostItem>) dispatch =
       [ Style [ MarginTop 5 ] ] 
       [ title; timeline timelineEvents ]    
 
+/// Groups posts by month from most recent to oldest
 let latestPosts (blogPosts : list<BlogPostItem>) dispatch = 
     blogPosts
+    |> List.sortByDescending (fun post -> post.DateAdded)
     |> List.groupBy (fun post -> post.DateAdded.Year, post.DateAdded.Month)
     |> List.map (fun ((year, month), posts) -> 
         let title = (monthName month) + " " + string year  

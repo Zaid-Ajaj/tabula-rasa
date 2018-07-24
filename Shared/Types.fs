@@ -133,4 +133,5 @@ type IBlogApi =
        savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>>
        updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<SuccessMsg, ErrorMsg>>
        togglePostFeauted : SecureRequest<int> -> Async<Result<string, string>>
-       updatePassword : SecureRequest<UpdatePasswordInfo> -> Async<Result<string, string>> }
+       updatePassword : SecureRequest<UpdatePasswordInfo> -> Async<Result<string, string>> 
+    }

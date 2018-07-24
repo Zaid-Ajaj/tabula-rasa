@@ -22,12 +22,7 @@ let update authToken msg state =
         | SaveChanges -> 
             let nextState = { state with SavingChanges = true }
             let request = { Token = authToken; Body = article }
-            let successHandler = function
-                | Ok true -> SavedChanges
-                | Error errorMsg -> SaveChangesError errorMsg 
-                | otherwise -> DoNothing
-            
-            let nextCmd = 
+            let saveChangesCmd = 
                 Cmd.fromAsync 
                     { Value = Server.api.savePostChanges request
                       Error = fun ex -> SaveChangesError "Network error while saving changes to blog post"
@@ -36,7 +31,7 @@ let update authToken msg state =
                         | Error errorMsg -> SaveChangesError errorMsg 
                         | otherwise -> DoNothing }
             
-            nextState, nextCmd
+            nextState, saveChangesCmd
         
         | SaveChangesError errorMsg -> 
             let nextState = { state with SavingChanges = false }

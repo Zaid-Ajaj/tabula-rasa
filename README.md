@@ -58,6 +58,8 @@ type IBlogApi = {
     updatePassword : SecureRequest<UpdatePasswordInfo> -> Async<Result<string, string>> 
 }
 ```
+Thanks to [Fable.Remoting](https://github.com/Zaid-Ajaj/Fable.Remoting), this application does not need to handle data serialization/deserialization and routing between client and server, it is all done for us which means that the code is 99% domain models and domain logic.
+
 You will often see calls made to server like these:
 ```fs
 let request = { Token = authToken; Body = article }
@@ -114,24 +116,25 @@ Every component comes with a `Types.fs` file that contains mostly three things
 
 The `State` keeps track of the `CurrentPage` but it will never update it by hand: the `CurrentPage` is only updated in response to url changes and these changes will dipatch a message to change the value of the `CurrentPage` along with dispatching other messages related to loading the data for the component in subject
 
-# Data Locality and Message Interception
+# Important Concepts: Data Locality and Message Interception
 
 Following these principles to help us write components in isolation:
  - Child components don't know anything about their parents
  - Child components don't know anything about their siblings
  - Parent components manage child state and communication between children 
 
-For example, in order for `ChildA` to send a message to `ChildB`, the message has to be dispatched from `ChildA` -> *intercepted* by the parent of `ChildA` -> propagated as another message to `ChildB` from parent. 
-
-The best example of this concept is the interaction between the components:
+The best example of these concepts is the interaction between the following components:
 ```
-      Admin
-        |
-  ---------------
-  |             |
-Backoffice    Login     
-
+        Admin
+          |
+   ---------------
+   |             |
+Backoffice     Login     
 ```
+## Message Interception by example
+
+> Definition: Message intecption is having control over how messages flow in your application, allowing for communication between components that don't know each other exist.  
+
 `Login` doesn't know anything going on in the application as a whole, it just has a form for the user to input his credentials and try to login to the server to obtain an authorization token. When the token is obtained, a `LoginSuccess token` message is dispatched. However, this very message is *intercepted* by `Admin` (the parent of `Login`), updating the state of `Admin`:
 ```fs
 // Admin/State.fs
@@ -155,7 +158,6 @@ let update msg (state: State) =
 After updating the state of `Admin` to include the security token obtained from `Login`, the application navigates to the admin pages using `Urls.navigate [ Urls.admin ]`. Now the navigation will succeed, because navigating to the admin is allowed only if the admin has a security token defined:
 ```fs
 // App/State.fs -> inside handleUpdatedUrl
-
 
 | Admin.Types.Page.Backoffice backofficePage ->
     match state.Admin.SecurityToken with
@@ -202,6 +204,12 @@ After updating the state of `Admin` to include the security token obtained from 
 ```
 
 Another concrete example in this application: when you update the settings, the root component intercepts the "Changed settings" message and reloads it's blog information with the new settings accordingly
+
+## Data Locality by example
+
+> Definition: Data Locality is having control over the data that is available to certain components, without access to global state. 
+
+Assumption: Once the user is inside a component of `Backoffice`, there will always be a `SecurityToken` available to that component. This means I don't want to check whether there is a security token or not everytime I want to make a web request, because if there isn't one, the user shouldn't have been able to reach the `Backoffice` component in the first place.   
 
 # Responsive using different UI's
 As opposed to using CSS to show or hide elements based on screen size, I used react-responsive to make a completely different app for small-sized screens, implemented as 

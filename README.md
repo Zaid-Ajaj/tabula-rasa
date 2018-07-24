@@ -133,7 +133,7 @@ Backoffice     Login
 ```
 ## Message Interception by example
 
-> Definition: Message intecption is having control over how messages flow in your application, allowing for communication between components that don't know each other exist.  
+> Definition: Message intercption is having control over how messages flow in your application, allowing for communication between components that don't know each other even exist.  
 
 `Login` doesn't know anything going on in the application as a whole, it just has a form for the user to input his credentials and try to login to the server to obtain an authorization token. When the token is obtained, a `LoginSuccess token` message is dispatched. However, this very message is *intercepted* by `Admin` (the parent of `Login`), updating the state of `Admin`:
 ```fs
@@ -209,7 +209,35 @@ Another concrete example in this application: when you update the settings, the 
 
 > Definition: Data Locality is having control over the data that is available to certain components, without access to global state. 
 
-Assumption: Once the user is inside a component of `Backoffice`, there will always be a `SecurityToken` available to that component. This means I don't want to check whether there is a security token or not everytime I want to make a web request, because if there isn't one, the user shouldn't have been able to reach the `Backoffice` component in the first place.   
+Fact: Components of `Backoffice` need to make secure requests, hence they need a security token available whenever a request is to be made.
+
+Requirement: Once the user is inside a component of `Backoffice`, there will always be a `SecurityToken` available to that component. This means I don't want to check whether there is a security token or not everytime I want to make a web request, because if there isn't one, there is an internal inconsistency: the user shouldn't have been able to reach the `Backoffice` component in the first place. 
+
+Problem: The security token is only acquired *after* the user logs in from `Login`, but before that there isn't a security token, hence the type of the token will be `SecurityToken: string option` but we don't want an optional token, we want an actual token once we are logged in.
+
+Solution: `Login` and components of `Backoffice` cannot be siblings, `Login` is happy with the security token being optional, while `Backoffice` insists on having a token at any given time. So we introduce a parent: `Admin` that handles the *optionalness* of the security token! The `Admin` will disallow the user from reaching `Backoffice` if there isn't a security token, and if there is one, it will be propagated to the backoffice:
+```fs
+// Admin/State.fs -> update
+| BackofficeMsg msg ->
+    match msg with 
+    | Backoffice.Types.Msg.Logout -> 
+        // intercept logout message of the backoffice child
+        let nextState, _ = init()
+        nextState, Urls.navigate [ Urls.posts ]
+    | _ -> 
+        match state.SecurityToken with 
+        | Some token -> 
+            let prevBackofficeState = state.Backoffice
+            let nextBackofficeState, nextBackofficeCmd = 
+                // pass security token down to backoffice
+                Backoffice.State.update token msg prevBackofficeState
+            let nextAdminState = { state with Backoffice = nextBackofficeState }
+            nextAdminState, Cmd.map BackofficeMsg nextBackofficeCmd
+        | None ->
+            state, Cmd.none
+``` 
+
+
 
 # Responsive using different UI's
 As opposed to using CSS to show or hide elements based on screen size, I used react-responsive to make a completely different app for small-sized screens, implemented as 

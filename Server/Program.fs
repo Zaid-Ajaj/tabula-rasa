@@ -34,6 +34,7 @@ let main argv =
             GET >=> path "/" >=> Files.browseFileHome "index.html"
             Files.browseHome
             webApp
+            WebApp.socketServer
             NOT_FOUND "The resource you requested was not found"
         ]
 

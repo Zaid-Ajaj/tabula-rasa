@@ -6,6 +6,8 @@ open Fable.Remoting.Server
 open Fable.Remoting.Suave
 open Serilog
 open Suave.SerilogExtensions
+open Elmish.Bridge
+open Elmish
 
 let liftAsync x = async { return x }
 
@@ -61,3 +63,36 @@ let createUsing storeType =
     |> Remoting.withErrorHandler errorHandler
     |> Remoting.buildWebPart 
     |> SerilogAdapter.Enable
+
+// server state is what the server keeps track of
+type ServerState = Nothing 
+
+// the server message is what the server reacts to
+// in this case, it reacts to messages from client
+type ServerMsg = ClientMsg of RemoteClientMsg 
+
+// The postsHub keeps track of connected clients and has broadcasting logic
+let postsHub = 
+    ServerHub<ServerState, ServerMsg, RemoteServerMsg>() 
+        .RegisterServer(ClientMsg) 
+
+// react to messages coming from client
+let update currentClientDispatch (ClientMsg clientMsg) currentState = 
+    match clientMsg with 
+    // when a post is added
+    | PostAdded -> 
+        // tell all clients to reload posts
+        postsHub.BroadcastClient ReloadPosts
+        currentState, Cmd.none 
+
+// Don't do anything initially
+let init (clientDispatch:Dispatch<RemoteServerMsg>) () = Nothing, Cmd.none 
+
+// Construct the socketServer as a WebPart
+let socketServer =
+    Bridge.mkServer Shared.socket init update 
+    |> Bridge.withConsoleTrace
+    |> Bridge.withServerHub postsHub
+    // register the types we can receive
+    |> Bridge.register ClientMsg  
+    |> Bridge.run Suave.server

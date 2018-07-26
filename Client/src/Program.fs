@@ -5,7 +5,7 @@ open Elmish.HMR
 open Elmish.React
 open Elmish.Debug
 open Elmish.Browser.Navigation
-
+open Elmish.Bridge
 open App.State
 open App.View
 
@@ -31,6 +31,9 @@ let urlSubscription appState : Cmd<_> =
 // App
 Program.mkProgram init update render
 |> Program.withSubscription urlSubscription
+|> Program.withBridgeConfig (
+    Bridge.endpoint Shared.socket
+    |> Bridge.withMapping App.Types.AppMsg.ServerMsg)
 #if DEBUG
 |> Program.withConsoleTrace
 |> Program.withDebugger

@@ -2,6 +2,8 @@ source https://nuget.org/api/v2
 
 storage:none
 
+nuget Elmish.Bridge.Client 1.0.0-rc rc
+nuget Elmish.Bridge.Suave 1.0.0-rc rc
 nuget Elmish.Toastr
 nuget Expecto
 

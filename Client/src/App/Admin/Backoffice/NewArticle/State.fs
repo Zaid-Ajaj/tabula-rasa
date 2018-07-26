@@ -1,8 +1,10 @@
 module Admin.Backoffice.NewArticle.State
 
 open Elmish
+open Elmish.Bridge
 open Admin.Backoffice.NewArticle.Types
 open Shared
+open Common
 
 let init() = 
     let initialState : NewArticleState = {
@@ -61,11 +63,18 @@ let update authToken msg (state: NewArticleState) =
                        Slug = state.Slug; 
                        Content = state.Content; 
                        Tags = state.Tags } }
-          nextState, Cmd.ofAsync Server.api.publishNewPost request
-                                 (function 
-                                    | AddedPostId id -> Published
-                                    | other -> PublishError "Could not publish post") 
-                                 (fun ex -> PublishError "Could not publish post")
+          let publishCmd = Cmd.fromAsync {
+              Value = Server.api.publishNewPost request
+              Error = fun ex -> PublishError "Could not publish post"
+              Success = function 
+                | AddedPostId id -> 
+                    // let the server know, that a post was added
+                    Bridge.Send (RemoteClientMsg.PostAdded)
+                    Published
+                | other -> PublishError "Could not publish post"
+          }
+          
+          nextState, publishCmd
     
     | SaveAsDraft -> 
         if state.IsPublishing 

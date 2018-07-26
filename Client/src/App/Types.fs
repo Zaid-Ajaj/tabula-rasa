@@ -19,6 +19,8 @@ type AppMsg =
   | BlogInfoLoadFailed of error:string
   | UrlUpdated of Page
   | NavigateTo of Page
+  // specialized message coming from server via Elmish.Bridge
+  | ServerMsg of RemoteServerMsg
   | DoNothing 
 
 type AppState = {

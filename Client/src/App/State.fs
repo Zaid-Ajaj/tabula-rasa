@@ -230,6 +230,15 @@ let handleUpdatedUrl nextPage state =
 
 let update msg state =
   match msg with
+  | ServerMsg msg -> 
+      match msg with 
+      | ReloadPosts -> 
+           match state.CurrentPage with  
+           | Some (App.Types.Page.Posts PostsPage.AllPosts) -> 
+                let reloadPostsCmd = Cmd.ofMsg (PostsMsg Posts.Types.Msg.LoadLatestPosts)
+                state, reloadPostsCmd
+           | _ -> state, Cmd.none 
+
   | PostsMsg msg ->
       let postsState, postsCmd = Posts.State.update state.Admin.SecurityToken state.Posts msg 
       let appState = { state with Posts = postsState }

@@ -135,3 +135,14 @@ type IBlogApi =
        togglePostFeauted : SecureRequest<int> -> Async<Result<string, string>>
        updatePassword : SecureRequest<UpdatePasswordInfo> -> Async<Result<string, string>> 
     }
+
+
+// Message from the client, telling the server that a new post is added
+type RemoteClientMsg = 
+    | PostAdded 
+
+// Message from the server, telling the client to reload posts
+type RemoteServerMsg = 
+    | ReloadPosts 
+
+let socket = "/socket"

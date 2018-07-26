@@ -16,12 +16,15 @@ A minimalistic real-worldish blog engine written entirely in F#. Specifically ma
 
 ![second.gif](/gifs/second.gif) 
 
+![bridge.gif](/gifs/bridge.gif)
+
 ### The server uses the following tech 
  - [Suave](https://github.com/SuaveIO/suave) as a lightweight web server 
  - [LiteDB](https://github.com/mbdavid/LiteDB) as a lightweight embedded database through [LiteDB.FSharp](https://github.com/Zaid-Ajaj/LiteDB.FSharp)  
  - [Serilog](https://github.com/serilog/serilog) for logging through [Suave.SerilogExtensiosn](https://github.com/Zaid-Ajaj/Suave.SerilogExtensions)
  - [Jose](https://github.com/dvsekhvalnov/jose-jwt) for generating secure JSON web tokens 
  - [Fable.Remoting](https://github.com/Zaid-Ajaj/Fable.Remoting) for type-safe communication 
+ - [Elmish.Bridge](https://github.com/Nhowka/Elmish.Bridge) for real-time type-safe messaging in an elmish model 
  - [Expecto](https://github.com/haf/expecto) for testing 
 
 ### The client uses the following tech 
@@ -29,6 +32,7 @@ A minimalistic real-worldish blog engine written entirely in F#. Specifically ma
  - [Bootstrap](https://getbootstrap.com/) for styling 
  - [Elmish.Toastr](https://github.com/Zaid-Ajaj/Elmish.Toastr) for toasts/notifications 
  - [Fable.Remoting](https://github.com/Zaid-Ajaj/Fable.Remoting) for type-safe communication
+ - [Elmish.Bridge](https://github.com/Nhowka/Elmish.Bridge) for real-time type-safe messaging in an elmish model 
  - Third-party javascript libraries 
    - [react-select](https://github.com/JedWatson/react-select) for adding tags to posts 
    - [react-event-timeline](https://github.com/rcdexta/react-event-timeline) for a timeline view of the blog posts 

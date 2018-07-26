@@ -9,6 +9,7 @@ A minimalistic real-worldish blog engine written entirely in F#. Specifically ma
  - Database access
  - User security: authentication and authorization
  - Type-safe RPC communication  
+ - Realtime type-safe messaging via web sockets 
 
 # Screen recordings
 
@@ -294,6 +295,11 @@ let togglePostFeatured (db: LiteDatabase) (req: SecureRequest<int>) =
 ```
 See [Modeling Authentication and Authorization](https://zaid-ajaj.github.io/Fable.Remoting/src/modeling-authentication.html) in Fable.Remoting to learn more
 # Try out on your machine
+
+Requirements: 
+ - [.NET Core](https://www.microsoft.com/net/download)
+ - [Node.js](https://nodejs.org/en/) 
+
 Start watch build on windows:
 ```
 git clone https://github.com/Zaid-Ajaj/tabula-rasa.git 

@@ -1,4 +1,4 @@
-# Tabula Rasa
+# Tabula Rasa [![Build Status](https://travis-ci.org/Zaid-Ajaj/tabula-rasa.svg?branch=master)](https://travis-ci.org/Zaid-Ajaj/tabula-rasa)
 
 A minimalistic real-worldish blog engine written entirely in F#. Specifically made as a learning resource when building apps with the [SAFE](https://safe-stack.github.io/) stack. This application features many concerns of large apps such as:
  - Using third-party react libraries via interop
@@ -296,10 +296,14 @@ See [Modeling Authentication and Authorization](https://zaid-ajaj.github.io/Fabl
 # Try out on your machine
 Start watch build on windows:
 ```
+git clone https://github.com/Zaid-Ajaj/tabula-rasa.git 
+cd tabula-rasa
 build.cmd Watch 
 ```
 On linux/mac you can use bash
 ```bash
+git clone https://github.com/Zaid-Ajaj/tabula-rasa.git 
+cd tabula-rasa
 ./build.sh Watch
 ```
 When the build finishes, you can navigate to `http://localhost:8090` to start using the application. Once you make changes to either server or client, it will automatically re-compile the app

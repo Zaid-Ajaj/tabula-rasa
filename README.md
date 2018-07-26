@@ -293,5 +293,15 @@ let togglePostFeatured (db: LiteDatabase) (req: SecureRequest<int>) =
             else Error "Error occured while updating the blog post"
 ```
 See [Modeling Authentication and Authorization](https://zaid-ajaj.github.io/Fable.Remoting/src/modeling-authentication.html) in Fable.Remoting to learn more
+# Try out on your machine
+Start watch build on windows:
+```
+build.cmd Watch 
+```
+On linux/mac you can use bash
+```bash
+./build.sh Watch
+```
+When the build finishes, you can navigate to `http://localhost:8090` to start using the application. Once you make changes to either server or client, it will automatically re-compile the app
 # More
 There is a lot to talk about with this application, but the best to learn from it is by actually trying it out and going through the code yourself. If you need clarification or explanation on why a code snippet is written the way it is, just open an issue with your question :) 

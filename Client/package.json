@@ -32,6 +32,7 @@
     "fable-loader": "^1.1.2",
     "fable-utils": "^1.0.6",
     "loglevel": "^1.5.0",
+    "node-sass": "^4.9.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "webpack": "^3.6.0",

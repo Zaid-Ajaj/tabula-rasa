@@ -1,0 +1,9 @@
+language: csharp
+mono: 5.2.0
+dotnet: 2.0.0
+dist: trusty
+script:
+ - echo "Running tests"
+ - ./build.sh ServerTests
+ - echo "Building application"
+ - ./build.sh Release

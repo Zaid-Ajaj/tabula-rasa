@@ -7,7 +7,7 @@ open Fable.Remoting.Suave
 open Serilog
 open Suave.SerilogExtensions
 open Elmish.Bridge
-open Elmish
+open Elmish 
 
 let liftAsync x = async { return x }
 
@@ -32,7 +32,7 @@ let createBlogApi (logger: ILogger) (database: LiteDatabase) : IBlogApi =
         getPostById = BlogPosts.getPostById database >> liftAsync
         savePostChanges = BlogPosts.savePostChanges database >> liftAsync
         updateBlogInfo = Admin.updateBlogInfo database >> liftAsync
-        togglePostFeauted = BlogPosts.togglePostFeatured database >> liftAsync 
+        togglePostFeatured = BlogPosts.togglePostFeatured database >> liftAsync 
         updatePassword = Admin.updatePassword logger database >> liftAsync
     }
 

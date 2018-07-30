@@ -3,6 +3,7 @@ module Admin.Backoffice.Drafts.State
 open Shared
 open Admin.Backoffice.Drafts.Types 
 open Elmish 
+open Elmish.SweetAlert
 open Fable.PowerPack
 open Common
 
@@ -46,19 +47,16 @@ let update authToken (msg: Msg) (state: State) =
         state, Toastr.info (Toastr.message "An action is already taking place") 
     
     | AskPermissionToDeleteDraft draftId -> 
-        let renderModal() = 
-            [ SweetAlert.Title "Are you sure you want to delete this draft?"
-              SweetAlert.Text "You will not be able to undo this action"
-              SweetAlert.Type SweetAlert.ModalType.Question
-              SweetAlert.CancelButtonEnabled true ] 
-            |> SweetAlert.render 
-            |> Promise.map (fun result -> result.value)
+        let handleConfirm = function
+        | ConfirmAlertResult.Confirmed -> DeleteDraft draftId 
+        | ConfirmAlertResult.Dismissed reason -> CancelDraftDeletion
 
-        let handleModal = function 
-            | true -> DeleteDraft draftId
-            | false ->  CancelDraftDeletion 
+        let confirmAlert = 
+            ConfirmAlert("You will not be able to undo this action", handleConfirm)
+                .Title("Are you sure you want to delete this draft?")
+                .Type(AlertType.Question)
 
-        state, Cmd.ofPromise renderModal () handleModal (fun ex -> DoNothing)
+        state, SweetAlert.Run(confirmAlert)   
 
     | DeleteDraft draftId ->
         let request = { Token = authToken; Body = draftId }
@@ -129,7 +127,7 @@ let update authToken (msg: Msg) (state: State) =
         let request = { Token = authToken; Body = postId }
         let nextCmd = 
             Cmd.fromAsync
-                { Value = Server.api.togglePostFeauted request
+                { Value = Server.api.togglePostFeatured request
                   Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
                   Success = function 
                     | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)

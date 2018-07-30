@@ -292,7 +292,6 @@ testCase "Login with default credentials works" <| fun _ ->
         match result with 
         | LoginResult.Success token -> pass() 
         | _ -> fail()
-})
 ```
 Of course you can also test the individual function seperately because every function is also unit testable as long as you provide a database instance and a logger. 
 

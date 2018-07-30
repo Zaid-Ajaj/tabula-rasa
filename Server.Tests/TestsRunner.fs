@@ -4,6 +4,8 @@ open Expecto
 open Expecto.Logging
 open StorageTests
 open SecurityTests
+open BlogApiTests 
+
 let testConfig =  
     { Expecto.Tests.defaultConfig with 
          parallelWorkers = 1
@@ -13,6 +15,7 @@ let liteDbTests =
     testList "All tests" [  
         storageTests
         securityTests
+        blogApiTests
     ]
 
 

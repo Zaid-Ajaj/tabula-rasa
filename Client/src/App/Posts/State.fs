@@ -1,10 +1,12 @@
 module Posts.State
 
 open Elmish
+open Elmish.SweetAlert 
 open Fable.PowerPack
 open Posts.Types
 open Shared
 open Common
+
 
 let update securityToken (state: State) (msg: Msg) = 
     match msg with
@@ -45,19 +47,16 @@ let update securityToken (state: State) (msg: Msg) =
         state, Toastr.warning (Toastr.message "Post is being deleted, please wait...")
 
     | AskPermissionToDeletePost postId ->
-        let renderModal() = 
-            [ SweetAlert.Title "Are you sure you want to delete this blog post?"
-              SweetAlert.Text "You will not be able to undo this action"
-              SweetAlert.Type SweetAlert.ModalType.Question
-              SweetAlert.CancelButtonEnabled true ] 
-            |> SweetAlert.render 
-            |> Promise.map (fun result -> result.value)
+        let handleConfirm = function
+        | ConfirmAlertResult.Confirmed -> DeletePost postId 
+        | ConfirmAlertResult.Dismissed reason -> CancelPostDeletion
 
-        let handleModal = function 
-            | true -> DeletePost postId
-            | false ->  CancelPostDeletion 
+        let confirmAlert = 
+            ConfirmAlert("You will not be able to undo this action", handleConfirm)
+                .Title("Are you sure you want to delete this blog post?")
+                .Type(AlertType.Question)
 
-        state, Cmd.ofPromise renderModal () handleModal (fun _ -> DoNothing)         
+        state, SweetAlert.Run(confirmAlert)         
     
     | DeletePost postId ->
         match securityToken with 

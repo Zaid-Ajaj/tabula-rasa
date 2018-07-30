@@ -9,7 +9,6 @@
     <Compile Include="Components/React.Responsive.fs" />
     <Compile Include="Components/React.Select.fs" />
     <Compile Include="Components/Common.fs" />
-    <Compile Include="Components/SweetAlert2.fs" />
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
     <Compile Include="App/Urls.fs" />

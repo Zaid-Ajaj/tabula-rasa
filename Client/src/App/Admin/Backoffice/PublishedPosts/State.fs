@@ -2,6 +2,7 @@ module Admin.Backoffice.PublishedPosts.State
 
 open Shared
 open Elmish
+open Elmish.SweetAlert
 open Admin.Backoffice.PublishedPosts.Types
 open Fable.PowerPack
 open Fable
@@ -36,19 +37,16 @@ let update authToken msg state =
         nextState, Toastr.error (Toastr.message errorMsg)
     
     | AskPermissionToDeletePost postId ->
-        let renderModal() = 
-            [ SweetAlert.Title "Are you sure you want to delete this article?"
-              SweetAlert.Text "You will not be able to undo this action"
-              SweetAlert.Type SweetAlert.ModalType.Question
-              SweetAlert.CancelButtonEnabled true ] 
-            |> SweetAlert.render 
-            |> Promise.map (fun result -> result.value)
-
-        let handleModal = function 
-            | true -> DeletePost postId
-            | false ->  CancelPostDeletion 
-
-        state, Cmd.ofPromise renderModal () handleModal (fun _ -> DoNothing)        
+        let handleConfirm = function
+        | ConfirmAlertResult.Confirmed -> DeletePost postId 
+        | ConfirmAlertResult.Dismissed reason -> CancelPostDeletion
+        
+        let confirmAlert = 
+            ConfirmAlert("You will not be able to undo this action", handleConfirm)
+                .Title("Are you sure you want to delete this article?")
+                .Type(AlertType.Question)
+        
+        state, SweetAlert.Run(confirmAlert)   
     
     | CancelPostDeletion -> 
         state, Toastr.info (Toastr.message "Delete operation was cancelled")
@@ -113,7 +111,7 @@ let update authToken msg state =
         let request = { Token = authToken; Body = postId }
         let toggleFeatureCmd = 
             Cmd.fromAsync {
-                Value = Server.api.togglePostFeauted request
+                Value = Server.api.togglePostFeatured request
                 Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
                 Success = function 
                     | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)

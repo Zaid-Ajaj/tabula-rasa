@@ -32,6 +32,7 @@ A minimalistic real-worldish blog engine written entirely in F#. Specifically ma
  - [Elmish](https://github.com/elmish) for building the client architecture with react
  - [Bootstrap](https://getbootstrap.com/) for styling 
  - [Elmish.Toastr](https://github.com/Zaid-Ajaj/Elmish.Toastr) for toasts/notifications 
+ - [Elmish.SweetAlert](https://github.com/Zaid-Ajaj/Elmish.SweetAlert) for simple and sweet elmish dialogs prompts 
  - [Fable.Remoting](https://github.com/Zaid-Ajaj/Fable.Remoting) for type-safe communication
  - [Elmish.Bridge](https://github.com/Nhowka/Elmish.Bridge) for real-time type-safe messaging in an elmish model 
  - Third-party javascript libraries 
@@ -39,7 +40,6 @@ A minimalistic real-worldish blog engine written entirely in F#. Specifically ma
    - [react-event-timeline](https://github.com/rcdexta/react-event-timeline) for a timeline view of the blog posts 
    - [react-marked-markdown](https://github.com/Vincent-P/react-marked-markdown) for rendering markdown
    - [react-responsive](https://github.com/contra/react-responsive) for making the app responsive
-   - [SweetAlert2](https://github.com/sweetalert2/sweetalert2) for sweet sweet prompt dialogs 
 
 # Communication Protocol
 To understand how the application works and what it does, you simply take a look the protocol between the client and server:
@@ -59,7 +59,7 @@ type IBlogApi = {
     getPostById : SecureRequest<int> -> Async<Result<BlogPostItem,string>>
     savePostChanges : SecureRequest<BlogPostItem> ->  Async<Result<bool,string>>
     updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<SuccessMsg,ErrorMsg>>
-    togglePostFeauted : SecureRequest<int> -> Async<Result<string,string>>
+    togglePostFeatured : SecureRequest<int> -> Async<Result<string,string>>
     updatePassword : SecureRequest<UpdatePasswordInfo> -> Async<Result<string, string>> 
 }
 ```
@@ -242,6 +242,59 @@ Solution: `Login` and components of `Backoffice` cannot be siblings, `Login` is 
             state, Cmd.none
 ``` 
 
+# Unit-testable at the composition root level:
+The composition root is where the application functionality gets all the dependencies it needs to run to application like the database and a logger. In this application, the composition root is where we contruct an implementation for the `IBlogApi` protocol: 
+```fs
+let liftAsync x = async { return x }
+
+/// Composition root of the application
+let createBlogApi (logger: ILogger) (database: LiteDatabase) : IBlogApi = 
+     // create initial admin guest admin if one does not exists
+    Admin.writeAdminIfDoesNotExists database Admin.guestAdmin 
+    let getBlogInfo() = async { return Admin.blogInfo database }
+    let getPosts() = async { return BlogPosts.getPublishedArticles database } 
+    let blogApi : IBlogApi = {   
+        getBlogInfo = getBlogInfo
+        getPosts = getPosts 
+        login = Admin.login logger database >> liftAsync
+        publishNewPost = BlogPosts.publishNewPost logger database >> liftAsync
+        getPostBySlug =  BlogPosts.getPostBySlug database >> liftAsync 
+        savePostAsDraft = BlogPosts.saveAsDraft logger database >> liftAsync
+        getDrafts = BlogPosts.getAllDrafts database >> liftAsync
+        deleteDraftById = BlogPosts.deleteDraft logger database >> liftAsync 
+        publishDraft = BlogPosts.publishDraft database >> liftAsync
+        deletePublishedArticleById = BlogPosts.deletePublishedArticle database >> liftAsync
+        turnArticleToDraft = BlogPosts.turnArticleToDraft database >> liftAsync
+        getPostById = BlogPosts.getPostById database >> liftAsync
+        savePostChanges = BlogPosts.savePostChanges database >> liftAsync
+        updateBlogInfo = Admin.updateBlogInfo database >> liftAsync
+        togglePostFeatured = BlogPosts.togglePostFeatured database >> liftAsync 
+        updatePassword = Admin.updatePassword logger database >> liftAsync
+    }
+
+    blogApi
+```
+Because LiteDB already includes an in-memory database and Serilog provides a simple no-op logger, you can write unit tests right off the bat at the application level:
+```fs
+// creates a disposable in memory database
+let useDatabase (f: LiteDatabase -> unit) = 
+    let mapper = FSharpBsonMapper()
+    use memoryStream = new MemoryStream()
+    use db = new LiteDatabase(memoryStream, mapper)
+    f db
+
+testCase "Login with default credentials works" <| fun _ -> 
+    useDatabase <| fun db -> 
+        let logger = Serilog.Log.Logger 
+        let testBlogApi = WebApp.createBlogApi logger db 
+        let loginInfo = { Username = "guest"; Password = "guest" }
+        let result = Async.RunSynchronously (testBlogApi.login loginInfo)
+        match result with 
+        | LoginResult.Success token -> pass() 
+        | _ -> fail()
+})
+```
+Of course you can also test the individual function seperately because every function is also unit testable as long as you provide a database instance and a logger. 
 
 
 # Responsive using different UI's
@@ -266,14 +319,14 @@ let nextState = { state with IsTogglingFeatured = Some postId }
 let request = { Token = authToken; Body = postId }
 let toggleFeatureCmd = 
     Cmd.fromAsync {
-        Value = Server.api.togglePostFeauted request
+        Value = Server.api.togglePostFeatured request
         Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
         Success = function 
             | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)
             | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg)
     } 
 ```
-And it is handles like this on the server:
+And it is handled like this on the server:
 ```fs
 // Server
 
@@ -312,6 +365,12 @@ git clone https://github.com/Zaid-Ajaj/tabula-rasa.git
 cd tabula-rasa
 ./build.sh Watch
 ```
-When the build finishes, you can navigate to `http://localhost:8090` to start using the application. Once you make changes to either server or client, it will automatically re-compile the app
+This will start the build and create the [LiteDb](https://github.com/Zaid-Ajaj/LiteDB.FSharp) (single file) database for the first time if it does not already exists. The database will be in the application data directory of your OS under the `TabulaRasa` directory with name `tabula-rasa.db` along with the newly generated secret key used for generating secure Json web tokens. 
+
+When the build finishes, you can navigate to `http://localhost:8090` to start using the application. Once you make changes to either server or client, it will automatically re-compile the app.
+
+Once the application starts, the home page will tell you *"There aren't any stories published yet"* because the database is still empty. You can then navigate to `http://localhost:8090/#login` to login in as an admin who can write stories. The default credentials are Username = `guest` and Password = `guest`. 
+
+
 # More
 There is a lot to talk about with this application, but the best to learn from it is by actually trying it out and going through the code yourself. If you need clarification or explanation on why a code snippet is written the way it is, just open an issue with your question :) 

@@ -115,10 +115,13 @@ let mobileApp blogInfo state dispatch =
                                     Marked.Options [ Marked.Sanitize false ] ]  ]
 
         | otherPage ->
-          // map other pages to just an empty view 
-          // because we don't to support backoffice from mobile
-          // at least for now... 
-          div [ ] [ ]
+          div [ ] [
+            str "map other pages to just an empty view"
+            br [ ]
+            str "because we don't to support backoffice from mobile"
+            br [ ]
+            str "at least for now..."
+          ]
 
   
 let app blogInfo state dispatch =

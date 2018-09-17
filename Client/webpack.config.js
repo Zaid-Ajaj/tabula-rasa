@@ -2,6 +2,7 @@ var path = require("path");
 var webpack = require("webpack");
 var fableUtils = require("fable-utils");
 var WriteFilePlugin = require('write-file-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 function resolve(filePath) {
     return path.join(__dirname, filePath)
@@ -79,7 +80,13 @@ module.exports = {
             }
         ]
     },
-    plugins: isProduction ? [] : [
+    plugins: isProduction ? [
+        // generate bundle report in production build
+        new BundleAnalyzerPlugin({
+            generateStatsFile: true,
+            analyzerMode: "static"
+        })
+    ] : [
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NamedModulesPlugin()
     ]

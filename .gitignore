@@ -15,7 +15,8 @@ node_modules/
 *.userprefs
 *.dll.mdb
 *.exe.mdb
-
+stats.json
+report.html
 # Build results
 
 [Dd]ebug/
@@ -194,8 +195,8 @@ docs/tools/FSharp.Formatting.svclog
 .ionide.debug
 *.bak
 project.lock.json
-bundle.json
-bundle.json.map
+bundle.js
+bundle.js.map
 .idea/
 TabulaRasa.sln.DotSettings.user
 .idea

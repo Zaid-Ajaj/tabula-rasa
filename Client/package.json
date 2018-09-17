@@ -4,7 +4,8 @@
   "description": "Simple Fable App",
   "scripts": {
     "build": "webpack -p",
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "explore-bundle": "source-map-explorer public/bundle.js public/bundle.js.map"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +37,7 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "webpack": "^3.6.0",
+    "webpack-bundle-analyzer": "^3.0.2",
     "webpack-dev-server": "^2.8.2",
     "write-file-webpack-plugin": "^4.2.0"
   }

@@ -3,6 +3,7 @@ module Admin.Backoffice.Drafts.State
 open Shared
 open Admin.Backoffice.Drafts.Types 
 open Elmish 
+open Elmish.Toastr
 open Elmish.SweetAlert
 open Fable.PowerPack
 open Common

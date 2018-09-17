@@ -2,6 +2,7 @@ module Admin.Backoffice.EditArticle.State
 
 open Shared
 open Elmish
+open Elmish.Toastr
 open Admin.Backoffice.EditArticle.Types
 open Common
 

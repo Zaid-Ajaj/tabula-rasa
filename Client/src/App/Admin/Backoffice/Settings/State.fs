@@ -4,6 +4,7 @@ open Common
 open System
 open Shared
 open Elmish
+open Elmish.Toastr
 open Admin.Backoffice.Settings.Types 
 
 let init() = { BlogInfo = Empty;

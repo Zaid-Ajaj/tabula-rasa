@@ -2,85 +2,80 @@ var path = require("path");
 var webpack = require("webpack");
 var fableUtils = require("fable-utils");
 var WriteFilePlugin = require('write-file-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 function resolve(filePath) {
     return path.join(__dirname, filePath)
 }
 
-var babelOptions = fableUtils.resolveBabelOptions({
-    presets: [["es2015", { "modules": false }]],
-    plugins: [["transform-runtime", {
-        "helpers": true,
-        // We don't need the polyfills as we're already calling
-        // cdn.polyfill.io/v2/polyfill.js in index.html
-        "polyfill": false,
-        "regenerator": false
-    }]]
-});
+var babelOptions = {
+  presets: [
+    ["env", {
+        "modules": false,
+        "useBuiltIns": "usage",
+    }]
+  ]
+};
 
-var isProduction = process.argv.indexOf("-p") >= 0;
-console.log("Bundling for " + (isProduction ? "production" : "development") + "...");
-
-module.exports = {
-    devtool: "source-map",
-    entry: resolve('./src/TabulaRasa.Client.fsproj'),
-    output: {
-        filename: 'bundle.js',
-        path: resolve('./public'),
-    },
-    resolve: {
-        modules: [
-            "node_modules", resolve("./node_modules/")
-        ]
-    },
-    devServer: {
-        proxy: {
-            '/api/*': {
-              target: 'http://localhost:8080',
-              changeOrigin: true
-            }, 
-            '/socket': {
-                target: 'http://localhost:8080',
-                ws: true
-            }
+module.exports = function (evn, argv) {
+    var mode = argv.mode || "development";
+    var isProduction = mode === "production";
+    console.log("Webpack mode: " + mode);
+    return {
+        devtool: "source-map",
+        entry: resolve('./src/TabulaRasa.Client.fsproj'),
+        output: {
+            filename: 'bundle.js',
+            path: resolve('./public'),
         },
-        contentBase: resolve('./public'),
-        port: 8090,
-        hot: true,
-        inline: true
-    },
-    module: {
-        rules: [
-            {
-                test: /\.fs(x|proj)?$/,
-                use: {
-                    loader: "fable-loader",
-                    options: {
-                        babel: babelOptions,
-                        define: isProduction ? [] : ["DEBUG"]
-                    }
+        devServer: {
+            proxy: {
+                '/api/*': {
+                  target: 'http://localhost:8080',
+                  changeOrigin: true
+                }, 
+                '/socket': {
+                    target: 'http://localhost:8080',
+                    ws: true
                 }
             },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: babelOptions
+            contentBase: resolve('./public'),
+            port: 8090,
+            hot: true,
+            inline: true
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.fs(x|proj)?$/,
+                    use: "fable-loader"
                 },
-            },
-            {
-                test: /\.(sa|c)ss$/,
-                use: [
-                    "style-loader",
-                    "css-loader",
-                    "sass-loader"
-                ]
-            }
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: babelOptions
+                    },
+                },
+                {
+                    test: /\.(sa|c)ss$/,
+                    use: [
+                        "style-loader",
+                        "css-loader",
+                        "sass-loader"
+                    ]
+                }
+            ]
+        },
+        plugins: isProduction ? [
+            new BundleAnalyzerPlugin({
+                generateStatsFile: true,
+                analyzerMode:"static"
+            })
+        ] : [
+            new webpack.HotModuleReplacementPlugin(),
+            new webpack.NamedModulesPlugin()
         ]
-    },
-    plugins: isProduction ? [] : [
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin()
-    ]
+    };
 };

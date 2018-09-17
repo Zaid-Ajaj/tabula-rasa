@@ -2,6 +2,7 @@ module Admin.Login.State
 
 open System
 open Elmish
+open Elmish.Toastr
 open Admin.Login.Types
 open Shared
 
@@ -76,7 +77,7 @@ let update msg (state: State) =
         let nextState = { state with LoggingIn = false }
         let successFeedback = 
             Toastr.message "Login succesful"
-            |> Toastr.withTitle "Login"
+            |> Toastr.title "Login"
             |> Toastr.success
         nextState, successFeedback
     | LoginFailed error ->
@@ -85,7 +86,7 @@ let update msg (state: State) =
                          LoggingIn = false }
         let showErrorMsg = 
             Toastr.message error
-            |> Toastr.withTitle "Login"
+            |> Toastr.title "Login"
             |> Toastr.error
         
         nextState, showErrorMsg

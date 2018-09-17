@@ -7,4 +7,4 @@ open Shared
 let api = 
     Remoting.createApi()
     |> Remoting.withRouteBuilder routes 
-    |> Remoting.buildProxy<IBlogApi>() 
+    |> Remoting.buildProxy<IBlogApi>

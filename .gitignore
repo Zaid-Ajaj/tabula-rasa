@@ -190,6 +190,9 @@ paket-files
 docs/content/license.md
 docs/content/release-notes.md
 .fake
+.fable
+stats.json
+report.html
 docs/tools/FSharp.Formatting.svclog
 .ionide.debug
 *.bak

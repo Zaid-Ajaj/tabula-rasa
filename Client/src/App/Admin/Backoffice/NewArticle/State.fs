@@ -1,7 +1,7 @@
 module Admin.Backoffice.NewArticle.State
 
 open Elmish
-open Elmish.Bridge
+open Elmish.Toastr
 open Admin.Backoffice.NewArticle.Types
 open Shared
 open Common
@@ -23,7 +23,7 @@ let init() =
 
 let warning text = 
     Toastr.message text
-    |> Toastr.withTitle "Tabula Rasa"
+    |> Toastr.title "Tabula Rasa"
     |> Toastr.warning
     
 let update authToken msg (state: NewArticleState) = 
@@ -69,7 +69,7 @@ let update authToken msg (state: NewArticleState) =
               Success = function 
                 | AddedPostId id -> 
                     // let the server know, that a post was added
-                    Bridge.Send (RemoteClientMsg.PostAdded)
+                    // Bridge.Send (RemoteClientMsg.PostAdded)
                     Published
                 | other -> PublishError "Could not publish post"
           }
@@ -122,7 +122,7 @@ let update authToken msg (state: NewArticleState) =
     | SaveAsDraftError errorMsg -> 
         let errorToast =
           Toastr.message errorMsg
-          |> Toastr.withTitle "Publish Error"
+          |> Toastr.title "Publish Error"
           |> Toastr.error
         let nextState = { state with IsSavingDraft = false }
         nextState, errorToast
@@ -150,7 +150,7 @@ let update authToken msg (state: NewArticleState) =
     | PublishError errorMsg ->
         let errorToast =
           Toastr.message errorMsg
-          |> Toastr.withTitle "Publish Error"
+          |> Toastr.title "Publish Error"
           |> Toastr.error
         let nextState = { state with IsPublishing = false }
         nextState, errorToast

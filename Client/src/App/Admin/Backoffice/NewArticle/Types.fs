@@ -27,6 +27,3 @@ type NewArticleState = {
     IsPublishing : bool
     IsSavingDraft : bool
 }
- 
-
- 

@@ -10,7 +10,6 @@
     <Compile Include="Components/React.Select.fs" />
     <Compile Include="Components/Common.fs" />
     <Compile Include="Server.fs" />
-    <Compile Include="Elmish.Toastr.fs" />
     <Compile Include="App/Urls.fs" />
     <!-- Admin Backoffice NewArticle -->
     <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />

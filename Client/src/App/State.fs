@@ -2,6 +2,7 @@ module App.State
 
 open System
 open Elmish
+open Elmish.Toastr
 open App.Types
 open Shared
 open Fable.Import.Browser
@@ -136,7 +137,7 @@ let init() =
 
 let showInfo msg = 
     Toastr.message msg
-    |> Toastr.withTitle "Tabula Rasa"
+    |> Toastr.title "Tabula Rasa"
     |> Toastr.info  
 
 /// What happens when the URL is updated, either from the application's components 

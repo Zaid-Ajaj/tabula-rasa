@@ -1,12 +1,12 @@
 module Posts.State
 
 open Elmish
+open Elmish.Toastr
 open Elmish.SweetAlert 
 open Fable.PowerPack
 open Posts.Types
 open Shared
 open Common
-
 
 let update securityToken (state: State) (msg: Msg) = 
     match msg with

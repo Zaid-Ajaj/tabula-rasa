@@ -7,4 +7,4 @@ Fable.Elmish.HMR
 dotnet-fable
 Fable.Remoting.Client
 Elmish.SweetAlert
-Elmish.Bridge.Client
+Elmish.Toastr

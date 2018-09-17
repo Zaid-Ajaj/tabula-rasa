@@ -2,6 +2,7 @@ module Admin.Backoffice.PublishedPosts.State
 
 open Shared
 open Elmish
+open Elmish.Toastr
 open Elmish.SweetAlert
 open Admin.Backoffice.PublishedPosts.Types
 open Fable.PowerPack

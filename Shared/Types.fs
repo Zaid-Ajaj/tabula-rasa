@@ -116,7 +116,7 @@ type ErrorMsg = ErrorMsg of string
 
 let routes typeName methodName = 
  sprintf "/api/%s/%s" typeName methodName
- 
+
 type IBlogApi = 
     {  getBlogInfo : unit -> Async<Result<BlogInfo, string>>
        login : LoginInfo -> Async<LoginResult>
@@ -145,4 +145,4 @@ type RemoteClientMsg =
 type RemoteServerMsg = 
     | ReloadPosts 
 
-let socket = "/socket"
+let socket = "/socket" 

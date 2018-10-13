@@ -1,7 +1,5 @@
 var path = require("path");
 var webpack = require("webpack");
-var fableUtils = require("fable-utils");
-var WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 function resolve(filePath) {
@@ -9,12 +7,12 @@ function resolve(filePath) {
 }
 
 var babelOptions = {
-  presets: [
-    ["env", {
-        "modules": false,
-        "useBuiltIns": "usage",
-    }]
-  ]
+    presets: [
+      ["@babel/preset-env", {
+          "modules": false,
+          "useBuiltIns": "usage",
+      }]
+    ]
 };
 
 module.exports = function (evn, argv) {

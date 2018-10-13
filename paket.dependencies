@@ -1,31 +1,28 @@
-source https://nuget.org/api/v2
+source https://api.nuget.org/v3/index.json
 
 storage:none
 
 nuget Elmish.Bridge.Suave
-nuget Elmish.SweetAlert prerelease
-nuget Elmish.Toastr prerelease
+nuget Elmish.SweetAlert
+nuget Elmish.Toastr
 nuget Expecto
-
-nuget Fable.Remoting.Client prerelease
+nuget Fable.Remoting.Client
 nuget Fable.Remoting.Suave
 nuget FSharp.Core
-nuget Fable.Core prerelease
-nuget Fable.Elmish.React prerelease
-nuget Fable.Elmish.Browser prerelease
-nuget Fable.Elmish.HMR prerelease
-nuget Fable.Elmish.Debugger prerelease
+nuget Fable.Core 
+nuget Fable.Elmish.React 
+nuget Fable.Elmish.Browser
+nuget Fable.Elmish.HMR
+nuget Fable.Elmish.Debugger
 nuget Serilog.Sinks.Console
 nuget Suave.SerilogExtensions
-
 nuget jose-jwt
-nuget Suave
 nuget Newtonsoft.Json
 nuget LiteDB.FSharp
 nuget Fable.JsonConverter
+nuget Suave 
 
-clitool dotnet-fable prerelease
-clitool Microsoft.DotNet.Watcher.Tools
+clitool dotnet-fable
 
 group Build
   framework >= net45

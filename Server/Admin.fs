@@ -43,7 +43,7 @@ let writeAdminIfDoesNotExists (db: LiteDatabase) (adminInfo: AdminInfo)  =
     let admins = db.GetCollection<AdminInfo> "admins"
     if admins.Count() = 0 then ignore (admins.Insert adminInfo)
 
-/// Reads admin data from the database. There must be atleast one admn    
+/// Reads admin data from the database. There must be atleast one admin    
 let readAdminData (db: LiteDatabase)  =
     let admins = db.GetCollection<AdminInfo> "admins"
     admins.FindAll() 

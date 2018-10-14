@@ -67,11 +67,12 @@ let update authToken msg (state: NewArticleState) =
               Value = Server.api.publishNewPost request
               Error = fun ex -> PublishError "Could not publish post"
               Success = function 
-                | AddedPostId id -> 
+                | Ok (AddedPostId id) -> 
                     // let the server know, that a post was added
                     Bridge.Send (RemoteClientMsg.PostAdded)
                     Published
-                | other -> PublishError "Could not publish post"
+                | other -> 
+                    PublishError "Could not publish post"
           }
           
           nextState, publishCmd
@@ -92,14 +93,15 @@ let update authToken msg (state: NewArticleState) =
                        Content = state.Content; 
                        Tags = state.Tags } }
           let successHandler = function 
-            | AddedPostId draftId -> DraftSaved
-            | PostWithSameSlugAlreadyExists -> 
-                SaveAsDraftError "A post with this slug already exists"
-            | PostWithSameTitleAlreadyExists -> 
-                SaveAsDraftError "A post with this title already exists"
-            | AddPostResult.AuthError UserUnauthorized -> 
+            | Error authError -> 
                 SaveAsDraftError "User was unauthorized to publish the draft"
-            | DatabaseErrorWhileAddingPost ->
+            | Ok (AddedPostId draftId) -> 
+                DraftSaved
+            | Ok PostWithSameSlugAlreadyExists -> 
+                SaveAsDraftError "A post with this slug already exists"
+            | Ok PostWithSameTitleAlreadyExists -> 
+                SaveAsDraftError "A post with this title already exists"
+            | Ok DatabaseErrorWhileAddingPost ->
                 SaveAsDraftError "Internal error occured on the server's database while saving the draft"
              
           nextState, Cmd.ofAsync Server.api.savePostAsDraft request

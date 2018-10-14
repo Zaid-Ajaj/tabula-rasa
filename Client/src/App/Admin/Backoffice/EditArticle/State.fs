@@ -27,9 +27,12 @@ let update authToken msg state =
                     { Value = Server.api.savePostChanges request
                       Error = fun ex -> SaveChangesError "Network error while saving changes to blog post"
                       Success = function
-                        | Ok true -> SavedChanges
-                        | Error errorMsg -> SaveChangesError errorMsg 
-                        | otherwise -> DoNothing }
+                        | Error authError -> SaveChangesError "User was unauthorized"
+                        | Ok result -> 
+                            match result with 
+                            | Ok true -> SavedChanges
+                            | Error err -> SaveChangesError err
+                            | otherwise -> DoNothing }
             
             nextState, saveChangesCmd
         
@@ -53,8 +56,9 @@ let update authToken msg state =
             let nextState = { state with ArticleToEdit = Loading }
             let request = { Token = authToken; Body = postId }
             let successHandler = function 
-                | Ok article -> ArticleLoaded article 
-                | Error errorMsg -> LoadArticleError errorMsg
+                | Error authError -> LoadArticleError "User is unauthorized"
+                | Ok None -> LoadArticleError "Article was not found"
+                | Ok (Some article) -> ArticleLoaded article 
             nextState, Cmd.ofAsync Server.api.getPostById request successHandler (fun ex -> DoNothing) 
                              
         | LoadArticleError errorMsg ->  

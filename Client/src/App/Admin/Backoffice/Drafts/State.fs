@@ -28,7 +28,7 @@ let update authToken (msg: Msg) (state: State) =
                 Error = fun ex -> DraftsLoadingError ex 
                 Success = function
                    | Ok drafts -> DraftsLoaded drafts
-                   | Error msg -> AuthenticationError msg }
+                   | Error authError -> AuthenticationError "User was unauthorize to view drafts" }
 
         nextState, loadDraftsCmd
 
@@ -65,13 +65,13 @@ let update authToken (msg: Msg) (state: State) =
                 { Value = Server.api.deleteDraftById request
                   Error = fun ex -> DeleteDraftError "Network error occured while publishing the draft"
                   Success = function
-                    | DeleteDraftResult.DraftDeleted -> 
-                          DraftDeleted 
-                    | DeleteDraftResult.AuthError (UserUnauthorized) ->
+                    | Error authError -> 
                         DeleteDraftError "User was unauthorized"
-                    | DeleteDraftResult.DraftDoesNotExist ->
+                    | Ok DeleteDraftResult.DraftDeleted -> 
+                        DraftDeleted 
+                    | Ok DeleteDraftResult.DraftDoesNotExist ->
                         DeleteDraftError "Draft does not seem to be in the database anymore"
-                    | DeleteDraftResult.DatabaseErrorWhileDeletingDraft ->
+                    | Ok DeleteDraftResult.DatabaseErrorWhileDeletingDraft ->
                         DeleteDraftError "Internal error of the server's database while publishing draft" }
         
         let nextState = { state with DeletingDraft = Some draftId }
@@ -87,18 +87,19 @@ let update authToken (msg: Msg) (state: State) =
     | PublishDraft draftId ->
         let request = { Token = authToken; Body = draftId }
         let publishCmd = 
-            Cmd.fromAsync 
-                { Value = Server.api.publishDraft request
-                  Error = fun ex -> PublishDraftError "Network error occured while publishing the draft"
-                  Success = function 
-                    | PublishDraftResult.DraftPublished -> 
-                        DraftPublished
-                    | PublishDraftResult.AuthError (UserUnauthorized) -> 
-                        PublishDraftError "User is not authorized" 
-                    | PublishDraftResult.DatabaseErrorWhilePublishingDraft ->
-                        PublishDraftError "Internal error of the server's database while publishing draft"
-                    | PublishDraftResult.DraftDoesNotExist ->
-                        PublishDraftError "The draft does not exist anymore" }
+            Cmd.fromAsync {
+                Value = Server.api.publishDraft request
+                Error = fun ex -> PublishDraftError "Network error occured while publishing the draft"
+                Success = function 
+                  | Error authError -> 
+                      PublishDraftError "User is not authorized" 
+                  | Ok PublishDraftResult.DraftPublished -> 
+                      DraftPublished
+                  | Ok PublishDraftResult.DatabaseErrorWhilePublishingDraft ->
+                      PublishDraftError "Internal error of the server's database while publishing draft"
+                  | Ok PublishDraftResult.DraftDoesNotExist ->
+                      PublishDraftError "The draft does not exist anymore" 
+            }
         
         let nextState = { state with PublishingDraft = Some draftId }
         nextState, publishCmd
@@ -130,8 +131,9 @@ let update authToken (msg: Msg) (state: State) =
                 { Value = Server.api.togglePostFeatured request
                   Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
                   Success = function 
-                    | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)
-                    | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg) } 
+                    | Error authError -> ToggleFeaturedFinished (Error "User was unauthorized")
+                    | Ok (Ok successMsg) -> ToggleFeaturedFinished (Ok successMsg)
+                    | Ok (Error errorMsg) -> ToggleFeaturedFinished (Error errorMsg) } 
         
         nextState, nextCmd
     

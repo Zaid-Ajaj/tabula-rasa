@@ -73,6 +73,7 @@ type NewBlogPostReq = {
 }
 
 type AuthError = 
+    | TokenInvalid
     | UserUnauthorized 
 
 type AddPostResult =
@@ -80,30 +81,25 @@ type AddPostResult =
     | PostWithSameTitleAlreadyExists
     | PostWithSameSlugAlreadyExists
     | DatabaseErrorWhileAddingPost
-    | AuthError of AuthError
 
 type DeleteDraftResult = 
     | DraftDoesNotExist
     | DraftDeleted
-    | AuthError of AuthError
     | DatabaseErrorWhileDeletingDraft
 
 type DeletePostResult = 
     | PostDoesNotExist
     | PostDeleted
-    | AuthError of AuthError
     | DatabaseErrorWhileDeletingPost
 
 type PublishDraftResult = 
     | DraftDoesNotExist 
     | DraftPublished 
-    | AuthError of AuthError
     | DatabaseErrorWhilePublishingDraft
 
 type MakeDraftResult = 
     | ArticleDoesNotExist
     | ArticleTurnedToDraft
-    | AuthError of AuthError
     | DatabaseErrorWhileMakingDraft    
 
 type UpdatePasswordInfo = {
@@ -114,6 +110,10 @@ type UpdatePasswordInfo = {
 type SuccessMsg = SuccessMsg of string 
 type ErrorMsg = ErrorMsg of string
 
+type PostId = PostId of int 
+
+type SecureResponse<'t> = Async<Result<'t, AuthError>> 
+
 let routes typeName methodName = 
  sprintf "/api/%s/%s" typeName methodName
  
@@ -122,18 +122,18 @@ type IBlogApi =
        login : LoginInfo -> Async<LoginResult>
        getPosts : unit -> Async<list<BlogPostItem>>
        getPostBySlug : string -> Async<Option<BlogPostItem>>
-       getDrafts : AuthToken -> Async<Result<list<BlogPostItem>, string>>
-       publishNewPost : SecureRequest<NewBlogPostReq> -> Async<AddPostResult> 
-       savePostAsDraft : SecureRequest<NewBlogPostReq> -> Async<AddPostResult>
-       deleteDraftById : SecureRequest<int> -> Async<DeleteDraftResult>
-       publishDraft : SecureRequest<int> -> Async<PublishDraftResult>
-       deletePublishedArticleById : SecureRequest<int> -> Async<DeletePostResult>
-       turnArticleToDraft: SecureRequest<int> -> Async<MakeDraftResult>
-       getPostById : SecureRequest<int> -> Async<Result<BlogPostItem, string>>
-       savePostChanges : SecureRequest<BlogPostItem> -> Async<Result<bool, string>>
-       updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<SuccessMsg, ErrorMsg>>
-       togglePostFeatured : SecureRequest<int> -> Async<Result<string, string>>
-       updatePassword : SecureRequest<UpdatePasswordInfo> -> Async<Result<string, string>> 
+       getDrafts : AuthToken -> SecureResponse<list<BlogPostItem>>
+       publishNewPost : SecureRequest<NewBlogPostReq> -> SecureResponse<AddPostResult> 
+       savePostAsDraft : SecureRequest<NewBlogPostReq> -> SecureResponse<AddPostResult>
+       deleteDraftById : SecureRequest<int> -> SecureResponse<DeleteDraftResult>
+       publishDraft : SecureRequest<int> -> SecureResponse<PublishDraftResult>
+       deletePublishedArticleById : SecureRequest<int> -> SecureResponse<DeletePostResult>
+       turnArticleToDraft: SecureRequest<int> -> SecureResponse<MakeDraftResult>
+       getPostById : SecureRequest<int> -> SecureResponse<Option<BlogPostItem>>
+       savePostChanges : SecureRequest<BlogPostItem> -> SecureResponse<Result<bool, string>>
+       updateBlogInfo : SecureRequest<BlogInfo> -> SecureResponse<Result<SuccessMsg, ErrorMsg>>
+       togglePostFeatured : SecureRequest<int> -> SecureResponse<Result<string, string>>
+       updatePassword : SecureRequest<UpdatePasswordInfo> -> SecureResponse<Result<string, string>> 
     }
 
 

@@ -55,13 +55,13 @@ let update authToken msg state =
         let nextState = { state with DeletingPost = Some postId }
         let request = { Token = authToken; Body = postId }
         let successHandler = function 
-            | DeletePostResult.PostDeleted ->     
-                PostDeleted 
-            | DeletePostResult.AuthError (UserUnauthorized) -> 
+            | Error authError -> 
                 DeletePostError "User was unauthorized to delete the article"
-            | DeletePostResult.PostDoesNotExist ->
+            | Ok DeletePostResult.PostDeleted ->     
+                PostDeleted 
+            | Ok DeletePostResult.PostDoesNotExist ->
                 DeletePostError "It seems that the article does not exist any more"
-            | DeletePostResult.DatabaseErrorWhileDeletingPost ->
+            | Ok DeletePostResult.DatabaseErrorWhileDeletingPost ->
                 DeletePostError "Internal error of the server's database while deleting the article"
         
         let deleteCmd = 
@@ -84,10 +84,10 @@ let update authToken msg state =
         let request = { Token = authToken; Body = articleId }
         let nextState = { state with MakingDraft = Some articleId }
         let successHandler = function 
-            | MakeDraftResult.ArticleTurnedToDraft -> DraftMade
-            | MakeDraftResult.ArticleDoesNotExist -> MakeDraftError "The article does not exist any more"
-            | MakeDraftResult.AuthError UserUnauthorized -> MakeDraftError "User was unauthorized"
-            | MakeDraftResult.DatabaseErrorWhileMakingDraft -> MakeDraftError "Internal error occured at the server's database while making draft"
+            | Error authError -> MakeDraftError "User was unauthorized"
+            | Ok MakeDraftResult.ArticleTurnedToDraft -> DraftMade
+            | Ok MakeDraftResult.ArticleDoesNotExist -> MakeDraftError "The article does not exist any more"
+            | Ok MakeDraftResult.DatabaseErrorWhileMakingDraft -> MakeDraftError "Internal error occured at the server's database while making draft"
         let cmd = 
             Cmd.ofAsync 
                 Server.api.turnArticleToDraft request 
@@ -114,8 +114,8 @@ let update authToken msg state =
                 Value = Server.api.togglePostFeatured request
                 Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
                 Success = function 
-                    | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)
-                    | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg)
+                    | Error authError -> ToggleFeaturedFinished (Error "User was unauthorized")
+                    | Ok toggleResult -> ToggleFeaturedFinished toggleResult
             } 
 
         nextState, toggleFeatureCmd

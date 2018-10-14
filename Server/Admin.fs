@@ -69,28 +69,21 @@ let login (logger: ILogger) (db: LiteDatabase) (loginInfo: LoginInfo)  =
           let token = encodeJwt userInfo
           Success token
 
-let updatePassword (logger: ILogger) (db: LiteDatabase) (updateInfo: SecureRequest<UpdatePasswordInfo>) = 
-    match Security.validateJwt updateInfo.Token with 
-    | None -> 
-        logger.Information("Invalid security token when updating password")
-        Error "User unauthorized: invalid JSON web token."
-    | Some user when not (Array.contains "admin" user.Claims) -> 
-        logger.Information("Non-Admin User {Username} is updating the password", user.Username)
-        Error "User unauthorized: must be an admin"
-    | Some userInfo -> 
+let updatePassword (logger: ILogger) (db: LiteDatabase) = 
+    Security.authorizeAdmin <| fun updatePassInfo user -> 
         let admins = db.GetCollection<AdminInfo> "admins"
-        match admins.tryFindOne <@ fun admin -> admin.Username = userInfo.Username @> with
+        match admins.tryFindOne <@ fun admin -> admin.Username = user.Username @> with
         | None -> 
-            logger.Information("Could not find admin {Username} in the database", userInfo.Username)
-            Error (sprintf "User '%s' was not found" userInfo.Username)
+            logger.Information("Could not find admin {Username} in the database", user.Username)
+            Error (sprintf "User '%s' was not found" user.Username)
         | Some admin -> 
             let salt = admin.PasswordSalt
             let hash = admin.PasswordHash
-            let passwordDidMatch = Security.verifyPassword updateInfo.Body.CurrentPassword salt hash 
+            let passwordDidMatch = Security.verifyPassword updatePassInfo.CurrentPassword salt hash 
             if not passwordDidMatch 
             then Error "The input for your current password is incorrect"
             else let salt = createRandomKey()
-                 let password = utf8Bytes updateInfo.Body.NewPassword
+                 let password = utf8Bytes updatePassInfo.NewPassword
                  let saltyPassword = Array.concat [ salt; password ]
                  let passwordHash = sha256Hash saltyPassword
                  let modifiedAdmin = 
@@ -99,7 +92,7 @@ let updatePassword (logger: ILogger) (db: LiteDatabase) (updateInfo: SecureReque
                         PasswordHash = base64 passwordHash  }
                  if admins.Update(modifiedAdmin) then Ok "Password succesfully updated"
                  else 
-                   logger.Error("Database error while trying to update admin password {Data}", updateInfo)  
+                   logger.Error("Database error while trying to update admin password {Data}", updatePassInfo)  
                    Error "Internal error while updating the admin password"
              
 let validateBlogInfo (blogInfo: BlogInfo) = 
@@ -109,17 +102,13 @@ let validateBlogInfo (blogInfo: BlogInfo) =
     then Some "The name of the blog cannot be empty"
     else None 
     
-let updateBlogInfo (db: LiteDatabase) (req: SecureRequest<BlogInfo>) = 
-    match Security.validateJwt req.Token with 
-    | None -> Error (ErrorMsg "User is unauthorized")
-    | Some user when not (Array.contains "admin" user.Claims) -> Error (ErrorMsg "User must be an admin")
-    | Some user ->
+let updateBlogInfo (db: LiteDatabase) = 
+    Security.authorizeAdmin <| fun blogInfo user ->
         let admins = db.GetCollection<AdminInfo> "admins"
         match admins.tryFindOne <@ fun admin -> admin.Username = user.Username  @> with 
         | None -> Error (ErrorMsg "Admin was not found")
         | Some foundAdmin -> 
-            let blogInfo = req.Body
-            match validateBlogInfo blogInfo with 
+            match validateBlogInfo blogInfo with  
             | Some errorMsg -> Error (ErrorMsg errorMsg)
             | None ->
                 let modifiedAdminInfo = 

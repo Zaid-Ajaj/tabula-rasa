@@ -67,3 +67,56 @@ let verifyPassword password saltBase64 hashBase64 =
     |> sha256Hash
     |> base64
     |> (=) hashBase64 
+
+let authorize (claims: string list) (f: 'u -> UserInfo -> 't) : SecureRequest<'u> -> SecureResponse<'t> = 
+    fun request -> 
+        match validateJwt request.Token with 
+        | None -> async { return Result.Error AuthError.TokenInvalid }
+        | Some user ->
+            let userHasAllClaims = 
+                claims 
+                |> List.forall (fun claim -> Array.contains claim user.Claims) 
+            if not userHasAllClaims 
+            then async { return Result.Error AuthError.UserUnauthorized }
+            else async {
+                let output = f request.Body user
+                return Result.Ok output
+            }
+
+let authorizeAsync (claims: string list) (f: 'u -> UserInfo -> Async<'t>) : SecureRequest<'u> -> SecureResponse<'t> = 
+    fun request -> 
+        match validateJwt request.Token with 
+        | None -> async { return Result.Error AuthError.TokenInvalid }
+        | Some user ->
+            let userHasAllClaims = 
+                claims 
+                |> List.forall (fun claim -> Array.contains claim user.Claims) 
+            if not userHasAllClaims 
+            then async { return Result.Error AuthError.UserUnauthorized }
+            else async {
+                let! output = f request.Body user
+                return Result.Ok output
+            }
+
+let authorizeAny (f: UserInfo -> 't) : AuthToken -> SecureResponse<'t> = 
+    fun (SecurityToken(token)) -> 
+        match validateJwt token with 
+        | None -> async { return Result.Error AuthError.TokenInvalid }
+        | Some user ->
+            async {
+                let output = f user
+                return Result.Ok output
+            }  
+
+let authorizeAnyAsync (f: UserInfo -> Async<'t>) : AuthToken -> SecureResponse<'t> = 
+    fun (SecurityToken(token)) -> 
+        match validateJwt token with 
+        | None -> async { return Result.Error AuthError.TokenInvalid }
+        | Some user ->
+            async {
+                let! output = f user
+                return Result.Ok output
+            }    
+
+let authorizeAdmin f = authorize [ "admin" ] f
+  

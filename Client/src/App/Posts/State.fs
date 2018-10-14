@@ -64,23 +64,21 @@ let update securityToken (state: State) (msg: Msg) =
         | Some token -> 
             let nextState = { state with DeletingPost = Some postId }
             let request = { Token = token; Body = postId }
-            let successHandler = function 
-                | DeletePostResult.PostDeleted ->     
+            let successHandler = function
+                | Error authError -> DeletePostError "User was unauthorized to delete the article" 
+                | Ok DeletePostResult.PostDeleted ->     
                     PostDeletedSuccessfully 
-                | DeletePostResult.AuthError (UserUnauthorized) -> 
-                    DeletePostError "User was unauthorized to delete the article"
-                | DeletePostResult.PostDoesNotExist ->
+                | Ok DeletePostResult.PostDoesNotExist ->
                     DeletePostError "It seems that the article does not exist any more"
-                | DeletePostResult.DatabaseErrorWhileDeletingPost ->
+                | Ok DeletePostResult.DatabaseErrorWhileDeletingPost ->
                     DeletePostError "Internal error of the server's database while deleting the article"
             
             let deleteCmd = 
                 Cmd.fromAsync 
                    {  Value = Server.api.deletePublishedArticleById request
                       Error = fun _ ->  DeletePostError "Network error while occured while deleting the article"
-                      Success = fun deletePostResult -> successHandler deletePostResult } 
+                      Success = fun result -> successHandler result }
 
-            
             nextState,  deleteCmd   
 
     | DeletePostError errorMsg ->

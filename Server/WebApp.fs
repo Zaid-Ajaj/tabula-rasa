@@ -21,19 +21,19 @@ let createBlogApi (logger: ILogger) (database: LiteDatabase) : IBlogApi =
         getBlogInfo = getBlogInfo
         getPosts = getPosts 
         login = Admin.login logger database >> liftAsync
-        publishNewPost = BlogPosts.publishNewPost logger database >> liftAsync
-        getPostBySlug =  BlogPosts.getPostBySlug database >> liftAsync 
-        savePostAsDraft = BlogPosts.saveAsDraft logger database >> liftAsync
-        getDrafts = BlogPosts.getAllDrafts database >> liftAsync
-        deleteDraftById = BlogPosts.deleteDraft logger database >> liftAsync 
-        publishDraft = BlogPosts.publishDraft database >> liftAsync
-        deletePublishedArticleById = BlogPosts.deletePublishedArticle database >> liftAsync
-        turnArticleToDraft = BlogPosts.turnArticleToDraft database >> liftAsync
-        getPostById = BlogPosts.getPostById database >> liftAsync
-        savePostChanges = BlogPosts.savePostChanges database >> liftAsync
-        updateBlogInfo = Admin.updateBlogInfo database >> liftAsync
-        togglePostFeatured = BlogPosts.togglePostFeatured database >> liftAsync 
-        updatePassword = Admin.updatePassword logger database >> liftAsync
+        publishNewPost = BlogPosts.publishNewPost logger database
+        getPostBySlug =  BlogPosts.getPostBySlug database >> liftAsync
+        savePostAsDraft = BlogPosts.saveAsDraft logger database 
+        getDrafts = BlogPosts.getAllDrafts database
+        deleteDraftById = BlogPosts.deleteDraft logger database 
+        publishDraft = BlogPosts.publishDraft database
+        deletePublishedArticleById = BlogPosts.deletePublishedArticle database 
+        turnArticleToDraft = BlogPosts.turnArticleToDraft database
+        getPostById = BlogPosts.getPostById database 
+        savePostChanges = BlogPosts.savePostChanges database
+        updateBlogInfo = Admin.updateBlogInfo database
+        togglePostFeatured = BlogPosts.togglePostFeatured database 
+        updatePassword = Admin.updatePassword logger database
     }
 
     blogApi

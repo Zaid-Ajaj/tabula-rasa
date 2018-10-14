@@ -84,8 +84,9 @@ let update authToken msg state =
                         Value = Server.api.updateBlogInfo request
                         Error = fun ex -> SaveChangesError "Network error occurred while update the blog info"
                         Success = function 
-                            | Ok (SuccessMsg msg) -> ChangesSaved msg
-                            | Error (ErrorMsg msg) -> SaveChangesError msg
+                            | Error authError ->  SaveChangesError "User was unauthorized"
+                            | Ok (Ok (SuccessMsg msg)) -> ChangesSaved msg
+                            | Ok (Error (ErrorMsg msg)) -> SaveChangesError msg
                     }
 
                 nextState, updateBlogInfoCmd 
@@ -127,8 +128,8 @@ let update authToken msg state =
                         Value = Server.api.updatePassword updatePwdInfo
                         Error = fun ex -> UpdatePasswordError "Network error occured while updating your password"
                         Success = function 
+                            | Error authError -> UpdatePasswordError "User was unauthorized" 
                             | Ok successMsg -> UpdatePasswordSuccess 
-                            | Error errorMsg -> UpdatePasswordError errorMsg 
                     }
 
                 let nextState = { state with IsUpdatingPassword = true }

@@ -49,34 +49,36 @@ type IBlogApi = {
     login : LoginInfo -> Async<LoginResult>
     getPosts : unit -> Async<list<BlogPostItem>>
     getPostBySlug : string -> Async<Option<BlogPostItem>>
-    getDrafts : AuthToken -> Async<Result<list<BlogPostItem>, string>>
-    publishNewPost : SecureRequest<NewBlogPostReq> -> Async<AddPostResult> 
-    savePostAsDraft : SecureRequest<NewBlogPostReq> -> Async<AddPostResult>
-    deleteDraftById : SecureRequest<int> ->  Async<DeleteDraftResult>
-    publishDraft : SecureRequest<int> -> Async<PublishDraftResult>
-    deletePublishedArticleById : SecureRequest<int> -> Async<DeletePostResult>
-    turnArticleToDraft: SecureRequest<int> ->  Async<MakeDraftResult>
-    getPostById : SecureRequest<int> -> Async<Result<BlogPostItem,string>>
-    savePostChanges : SecureRequest<BlogPostItem> ->  Async<Result<bool,string>>
-    updateBlogInfo : SecureRequest<BlogInfo> -> Async<Result<SuccessMsg,ErrorMsg>>
-    togglePostFeatured : SecureRequest<int> -> Async<Result<string,string>>
-    updatePassword : SecureRequest<UpdatePasswordInfo> -> Async<Result<string, string>> 
+    getDrafts : AuthToken -> SecureResponse<list<BlogPostItem>>
+    publishNewPost : SecureRequest<NewBlogPostReq> -> SecureResponse<AddPostResult> 
+    savePostAsDraft : SecureRequest<NewBlogPostReq> -> SecureResponse<AddPostResult>
+    deleteDraftById : SecureRequest<int> -> SecureResponse<DeleteDraftResult>
+    publishDraft : SecureRequest<int> -> SecureResponse<PublishDraftResult>
+    deletePublishedArticleById : SecureRequest<int> -> SecureResponse<DeletePostResult>
+    turnArticleToDraft: SecureRequest<int> -> SecureResponse<MakeDraftResult>
+    getPostById : SecureRequest<int> -> SecureResponse<Option<BlogPostItem>>
+    savePostChanges : SecureRequest<BlogPostItem> -> SecureResponse<Result<bool, string>>
+    updateBlogInfo : SecureRequest<BlogInfo> -> SecureResponse<Result<SuccessMsg, ErrorMsg>>
+    togglePostFeatured : SecureRequest<int> -> SecureResponse<Result<string, string>>
+    updatePassword : SecureRequest<UpdatePasswordInfo> -> SecureResponse<Result<string, string>> 
 }
 ```
 Thanks to [Fable.Remoting](https://github.com/Zaid-Ajaj/Fable.Remoting), this application does not need to handle data serialization/deserialization and routing between client and server, it is all done for us which means that the code is 99% domain models and domain logic.
 
-You will often see calls made to server like these:
+You will often see calls made to server from the client like these:
 ```fs
-let request = { Token = authToken; Body = article }
-
-let saveChangesCmd = 
-    Cmd.fromAsync 
-        { Value = Server.api.savePostChanges request
-          Error = fun ex -> SaveChangesError "Network error while saving changes to blog post"
-          Success = function
-            | Ok true -> SavedChanges
-            | Error errorMsg -> SaveChangesError errorMsg 
-            | otherwise -> DoNothing }
+| ToggleFeatured postId ->
+    let nextState = { state with IsTogglingFeatured = Some postId }
+    let request = { Token = authToken; Body = postId }
+    let toggleFeatureCmd = 
+        Cmd.fromAsync {
+            Value = Server.api.togglePostFeatured request
+            Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
+            Success = function 
+                | Error authError -> ToggleFeaturedFinished (Error "User was unauthorized")
+                | Ok toggleResult -> ToggleFeaturedFinished toggleResult
+        } 
+    nextState, toggleFeatureCmd
 ```
 # Client Application Layout
 The client application layout is how the components are structured in the project. The components are written in a consistent pattern that is reflected by the file system as follows:
@@ -257,19 +259,19 @@ let createBlogApi (logger: ILogger) (database: LiteDatabase) : IBlogApi =
         getBlogInfo = getBlogInfo
         getPosts = getPosts 
         login = Admin.login logger database >> liftAsync
-        publishNewPost = BlogPosts.publishNewPost logger database >> liftAsync
-        getPostBySlug =  BlogPosts.getPostBySlug database >> liftAsync 
-        savePostAsDraft = BlogPosts.saveAsDraft logger database >> liftAsync
-        getDrafts = BlogPosts.getAllDrafts database >> liftAsync
-        deleteDraftById = BlogPosts.deleteDraft logger database >> liftAsync 
-        publishDraft = BlogPosts.publishDraft database >> liftAsync
-        deletePublishedArticleById = BlogPosts.deletePublishedArticle database >> liftAsync
-        turnArticleToDraft = BlogPosts.turnArticleToDraft database >> liftAsync
-        getPostById = BlogPosts.getPostById database >> liftAsync
-        savePostChanges = BlogPosts.savePostChanges database >> liftAsync
-        updateBlogInfo = Admin.updateBlogInfo database >> liftAsync
-        togglePostFeatured = BlogPosts.togglePostFeatured database >> liftAsync 
-        updatePassword = Admin.updatePassword logger database >> liftAsync
+        publishNewPost = BlogPosts.publishNewPost logger database
+        getPostBySlug =  BlogPosts.getPostBySlug database >> liftAsync
+        savePostAsDraft = BlogPosts.saveAsDraft logger database 
+        getDrafts = BlogPosts.getAllDrafts database
+        deleteDraftById = BlogPosts.deleteDraft logger database 
+        publishDraft = BlogPosts.publishDraft database
+        deletePublishedArticleById = BlogPosts.deletePublishedArticle database 
+        turnArticleToDraft = BlogPosts.turnArticleToDraft database
+        getPostById = BlogPosts.getPostById database 
+        savePostChanges = BlogPosts.savePostChanges database
+        updateBlogInfo = Admin.updateBlogInfo database
+        togglePostFeatured = BlogPosts.togglePostFeatured database 
+        updatePassword = Admin.updatePassword logger database
     }
 
     blogApi
@@ -314,30 +316,27 @@ User authentication and authorization happen though secure requests, these reque
 ```fs
 // Client
 
-let nextState = { state with IsTogglingFeatured = Some postId }
-let request = { Token = authToken; Body = postId }
-let toggleFeatureCmd = 
-    Cmd.fromAsync {
-        Value = Server.api.togglePostFeatured request
-        Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
-        Success = function 
-            | Ok successMsg -> ToggleFeaturedFinished (Ok successMsg)
-            | Error errorMsg -> ToggleFeaturedFinished (Error errorMsg)
-    } 
+| ToggleFeatured postId ->
+    let nextState = { state with IsTogglingFeatured = Some postId }
+    let request = { Token = authToken; Body = postId }
+    let toggleFeatureCmd = 
+        Cmd.fromAsync {
+            Value = Server.api.togglePostFeatured request
+            Error = fun ex -> ToggleFeaturedFinished (Error "Network error while toggling post featured")
+            Success = function 
+                | Error authError -> ToggleFeaturedFinished (Error "User was unauthorized")
+                | Ok toggleResult -> ToggleFeaturedFinished toggleResult
+        } 
+    nextState, toggleFeatureCmd
 ```
 And it is handled like this on the server:
 ```fs
 // Server
 
-let togglePostFeatured (db: LiteDatabase) (req: SecureRequest<int>) = 
-    match Security.validateJwt req.Token with
-    | None ->  
-        Error "User unauthorized"
-    | Some user when not (Array.contains "admin" user.Claims) -> 
-        Error "User must be an admin"
-    | Some admin -> 
+let togglePostFeatured (db: LiteDatabase) = 
+    Security.authorize [ "admin" ] <| fun postId admin -> 
         let posts = db.GetCollection<BlogPost> "posts"
-        match posts.tryFindOne <@ fun post -> post.Id = req.Body @> with 
+        match posts.tryFindOne <@ fun post -> post.Id = postId @> with 
         | None -> Error "Blog post could not be found"
         | Some post -> 
             let modifiedPost = { post with IsFeatured = not post.IsFeatured }

@@ -78,4 +78,4 @@ Target "Release" <| fun _ ->
   ==> "DotnetRestore"
   ==> "Release"
 
-RunTargetOrDefault "Clean"
+RunTargetOrDefault "Release"

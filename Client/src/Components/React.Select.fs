@@ -5,7 +5,6 @@ open Fable.Helpers.React.Props
 open Fable.Core
 open Fable.Core.JsInterop
 
-[<Pojo>]
 type SelectOption = { label: string; value: string }
 
 [<Erase>]

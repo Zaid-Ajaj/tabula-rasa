@@ -1,23 +1,19 @@
-var path = require("path");
-var webpack = require("webpack");
-var fableUtils = require("fable-utils");
-var WriteFilePlugin = require('write-file-webpack-plugin');
+const path = require("path");
+const webpack = require("webpack");
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 function resolve(filePath) {
     return path.join(__dirname, filePath)
 }
 
-var babelOptions = fableUtils.resolveBabelOptions({
-    presets: [["es2015", { "modules": false }]],
-    plugins: [["transform-runtime", {
-        "helpers": true,
-        // We don't need the polyfills as we're already calling
-        // cdn.polyfill.io/v2/polyfill.js in index.html
-        "polyfill": false,
-        "regenerator": false
-    }]]
-});
+var babelOptions = {
+    presets: [
+      ["@babel/preset-env", {
+          "modules": false,
+          "useBuiltIns": "usage",
+      }]
+    ]
+};
 
 var isProduction = process.argv.indexOf("-p") >= 0;
 console.log("Bundling for " + (isProduction ? "production" : "development") + "...");

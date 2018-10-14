@@ -9,7 +9,7 @@ nuget Elmish.Toastr
 nuget Expecto
 
 nuget Fable.Remoting.Client
-nuget Fable.Remoting.Suave
+nuget Fable.Remoting.Suave 3.5.0
 nuget FSharp.Core
 nuget Fable.Core
 nuget Fable.Elmish.React
@@ -20,7 +20,7 @@ nuget Serilog.Sinks.Console
 nuget Suave.SerilogExtensions
 
 nuget jose-jwt
-nuget Suave
+nuget Suave 2.5.0
 nuget Newtonsoft.Json
 nuget LiteDB.FSharp
 nuget Fable.JsonConverter
@@ -31,4 +31,4 @@ clitool Microsoft.DotNet.Watcher.Tools
 group Build
     framework >= net45
     source https://www.nuget.org/api/v2
-    nuget FAKE
+    nuget FAKE ~> 4.64.3

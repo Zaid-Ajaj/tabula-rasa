@@ -195,8 +195,8 @@ docs/tools/FSharp.Formatting.svclog
 .ionide.debug
 *.bak
 project.lock.json
-bundle.js
-bundle.js.map
+Client/public/bundle.js
+Client/public/bundle.js.map
 .idea/
 TabulaRasa.sln.DotSettings.user
 .idea

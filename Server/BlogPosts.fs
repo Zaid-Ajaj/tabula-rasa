@@ -109,7 +109,7 @@ let turnArticleToDraft (db: LiteDatabase) =
             let postAsDraft = { post with IsDraft = true } 
             if posts.Update(postAsDraft) then ArticleTurnedToDraft 
             else MakeDraftResult.DatabaseErrorWhileMakingDraft 
- 
+            
 let savePostChanges (db: LiteDatabase) = 
     Security.authorize [ "admin" ] <| fun (postItem: BlogPostItem) user ->
         let posts = db.GetCollection<BlogPost> "posts"

@@ -10,7 +10,7 @@ var babelOptions = {
     presets: [
       ["@babel/preset-env", {
           "modules": false,
-          "useBuiltIns": "usage",
+          "useBuiltIns": "entry",
       }]
     ]
 };

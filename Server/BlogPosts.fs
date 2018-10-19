@@ -29,36 +29,36 @@ let validatePost (req: NewBlogPostReq) (db : LiteDatabase) =
         | Some _ -> Some PostWithSameSlugAlreadyExists
         | None -> None 
                  
-let publishNewPost  (logger: ILogger) (database: LiteDatabase)  = 
+let publishNewPost  (logger: ILogger) (database: LiteDatabase) = 
    Security.authorize [ "admin" ] <| fun newBlogReq user ->
-      let posts = database.GetCollection<BlogPost> "posts"
-      try 
-        match validatePost newBlogReq database with
-        | Some validationError -> validationError 
-        | None -> 
-            let newPost = toBlogPost newBlogReq
-            let result = posts.Insert(newPost)
-            AddedPostId (Bson.deserializeField<int> result)
-      with 
-      | ex ->
-        logger.Error(ex, "Error while publishing post {Data}", newBlogReq) 
-        DatabaseErrorWhileAddingPost  
+        let posts = database.GetCollection<BlogPost> "posts"
+        try 
+            match validatePost newBlogReq database with
+            | Some validationError -> AddPostError validationError 
+            | None -> 
+                let newPost = toBlogPost newBlogReq
+                let result = posts.Insert(newPost)
+                AddedPostId (Bson.deserializeField<int> result)
+        with 
+        | ex ->
+          logger.Error(ex, "Error while publishing post {Data}", newBlogReq) 
+          AddPostError DatabaseErrorWhileAddingPost  
           
 let saveAsDraft (logger: ILogger) (database: LiteDatabase) = 
     Security.authorizeAdmin <| fun newBlogReq user -> 
-       let draft = { toBlogPost newBlogReq with IsDraft = true }
-       let posts = database.GetCollection<BlogPost> "posts"
-       match validatePost newBlogReq database with 
-       | Some validationError -> validationError 
-       | None -> 
-       try 
-        let result = posts.Insert(draft)
-        let postId = Bson.deserializeField<int> result
-        AddedPostId postId
-       with 
-       | ex ->
-          logger.Error(ex, "Error while saving draft {Data}", newBlogReq) 
-          DatabaseErrorWhileAddingPost
+        let draft = { toBlogPost newBlogReq with IsDraft = true }
+        let posts = database.GetCollection<BlogPost> "posts"
+        match validatePost newBlogReq database with 
+        | Some validationError -> AddPostError validationError
+        | None -> 
+        try 
+            let result = posts.Insert(draft)
+            let postId = Bson.deserializeField<int> result
+            AddedPostId postId
+        with 
+        | ex ->
+            logger.Error(ex, "Error while saving draft {Data}", newBlogReq) 
+            AddPostError DatabaseErrorWhileAddingPost
 
 let deleteDraft (logger: ILogger) (db: LiteDatabase) = 
     Security.authorizeAdmin <| fun (postId: int) admin ->

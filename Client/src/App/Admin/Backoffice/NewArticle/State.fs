@@ -67,12 +67,14 @@ let update authToken msg (state: NewArticleState) =
               Value = Server.api.publishNewPost request
               Error = fun ex -> PublishError "Could not publish post"
               Success = function 
-                | Ok (AddedPostId id) -> 
+                | Ok (AddedPostId _) -> 
                     // let the server know, that a post was added
                     Bridge.Send (RemoteClientMsg.PostAdded)
                     Published
-                | other -> 
-                    PublishError "Could not publish post"
+                | Ok (AddPostError err) ->
+                    PublishError (sprintf "An error occurred whilst publishing: %s" err.Message)
+                | Error err -> 
+                    PublishError (sprintf "%O" err)
           }
           
           nextState, publishCmd
@@ -97,16 +99,12 @@ let update authToken msg (state: NewArticleState) =
                 SaveAsDraftError "User was unauthorized to publish the draft"
             | Ok (AddedPostId draftId) -> 
                 DraftSaved
-            | Ok PostWithSameSlugAlreadyExists -> 
-                SaveAsDraftError "A post with this slug already exists"
-            | Ok PostWithSameTitleAlreadyExists -> 
-                SaveAsDraftError "A post with this title already exists"
-            | Ok DatabaseErrorWhileAddingPost ->
-                SaveAsDraftError "Internal error occured on the server's database while saving the draft"
+            | Ok (AddPostError err) ->
+                SaveAsDraftError err.Message
              
           nextState, Cmd.ofAsync Server.api.savePostAsDraft request
                                  successHandler                             
-                                 (fun ex -> SaveAsDraftError "Could not publish post")
+                                 (fun ex -> SaveAsDraftError "Could not save draft")
     
     | Published ->
         // reset state and navigate to newly created post
@@ -124,7 +122,7 @@ let update authToken msg (state: NewArticleState) =
     | SaveAsDraftError errorMsg -> 
         let errorToast =
           Toastr.message errorMsg
-          |> Toastr.withTitle "Publish Error"
+          |> Toastr.withTitle "Could not save draft"
           |> Toastr.error
         let nextState = { state with IsSavingDraft = false }
         nextState, errorToast

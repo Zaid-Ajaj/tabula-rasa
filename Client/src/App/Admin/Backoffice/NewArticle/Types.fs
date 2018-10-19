@@ -1,6 +1,6 @@
 module Admin.Backoffice.NewArticle.Types
 
-type Msg = 
+type Msg =
     | SetTitle of string
     | SetSlug of string
     | SetContent of string
@@ -12,21 +12,16 @@ type Msg =
     | SaveAsDraft
     | SaveAsDraftError of string
     | DraftSaved
-    | Published 
+    | Published
     | PublishError of string
     | TogglePreview
 
-
-type NewArticleState = {
-    Title: string
-    Slug: string
-    Tags: string list
-    NewTag : string 
-    Content: string
-    Preview : bool
-    IsPublishing : bool
-    IsSavingDraft : bool
-}
- 
-
- 
+type NewArticleState =
+    { Title : string
+      Slug : string
+      Tags : string list
+      NewTag : string
+      Content : string
+      Preview : bool
+      IsPublishing : bool
+      IsSavingDraft : bool }

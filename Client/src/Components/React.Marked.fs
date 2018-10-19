@@ -5,7 +5,7 @@ open Fable.Helpers.React.Props
 open Fable.Core
 open Fable.Core.JsInterop
 
-type IMarkedOptions = 
+type IMarkedOptions =
     | [<CompiledName("gfc")>] GithubFlavoured
     | Tables
     | Sanitize of bool
@@ -14,13 +14,10 @@ type IMarkedOptions =
     | Breaks
     | Smartypants
 
-type IMarkedProps = 
+type IMarkedProps =
     | [<CompiledName("value")>] Content of string
     | [<CompiledName("markedOptions")>] Options of IMarkedOptions list
-    interface IHTMLProp 
+    interface IHTMLProp
 
-let marked (props : IHTMLProp list) = 
-    ofImport "MarkdownPreview" 
-             "react-marked-markdown"
-             (keyValueList CaseRules.LowerFirst props)
-             [ ]
+let marked (props : IHTMLProp list) =
+    ofImport "MarkdownPreview" "react-marked-markdown" (keyValueList CaseRules.LowerFirst props) []

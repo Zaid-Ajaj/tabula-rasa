@@ -1,18 +1,18 @@
 module Admin.Backoffice.EditArticle.Types
 
-open Shared 
+open Shared
 
-type State = 
+type State =
     { ArticleToEdit : Remote<BlogPostItem>
       Preview : bool
-      SavingChanges : bool } 
+      SavingChanges : bool }
 
-type Msg = 
-    | LoadArticleToEdit of postId:int
-    | ArticleLoaded of BlogPostItem 
+type Msg =
+    | LoadArticleToEdit of postId : int
+    | ArticleLoaded of BlogPostItem
     | LoadArticleError of string
-    | SetSlug of string 
-    | SetTitle of string 
+    | SetSlug of string
+    | SetTitle of string
     | SetContent of string
     | TogglePreview
     | SaveChanges

@@ -6,22 +6,14 @@ open Fable.Helpers.React
 open Fable.Helpers.React.Props
 open Fable.Import.React
 
-type IEventProps = 
+type IEventProps =
     | Title of ReactElement
-    | CreatedAt of string 
+    | CreatedAt of string
     | Subtitle of string
     | IconColor of string
     | Icon of ReactElement
     interface IHTMLProp
-    
-let timelineEvent (props: IHTMLProp list) children =
-    ofImport "TimelineEvent" 
-             "react-event-timeline"
-             (keyValueList CaseRules.LowerFirst props)
-             children
-             
-let timeline children = 
-    ofImport "Timeline"
-             "react-event-timeline"
-             (keyValueList CaseRules.LowerFirst [])
-             children
+
+let timelineEvent (props : IHTMLProp list) children =
+    ofImport "TimelineEvent" "react-event-timeline" (keyValueList CaseRules.LowerFirst props) children
+let timeline children = ofImport "Timeline" "react-event-timeline" (keyValueList CaseRules.LowerFirst []) children

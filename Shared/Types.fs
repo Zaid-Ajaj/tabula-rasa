@@ -76,11 +76,19 @@ type AuthError =
     | TokenInvalid
     | UserUnauthorized 
 
-type AddPostResult =
-    | AddedPostId of int 
+type AddPostError =
     | PostWithSameTitleAlreadyExists
     | PostWithSameSlugAlreadyExists
     | DatabaseErrorWhileAddingPost
+    member this.Message =
+        match this with
+        | PostWithSameSlugAlreadyExists -> "A post with this slug already exists."
+        | PostWithSameTitleAlreadyExists -> "A post with this title already exists."
+        | DatabaseErrorWhileAddingPost -> "Internal error occured on the server's database while saving the draft."
+
+type AddPostResult =
+    | AddedPostId of int 
+    | AddPostError of AddPostError
 
 type DeleteDraftResult = 
     | DraftDoesNotExist

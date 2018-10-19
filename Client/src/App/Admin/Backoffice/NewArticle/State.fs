@@ -104,7 +104,7 @@ let update authToken msg (state: NewArticleState) =
              
           nextState, Cmd.ofAsync Server.api.savePostAsDraft request
                                  successHandler                             
-                                 (fun ex -> SaveAsDraftError "Could not publish post")
+                                 (fun ex -> SaveAsDraftError "Could not save draft")
     
     | Published ->
         // reset state and navigate to newly created post
@@ -122,7 +122,7 @@ let update authToken msg (state: NewArticleState) =
     | SaveAsDraftError errorMsg -> 
         let errorToast =
           Toastr.message errorMsg
-          |> Toastr.withTitle "Publish Error"
+          |> Toastr.withTitle "Could not save draft"
           |> Toastr.error
         let nextState = { state with IsSavingDraft = false }
         nextState, errorToast

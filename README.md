@@ -22,7 +22,7 @@ A minimalistic real-worldish blog engine written entirely in F#. Specifically ma
 ### The server uses the following tech 
  - [Suave](https://github.com/SuaveIO/suave) as a lightweight web server 
  - [LiteDB](https://github.com/mbdavid/LiteDB) as a lightweight embedded database through [LiteDB.FSharp](https://github.com/Zaid-Ajaj/LiteDB.FSharp)  
- - [Serilog](https://github.com/serilog/serilog) for logging through [Suave.SerilogExtensiosn](https://github.com/Zaid-Ajaj/Suave.SerilogExtensions)
+ - [Serilog](https://github.com/serilog/serilog) for logging through [Suave.SerilogExtension](https://github.com/Zaid-Ajaj/Suave.SerilogExtensions)
  - [Jose](https://github.com/dvsekhvalnov/jose-jwt) for generating secure JSON web tokens 
  - [Fable.Remoting](https://github.com/Zaid-Ajaj/Fable.Remoting) for type-safe communication 
  - [Elmish.Bridge](https://github.com/Nhowka/Elmish.Bridge) for real-time type-safe messaging in an elmish model 
@@ -119,9 +119,9 @@ App
 Every component comes with a `Types.fs` file that contains mostly three things 
 - `State` data model that the component keeps track of
 - `Msg` type that represents the events that can occur 
-- `Pages` represnets the current page and sub pages that a component can have
+- `Pages` represents the current page and sub pages that a component can have
 
-The `State` keeps track of the `CurrentPage` but it will never update it by hand: the `CurrentPage` is only updated in response to url changes and these changes will dipatch a message to change the value of the `CurrentPage` along with dispatching other messages related to loading the data for the component in subject
+The `State` keeps track of the `CurrentPage` but it will never update it by hand: the `CurrentPage` is only updated in response to url changes and these changes will dispatch a message to change the value of the `CurrentPage` along with dispatching other messages related to loading the data for the component
 
 # Important Concepts: Data Locality and Message Interception
 
@@ -140,7 +140,7 @@ Backoffice     Login
 ```
 ## Message Interception by example
 
-> Definition: Message intercption is having control over how messages flow in your application, allowing for communication between components that don't know each other even exist.  
+> Definition: Message interception is having control over how messages flow in your application, allowing for communication between components that don't know each other even exist.  
 
 `Login` doesn't know anything going on in the application as a whole, it just has a form for the user to input his credentials and try to login to the server to obtain an authorization token. When the token is obtained, a `LoginSuccess token` message is dispatched. However, this very message is *intercepted* by `Admin` (the parent of `Login`), updating the state of `Admin`:
 ```fs
@@ -218,7 +218,7 @@ Another concrete example in this application: when you update the settings, the 
 
 Fact: Components of `Backoffice` need to make secure requests, hence they need a security token available whenever a request is to be made.
 
-Requirement: Once the user is inside a component of `Backoffice`, there will always be a `SecurityToken` available to that component. This means I don't want to check whether there is a security token or not everytime I want to make a web request, because if there isn't one, there is an internal inconsistency: the user shouldn't have been able to reach the `Backoffice` component in the first place. 
+Requirement: Once the user is inside a component of `Backoffice`, there will always be a `SecurityToken` available to that component. This is because I don't want to check whether there is a security token or not everytime I want to make a web request, because if there isn't one, there is an internal inconsistency: the user shouldn't have been able to reach the `Backoffice` component in the first place. 
 
 Problem: The security token is only acquired *after* the user logs in from `Login`, but before that there isn't a security token, hence the type of the token will be `SecurityToken: string option` but we don't want an optional token, we want an actual token once we are logged in.
 
@@ -245,7 +245,7 @@ Solution: `Login` and components of `Backoffice` cannot be siblings, `Login` is 
 ``` 
 
 # Unit-testable at the composition root level:
-The composition root is where the application functionality gets all the dependencies it needs to run to application like the database and a logger. In this application, the composition root is where we contruct an implementation for the `IBlogApi` protocol: 
+The composition root is where the application functionality gets all the dependencies it needs to run to application like the database and a logger. In this application, the composition root is where we construct an implementation for the `IBlogApi` protocol: 
 ```fs
 let liftAsync x = async { return x }
 
@@ -295,7 +295,7 @@ testCase "Login with default credentials works" <| fun _ ->
         | LoginResult.Success token -> pass() 
         | _ -> fail()
 ```
-Of course you can also test the individual function seperately because every function is also unit testable as long as you provide a database instance and a logger. 
+Of course you can also test the individual functions seperately because every function is also unit testable as long as you provide a database instance and a logger. 
 
 
 # Responsive using different UI's
@@ -363,7 +363,7 @@ git clone https://github.com/Zaid-Ajaj/tabula-rasa.git
 cd tabula-rasa
 ./build.sh Watch
 ```
-This will start the build and create the [LiteDb](https://github.com/Zaid-Ajaj/LiteDB.FSharp) (single file) database for the first time if it does not already exists. The database will be in the application data directory of your OS under the `TabulaRasa` directory with name `tabula-rasa.db` along with the newly generated secret key used for generating secure Json web tokens. 
+This will start the build and create the [LiteDb](https://github.com/Zaid-Ajaj/LiteDB.FSharp) (single file) database for the first time if it does not already exist. The database will be in the application data directory of your OS under the `TabulaRasa` directory with name `tabula-rasa.db` along with the newly generated secret key used for generating secure Json web tokens. 
 
 When the build finishes, you can navigate to `http://localhost:8090` to start using the application. Once you make changes to either server or client, it will automatically re-compile the app.
 
@@ -371,4 +371,4 @@ Once the application starts, the home page will tell you *"There aren't any stor
 
 
 # More
-There is a lot to talk about with this application, but the best to learn from it is by actually trying it out and going through the code yourself. If you need clarification or explanation on why a code snippet is written the way it is, just open an issue with your question :) 
+There is a lot to talk about with this application, but the best way to learn from it is by actually trying it out and going through the code yourself. If you need clarification or explanation on why a code snippet is written the way it is, just open an issue with your question :) 

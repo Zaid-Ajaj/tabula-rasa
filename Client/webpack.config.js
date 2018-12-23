@@ -19,7 +19,6 @@ var isProduction = process.argv.indexOf("-p") >= 0;
 console.log("Bundling for " + (isProduction ? "production" : "development") + "...");
 
 module.exports = {
-    devtool: "source-map",
     entry: resolve('./src/TabulaRasa.Client.fsproj'),
     output: {
         filename: 'bundle.js',

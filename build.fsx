@@ -32,7 +32,7 @@ Target "ServerTests" <| fun _ ->
     run dotnet "run" "Server.Tests"
 
 Target "NpmInstall" <| fun _ ->
-    run npm "install" "Client"
+    run "yarn" "install" "Client"
 
 Target "Watch" <| fun () ->
   [ async { run dotnet "watch run" "Server" }; 

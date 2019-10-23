@@ -30,7 +30,7 @@ let validatePost (req : NewBlogPostReq) (db : LiteDatabase) =
         | None -> None
 
 let publishNewPost (logger : ILogger) (database : LiteDatabase) =
-    Security.authorize [ "admin" ] <| fun newBlogReq user -> 
+    Security.authorizeAdmin <| fun newBlogReq user -> 
         let posts = database.GetCollection<BlogPost> "posts"
         try 
             match validatePost newBlogReq database with
@@ -97,7 +97,7 @@ let publishDraft (db : LiteDatabase) =
             else DatabaseErrorWhilePublishingDraft
 
 let turnArticleToDraft (db : LiteDatabase) =
-    Security.authorize [ "admin" ] <| fun postId user -> 
+    Security.authorizeAdmin <| fun postId user -> 
         let posts = db.GetCollection<BlogPost> "posts"
         let foundPost = posts.tryFindOne <@ fun post -> post.Id = postId && not post.IsDraft @>
         match foundPost with
@@ -108,7 +108,7 @@ let turnArticleToDraft (db : LiteDatabase) =
             else MakeDraftResult.DatabaseErrorWhileMakingDraft
 
 let savePostChanges (db : LiteDatabase) =
-    Security.authorize [ "admin" ] <| fun (postItem : BlogPostItem) user -> 
+    Security.authorizeAdmin <| fun (postItem : BlogPostItem) user -> 
         let posts = db.GetCollection<BlogPost> "posts"
         match posts.tryFindOne <@ fun post -> post.Id = postItem.Id @> with
         | None -> Error "Could not find the post"
@@ -137,7 +137,7 @@ let getPublishedArticles (database : LiteDatabase) : list<BlogPostItem> =
     |> List.ofSeq
 
 let togglePostFeatured (db : LiteDatabase) =
-    Security.authorize [ "admin" ] <| fun postId admin -> 
+    Security.authorizeAdmin <| fun postId admin -> 
         let posts = db.GetCollection<BlogPost> "posts"
         match posts.tryFindOne <@ fun post -> post.Id = postId @> with
         | None -> Error "Blog post could not be found"
@@ -154,7 +154,7 @@ let getAllDrafts (database : LiteDatabase) =
         |> List.map toBlogPostItem
 
 let getPostById (database : LiteDatabase) =
-    Security.authorize [ "admin" ] <| fun postId user -> 
+    Security.authorizeAdmin <| fun postId user -> 
         let posts = database.GetCollection<BlogPost> "posts"
         posts.tryFindOne <@ fun post -> post.Id = postId @> |> Option.map toBlogPostItem
 

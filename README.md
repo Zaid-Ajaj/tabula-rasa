@@ -334,7 +334,7 @@ And it is handled like this on the server:
 // Server
 
 let togglePostFeatured (db: LiteDatabase) = 
-    Security.authorize [ "admin" ] <| fun postId admin -> 
+    Security.authorizeAdmin <| fun postId admin -> 
         let posts = db.GetCollection<BlogPost> "posts"
         match posts.tryFindOne <@ fun post -> post.Id = postId @> with 
         | None -> Error "Blog post could not be found"

@@ -363,7 +363,12 @@ git clone https://github.com/Zaid-Ajaj/tabula-rasa.git
 cd tabula-rasa
 ./build.sh Watch
 ```
-This will start the build and create the [LiteDb](https://github.com/Zaid-Ajaj/LiteDB.FSharp) (single file) database for the first time if it does not already exist. The database will be in the application data directory of your OS under the `TabulaRasa` directory with name `tabula-rasa.db` along with the newly generated secret key used for generating secure Json web tokens. 
+This will start the build and create the [LiteDb](https://github.com/Zaid-Ajaj/LiteDB.FSharp)
+(single file) database for the first time if it does not already exist. The database will be in the
+application data directory of your OS under the `tabula-rasa` directory with name `TabulaRasa.db`
+along with the newly generated secret key used for generating secure Json web tokens. The
+"application data directory" on most linux systems will be `~/.config/`, resulting in a directory
+`~/.config/tabula-rasa/`.
 
 When the build finishes, you can navigate to `http://localhost:8090` to start using the application. Once you make changes to either server or client, it will automatically re-compile the app.
 

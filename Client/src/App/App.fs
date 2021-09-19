@@ -47,15 +47,15 @@ let loadBlogInfo =
         (fun _ -> BlogInfoLoadFailed "Network error: could not retrieve initial blog information from server")
 
 
-type PostsPage = Posts.Page
+type PostsPage = Posts
 
 let pageHash =
     function
     | Page.AboutPage -> Urls.about
     | PostsPage page ->
         match page with
-        | Posts.Page.AllPosts -> Urls.posts
-        | Posts.Page.Post postSlug -> Urls.combine [ Urls.posts; postSlug ]
+        | Posts.AllPosts -> Urls.posts
+        | Posts.Post postSlug -> Urls.combine [ Urls.posts; postSlug ]
     | AdminPage adminPage ->
         match adminPage with
         | Admin.LoginPage -> Urls.login
@@ -94,12 +94,10 @@ let parseUrl (urlHash: string) =
         AboutPage |> Some
     | [ Urls.posts ] ->
         // all posts page
-        Posts.Page.AllPosts |> PostsPage |> Some
+        Posts.AllPosts |> PostsPage |> Some
     | [ Urls.posts; postSlug ] ->
         // matches against a specific post by it's slug
-        Posts.Page.Post postSlug
-        |> PostsPage
-        |> Some
+        Posts.Post postSlug |> PostsPage |> Some
     | [ Urls.admin ] ->
         // the home page of the backoffice
         Backoffice.HomePage
@@ -108,7 +106,7 @@ let parseUrl (urlHash: string) =
         |> Some
     | [ Urls.login ] ->
         // the login page
-        Admin.Page.LoginPage |> AdminPage |> Some
+        Admin.LoginPage |> AdminPage |> Some
     | [ Urls.admin; Urls.drafts ] ->
         // the drafts page
         Backoffice.DraftsPage
@@ -159,7 +157,7 @@ let init () =
         | None ->
             // if unable to parse the location (-> unknown url)
             // then navigate to allPosts, here
-            Posts.Page.AllPosts
+            Posts.AllPosts
             |> PostsPage
             |> UrlUpdated
             |> Cmd.ofMsg
@@ -190,17 +188,17 @@ let handleUpdatedUrl nextPage state =
         nextState, Cmd.none
     | PostsPage postsPage ->
         match postsPage with
-        | Posts.Page.AllPosts ->
+        | Posts.AllPosts ->
             // asking for all posts? the dispatch the LoadLatestPosts message to reload them
             let nextState =
                 { state with
                       CurrentPage = Some(PostsPage postsPage) }
 
             let nextCmd =
-                Cmd.ofMsg (PostsMsg Posts.Msg.LoadLatestPosts)
+                Cmd.ofMsg (PostsMsg Posts.LoadLatestPosts)
 
             nextState, nextCmd
-        | Posts.Page.Post postSlug ->
+        | Posts.Post postSlug ->
             // asking for a specific post by it's slug in the url?
             // then dispatch a message to load that post via the "LoadSinglePost" message
             let nextState =
@@ -208,7 +206,7 @@ let handleUpdatedUrl nextPage state =
                       CurrentPage = Some(PostsPage postsPage) }
 
             let nextCmd =
-                Cmd.ofMsg (PostsMsg(Posts.Msg.LoadSinglePost postSlug))
+                Cmd.ofMsg (PostsMsg(Posts.LoadSinglePost postSlug))
 
             nextState, nextCmd
     | AdminPage adminPage ->
@@ -240,26 +238,26 @@ let handleUpdatedUrl nextPage state =
                     match backofficePage with
                     | Backoffice.DraftsPage ->
                         Drafts.LoadDrafts
-                        |> Backoffice.Msg.DraftsMsg
-                        |> Admin.Msg.BackofficeMsg
+                        |> Backoffice.DraftsMsg
+                        |> Admin.BackofficeMsg
                         |> AdminMsg
                         |> Cmd.ofMsg
                     | Backoffice.PublishedPostsPage ->
                         PublishedPosts.LoadPublishedPosts
-                        |> Backoffice.Msg.PublishedPostsMsg
-                        |> Admin.Msg.BackofficeMsg
+                        |> Backoffice.PublishedPostsMsg
+                        |> Admin.BackofficeMsg
                         |> AdminMsg
                         |> Cmd.ofMsg
                     | Backoffice.SettingsPage ->
-                        Settings.Msg.LoadBlogInfo
-                        |> Backoffice.Msg.SettingsMsg
-                        |> Admin.Msg.BackofficeMsg
+                        Settings.LoadBlogInfo
+                        |> Backoffice.SettingsMsg
+                        |> Admin.BackofficeMsg
                         |> AdminMsg
                         |> Cmd.ofMsg
                     | Backoffice.EditArticlePage postId ->
-                        EditArticle.Msg.LoadArticleToEdit postId
-                        |> Backoffice.Msg.EditArticleMsg
-                        |> Admin.Msg.BackofficeMsg
+                        EditArticle.LoadArticleToEdit postId
+                        |> Backoffice.EditArticleMsg
+                        |> Admin.BackofficeMsg
                         |> AdminMsg
                         |> Cmd.ofMsg
                     | otherPage -> Cmd.none
@@ -276,9 +274,9 @@ let update msg state =
         match msg with
         | ReloadPosts ->
             match state.CurrentPage with
-            | Some (PostsPage PostsPage.AllPosts) ->
+            | Some (PostsPage Posts.AllPosts) ->
                 let reloadPostsCmd =
-                    Cmd.ofMsg (PostsMsg Posts.Msg.LoadLatestPosts)
+                    Cmd.ofMsg (PostsMsg Posts.LoadLatestPosts)
 
                 state, reloadPostsCmd
             | _ -> state, Cmd.none
@@ -360,7 +358,7 @@ let sidebar (blogInfo: BlogInfo) state dispatch =
         div [ ClassName "quote" ] [
             str blogInfo.Bio
         ]
-        menuItem "Posts" (PostsPage Posts.Page.AllPosts) state.CurrentPage dispatch
+        menuItem "Posts" (PostsPage Posts.AllPosts) state.CurrentPage dispatch
         menuItem "About" (AboutPage) state.CurrentPage dispatch
         ofList [ if state.Admin.SecurityToken.IsSome then
                      yield! adminMenuItems state dispatch ]
@@ -383,7 +381,7 @@ let mobileHeader (blogInfo: BlogInfo) state dispatch =
         div [ ClassName "col-xs-12"
               Style [ TextAlign "center" ] ] [
             span [] [
-                navButton "Posts" (PostsPage Posts.Page.AllPosts)
+                navButton "Posts" (PostsPage Posts.AllPosts)
                 navButton "About" (AboutPage)
             ]
         ]
@@ -422,7 +420,7 @@ let mobileApp blogInfo state dispatch =
                     About.render (Body blogInfo)
                 ]
             ]
-        | PostsPage (Posts.Page.AllPosts) ->
+        | PostsPage (Posts.AllPosts) ->
             // when viewing all posts, the same main view is re-used for mobile
             div [] [
                 mobileHeader blogInfo state dispatch
@@ -430,7 +428,7 @@ let mobileApp blogInfo state dispatch =
                     main state dispatch
                 ]
             ]
-        | PostsPage (Posts.Page.Post postSlug) ->
+        | PostsPage (Posts.Post postSlug) ->
             match state.Posts.Post with
             | Remote.Empty -> div [] []
             | Loading -> Common.spinner
@@ -438,7 +436,7 @@ let mobileApp blogInfo state dispatch =
             | Body post ->
                 let goBackButton =
                     button [ ClassName "btn btn-success"
-                             OnClick(fun _ -> dispatch (NavigateTo(PostsPage Posts.Page.AllPosts))) ] [
+                             OnClick(fun _ -> dispatch (NavigateTo(PostsPage Posts.AllPosts))) ] [
                         span [] [
                             i [ ClassName "fa fa-arrow-left"
                                 Style [ Margin 5 ] ] []

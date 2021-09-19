@@ -1,13 +1,12 @@
 module Program
 
+open App
 open Elmish
 open Elmish.HMR
 open Elmish.React
 open Elmish.Debug
 open Elmish.Browser.Navigation
 open Elmish.Bridge
-open App.State
-open App.View
 open Fable.Core.JsInterop
 open Fable.Import.Browser
 
@@ -18,7 +17,7 @@ let urlSubscription appState : Cmd<_> =
     [ fun dispatch -> 
         let onChange _ =
             match parseUrl window.location.hash with
-            | Some parsedPage -> dispatch (App.Types.AppMsg.UrlUpdated parsedPage)
+            | Some parsedPage -> dispatch (App.AppMsg.UrlUpdated parsedPage)
             | None -> ()
         // listen to manual hash changes or page refresh
         window.addEventListener_hashchange (unbox onChange)
@@ -28,7 +27,7 @@ let urlSubscription appState : Cmd<_> =
 // App
 Program.mkProgram init update render
 |> Program.withSubscription urlSubscription
-|> Program.withBridgeConfig (Bridge.endpoint Shared.socket |> Bridge.withMapping App.Types.AppMsg.ServerMsg)
+|> Program.withBridgeConfig (Bridge.endpoint Shared.socket |> Bridge.withMapping App.AppMsg.ServerMsg)
 #if DEBUG
 |> Program.withConsoleTrace
 |> Program.withDebugger

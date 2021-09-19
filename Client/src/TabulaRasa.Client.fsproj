@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
@@ -12,51 +12,28 @@
     <Compile Include="Server.fs" />
     <Compile Include="Elmish.Toastr.fs" />
     <Compile Include="App/Urls.fs" />
+    <Compile Include="App\Admin\Drafts.fs" />
+    <Compile Include="App\Admin\EditArticle.fs" />
+    <Compile Include="App\Admin\NewArticle.fs" />
+    <Compile Include="App\Admin\PublishedPosts.fs" />
+    <Compile Include="App\Admin\Settings.fs" />
     <!-- Admin Backoffice NewArticle -->
-    <Compile Include="App/Admin/Backoffice/NewArticle/Types.fs" />
-    <Compile Include="App/Admin/Backoffice/NewArticle/View.fs" />
-    <Compile Include="App/Admin/Backoffice/NewArticle/State.fs" />
     <!-- Admin Backoffice EditArticle -->
-    <Compile Include="App/Admin/Backoffice/EditArticle/Types.fs" />
-    <Compile Include="App/Admin/Backoffice/EditArticle/View.fs" />
-    <Compile Include="App/Admin/Backoffice/EditArticle/State.fs" />
     <!-- Admin Backoffice Drafts -->
-    <Compile Include="App/Admin/Backoffice/Drafts/Types.fs" />
-    <Compile Include="App/Admin/Backoffice/Drafts/View.fs" />
-    <Compile Include="App/Admin/Backoffice/Drafts/State.fs" />
     <!-- Admin Backoffice Articles -->
-    <Compile Include="App/Admin/Backoffice/PublishedPosts/Types.fs" />
-    <Compile Include="App/Admin/Backoffice/PublishedPosts/View.fs" />
-    <Compile Include="App/Admin/Backoffice/PublishedPosts/State.fs" />
     <!-- Admin Backoffice Settings -->
-    <Compile Include="App/Admin/Backoffice/Settings/Types.fs" />
-    <Compile Include="App/Admin/Backoffice/Settings/View.fs" />
-    <Compile Include="App/Admin/Backoffice/Settings/State.fs" />
     <!-- Admin Backoffice -->
-    <Compile Include="App/Admin/Backoffice/Types.fs" />
-    <Compile Include="App/Admin/Backoffice/View.fs" />
-    <Compile Include="App/Admin/Backoffice/State.fs" />
     <!-- Admin Login -->
-    <Compile Include="App/Admin/Login/Types.fs" />
-    <Compile Include="App/Admin/Login/Http.fs" />
-    <Compile Include="App/Admin/Login/View.fs" />
-    <Compile Include="App/Admin/Login/State.fs" />
+    <Compile Include="App\Admin\Login.fs" />
+    <Compile Include="App\Admin\Backoffice.fs" />
     <!-- Admin -->
-    <Compile Include="App/Admin/Types.fs" />
-    <Compile Include="App/Admin/View.fs" />
-    <Compile Include="App/Admin/State.fs" />
+    <Compile Include="App\Admin\Admin.fs" />
     <!-- Posts -->
-    <Compile Include="App/Posts/Types.fs" />
-    <Compile Include="App/Posts/View.fs" />
-    <Compile Include="App/Posts/Http.fs" />
-    <Compile Include="App/Posts/State.fs" />
+    <Compile Include="App\Posts.fs" />
     <!-- About -->
-    <Compile Include="App/About/View.fs" />
+    <Compile Include="App\About.fs" />
+    <Compile Include="App\App.fs" />
     <!-- App -->
-    <Compile Include="App/Types.fs" />
-    <Compile Include="App/Http.fs" />
-    <Compile Include="App/State.fs" />
-    <Compile Include="App/View.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

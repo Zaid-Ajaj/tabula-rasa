@@ -16,7 +16,6 @@ let run fileName args workingDir =
     if not ok then failwith (sprintf "'%s> %s %s' task failed" workingDir fileName args)
 
 let dotnet = "dotnet"
-let npm = "npm"
 let projects =  [ "Server"; "Server.Tests"; "Client" </> "src" ]
 
 Target "Clean" <| fun _ ->
@@ -32,7 +31,7 @@ Target "ServerTests" <| fun _ ->
     run dotnet "run" "Server.Tests"
 
 Target "NpmInstall" <| fun _ ->
-    run "yarn" "install" "Client"
+    run "npm" "install" "Client"
 
 Target "Watch" <| fun () ->
   [ async { run dotnet "watch run" "Server" }; 

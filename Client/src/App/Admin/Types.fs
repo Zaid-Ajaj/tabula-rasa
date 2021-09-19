@@ -2,13 +2,13 @@ module Admin.Types
 
 type Page =
     | Login
-    | Backoffice of Admin.Backoffice.Types.Page
+    | Backoffice of Backoffice.Types.Page
 
 type Msg =
     | LoginMsg of Admin.Login.Types.Msg
-    | BackofficeMsg of Admin.Backoffice.Types.Msg
+    | BackofficeMsg of Backoffice.Types.Msg
 
 type State =
-    { SecurityToken : string option
-      Backoffice : Admin.Backoffice.Types.State
-      Login : Admin.Login.Types.State }
+    { SecurityToken: string option
+      Backoffice: Backoffice.Types.State
+      Login: Login.Types.State }

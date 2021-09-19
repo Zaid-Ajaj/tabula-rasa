@@ -1,4 +1,4 @@
-module App.About.View
+﻿module About
 
 open Fable.Helpers.React
 open Shared

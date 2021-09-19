@@ -29,6 +29,6 @@ clitool dotnet-fable
 clitool Microsoft.DotNet.Watcher.Tools
 
 group Build
-    framework >= net45
+    framework >= netcoreapp3.1
     source https://www.nuget.org/api/v2
     nuget FAKE ~> 4.64.3

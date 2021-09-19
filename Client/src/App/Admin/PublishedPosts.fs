@@ -1,13 +1,87 @@
-module Admin.Backoffice.PublishedPosts.State
+module PublishedPosts
 
 open Shared
+
+open Fable.Helpers.React.Props
+open Fable.Helpers.React
+
 open Elmish
 open Elmish.SweetAlert
-open Admin.Backoffice.PublishedPosts.Types
-open Fable.PowerPack
-open Fable
-open Urls
 open Common
+
+type State =
+    { PublishedPosts : Remote<list<BlogPostItem>>
+      DeletingPost : Option<int>
+      MakingDraft : Option<int>
+      IsTogglingFeatured : Option<int> }
+
+type Msg =
+    | LoadPublishedPosts
+    | LoadedPublishedPosts of Result<list<BlogPostItem>, string>
+    | AskPermissionToDeletePost of articleId : int
+    | DeletePost of articleId : int
+    | CancelPostDeletion
+    | PostDeleted
+    | MakeIntoDraft of articleId : int
+    | DraftMade
+    | MakeDraftError of errorMsg : string
+    | DeletePostError of string
+    | EditPost of postId : int
+    | ToggleFeatured of postId : int
+    | ToggleFeaturedFinished of Result<string, string>
+    | DoNothing
+
+let postActions isDeleting makingDraft (article : BlogPostItem) dispatch =
+    [ button [ ClassName "btn btn-info"
+               OnClick(fun _ -> dispatch (EditPost article.Id))
+               Style [ Margin 5 ] ] [ span [] [ Common.icon false "edit"
+                                                str "Edit" ] ]
+      button [ ClassName "btn btn-success"
+               OnClick(fun _ -> dispatch (MakeIntoDraft article.Id))
+               Style [ Margin 5 ] ] [ span [] [ Common.icon makingDraft "rocket"
+                                                str "Make Draft" ] ]
+      button [ ClassName "btn btn-danger"
+               Style [ Margin 5 ]
+               OnClick(fun _ -> dispatch (AskPermissionToDeletePost article.Id)) ] [ span [] [ Common.icon isDeleting 
+                                                                                                   "times"
+                                                                                               str "Delete" ] ] ]
+
+let render state dispatch =
+    match state.PublishedPosts with
+    | Remote.Empty -> div [] [ str "Still empty" ]
+    | Loading -> Common.spinner
+    | LoadError msg -> Common.errorMsg msg
+    | Body loadedPosts -> 
+        div [] 
+            [ h1 [] [ str "Published Stories" ]
+              
+              table [ ClassName "table table-bordered" ] 
+                  [ thead [] [ tr [] [ th [] [ str "ID" ]
+                                       th [] [ str "Title" ]
+                                       th [] [ str "Tags" ]
+                                       th [] [ str "Featured?" ]
+                                       th [] [ str "Slug" ]
+                                       th [] [ str "Actions" ] ] ]
+                    tbody [] [ for post in loadedPosts -> 
+                                   let isMakingDraft = (state.MakingDraft = Some post.Id)
+                                   let isDeleting = (state.DeletingPost = Some post.Id)
+                                   let actionSection = postActions isDeleting isMakingDraft post dispatch
+                                   
+                                   let featuredButton =
+                                       let className =
+                                           if post.Featured then "btn btn-success"
+                                           else "btn btn-secondary"
+                                       button [ ClassName className
+                                                Style [ Margin 10 ]
+                                                OnClick(fun ev -> dispatch (ToggleFeatured post.Id)) ] 
+                                           [ str "Featured" ]
+                                   tr [] [ td [] [ str (string post.Id) ]
+                                           td [] [ str post.Title ]
+                                           td [] [ str (String.concat ", " post.Tags) ]
+                                           td [] [ featuredButton ]
+                                           td [] [ str post.Slug ]
+                                           td [ Style [ Width "360px" ] ] actionSection ] ] ] ]
+
 
 let init() =
     let initState =

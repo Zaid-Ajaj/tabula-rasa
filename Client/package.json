@@ -29,7 +29,7 @@
     "fable-loader": "2.0.0",
     "css-loader": "^0.28.7",
     "loglevel": "^1.5.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "webpack": "^4.8.1",
